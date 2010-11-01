@@ -1,0 +1,49 @@
+Compressed bitset in C++
+Daniel Lemire
+
+
+
+== What is this? ==
+
+The class EWAHBoolArray is a compressed bitset data structure.
+
+== Licensing ==
+
+Apache License 2.0 and GPL 2.0. (Other licenses are possible.)
+
+
+== Limitations ==
+
+Because of the compression type being used, you must set the bits
+in increasing order (no random access).
+
+== Dependencies ==
+
+None. (Will work under MacOS or Linux easily.)
+
+== Usage ==
+
+make
+./unit
+make example
+./example
+
+== Example ==
+
+Please see example.cpp
+
+== Further reading ==
+
+Please see
+
+Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves
+word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1),
+pages 3-28, 2010.
+http://arxiv.org/abs/0901.3751
+
+== Warning ==
+
+Please don't trust this software. Run your own unit tests. Report bugs.
+
+
+

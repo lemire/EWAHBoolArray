@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <sstream>
 
+typedef unsigned short  ushort;
 typedef unsigned long  ulong;
 typedef unsigned int  uint;
 typedef unsigned long long int uint64;

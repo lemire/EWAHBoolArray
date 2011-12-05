@@ -10,16 +10,18 @@
 
 using namespace std;
 
-
-
+// apparently Microsoft defines macros for min / max
+#ifndef min
 inline uint min(uint x, uint y) {
         return x > y ? y : x;
 }
+#endif 
 
-
+#ifndef max
 inline uint max(uint x, uint y) {
         return x > y ? x : y;
 }
+#endif 
 
 /**
  * This is used below in the Enhanced Word Aligned  Hybrid (EWAH)

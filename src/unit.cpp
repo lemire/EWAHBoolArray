@@ -276,8 +276,10 @@ void tellmeaboutmachine() {
 #if  __BIG_ENDIAN__
     cout << "you have a big endian machine" << endl;
 #endif
+#if __CHAR_BIT__
     if (__CHAR_BIT__ != 8)
         cout << "on your machine, chars don't have 8bits???" << endl;
+#endif
 }
 
 

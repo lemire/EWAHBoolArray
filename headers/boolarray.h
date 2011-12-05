@@ -6,6 +6,7 @@
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+#include <iso646.h> // mostly for Microsoft compilers
 
 typedef unsigned short  ushort;
 typedef unsigned long  ulong;

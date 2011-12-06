@@ -34,7 +34,7 @@ class RunningLengthWord {
 			if(sizeof(ushort)!=2) cerr << "bad ushort" << endl;
 			if(sizeof(uword)<2) cerr << "bad uword" << endl;
 			assert( (largestliteralcount<<(1+runninglengthbits))>>(1+runninglengthbits) ==  largestliteralcount);
-			assert(static_cast<uword>(~(1+ (largestliteralcount<<(1+runninglengthbits)) + (largestrunninglengthcount<<1)))==static_cast<uword>(0));
+			assert(static_cast<uword>(~(static_cast<uword>(1)+ (largestliteralcount<<(1+runninglengthbits)) + (largestrunninglengthcount<<1)))==static_cast<uword>(0));
 		}
 
 		RunningLengthWord(const RunningLengthWord & rlw) : mydata(rlw.mydata) {}

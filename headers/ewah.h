@@ -121,10 +121,10 @@ class RunningLengthWord {
 		static const uword largestliteralcount = (static_cast<uword>(1)<<literalbits) - 1;
 		static const uword largestrunninglengthcount = (static_cast<uword>(1)<<runninglengthbits)-1;//static_cast<uword>(0xFFFFUL) ;
 		static const uword shiftedlargestrunninglengthcount = largestrunninglengthcount<<1;
-		static const uword notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
+		static const uword notshiftedlargestrunninglengthcount = static_cast<uword>(~shiftedlargestrunninglengthcount);
 		static const uword runninglengthplusrunningbit = (static_cast<uword>(1)<<(runninglengthbits+1)) - 1;//static_cast<uword>(0x1FFFFUL);
-		static const uword notrunninglengthplusrunningbit =~runninglengthplusrunningbit;
-		static const uword notlargestrunninglengthcount =~largestrunninglengthcount;
+		static const uword notrunninglengthplusrunningbit =static_cast<uword>(~runninglengthplusrunningbit);
+		static const uword notlargestrunninglengthcount =static_cast<uword>(~largestrunninglengthcount);
 
 		uword & mydata;
 	private:
@@ -267,7 +267,7 @@ class EWAHBoolArrayIterator {
 		b(other.b){}
 
 		static const uword zero = 0;
-		static const uword notzero=~zero;
+		static const uword notzero=static_cast<uword>(~zero);
 private:
 	EWAHBoolArrayIterator(const vector<uword> & parent) ;
 	void readNewRunningLengthWord() ;
@@ -687,7 +687,7 @@ class EWAHBoolArrayRawIterator {
 		const uword * dirtyWords()  const {
 			assert(pointer>0);
 			assert(pointer>=rlw.getNumberOfLiteralWords());
-			return & ((*myparent)[pointer-rlw.getNumberOfLiteralWords()]);
+			return & (myparent->at(pointer-rlw.getNumberOfLiteralWords()));
 		}
 
 		EWAHBoolArrayRawIterator & operator=(const EWAHBoolArrayRawIterator & other) {
@@ -1045,10 +1045,15 @@ void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a, EWAHBoolArray &contain
                     // we have a stream of 0x00
 			const uint predatorrl (predator.getRunningLength());
 			const uint preyrl (prey.getRunningLength());
-			const uint tobediscarded = (predatorrl >= preyrl) ?  preyrl : predatorrl;
-			container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-			const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
-			container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+			if(predatorrl >= preyrl) {
+			    const uint tobediscarded =  preyrl ;
+				container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
+			} else {
+				const uint tobediscarded =   predatorrl ;
+				container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
+				const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
+				container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+			}
 			predator.discardFirstWords(preyrl);
 			prey.discardFirstWords(preyrl);
 		} else {

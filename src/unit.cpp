@@ -7,6 +7,10 @@ using namespace std;
 static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
 
+// for Microsoft compilers
+#if _MSC_VER >= 1400
+        #define unlink _unlink
+#endif
 
 template<class uword>
 bool testRunningLengthWord() {

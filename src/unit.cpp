@@ -128,6 +128,91 @@ bool testEWAHBoolArrayAppend() {
     return isOk;
 }
 
+
+// unit test contributed by Phong Tran
+bool testPhongTran() {
+    cout << "[testing PhongTran]" << endl;
+     bool isOk(true);
+     EWAHBoolArray<uword32> myarray;
+     for(uword32 x = 0;x< 10000; x++) {
+               myarray.add(x);
+     }
+     string indexfile("testingewahboolarray.bin");
+     ::unlink(indexfile.c_str());
+     ofstream out(indexfile.c_str(), ios::out | ios::binary);
+     myarray.write(out);
+     out.close();
+     EWAHBoolArray<uword32> lmyarray;
+     ifstream in(indexfile.c_str());
+     lmyarray.read(in);
+     in.close();
+     EWAHBoolArrayIterator<uword32> i = myarray.uncompress();
+     EWAHBoolArrayIterator<uword32> j = lmyarray.uncompress();
+     while (i.hasNext() or j.hasNext()) {
+        if ((!j.hasNext()) or (!i.hasNext())) {
+            cout<<"the two arrays don't have the same size?"<<endl;
+            isOk = false;
+            break;
+        }
+        uword32 val = i.next();
+        uword32 val2 = j.next();
+        if (val != val2) {
+            cout<<"the two arrays differ" << endl;
+            isOk = false;
+            break;
+        }
+    }
+    if (isOk) ::unlink(indexfile.c_str());
+    if (!isOk) cout << testfailed << endl;
+    return isOk;
+}
+
+
+// another unit test contributed by Phong Tran
+template<class uword>
+bool testPhongTran2() {
+        cout << "[testing PhongTran2]" << endl;
+        bool isOk(true);
+        uword iTotal = static_cast<uword>(1000); // when 1000 does not fit in uword, then it will be casted
+        EWAHBoolArray<uword> myarray;
+        for(uword x = static_cast<uword>(100);x< iTotal; x++)  {
+                myarray.add(x);
+        }
+        string indexfile("testingewahboolarray.bin");
+        ::unlink(indexfile.c_str());
+        ofstream out(indexfile.c_str(), ios::out | ios::binary);
+        myarray.write(out);
+        out.close();
+        EWAHBoolArray<uword> lmyarray;
+        ifstream in(indexfile.c_str());
+        lmyarray.read(in);
+        in.close();
+        if (!(myarray == lmyarray)) {
+                cout << "bad news, they are not equal" << endl;
+                cout << "size in bits: " << myarray.sizeInBits() << " vs. " << lmyarray.sizeInBits() << endl;
+                isOk = false;
+        }
+        EWAHBoolArrayIterator<uword> i = myarray.uncompress();
+        EWAHBoolArrayIterator<uword> j = lmyarray.uncompress();
+        while (i.hasNext())    {
+                if (!j.hasNext())    {
+                        cout<<"the two arrays don't have the same size?"<<endl;
+                        isOk = false;
+                        break;
+                }
+                uword val = i.next();
+                uword val2 = j.next();
+                if (val != val2)    {
+                        cout<<"the two arrays differ " << endl;
+                        isOk = false;
+                }
+        }
+        if (isOk) ::unlink(indexfile.c_str());
+        if (!isOk) cout << testfailed << endl;
+        return isOk;
+}
+
+
 template<class uword>
 bool testEWAHBoolArray() {
     cout << "[testing EWAHBoolArray]" << endl;
@@ -291,6 +376,12 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+    if (!testPhongTran()) ++failures;
+
+    if (!testPhongTran2<uword16 > ())++failures;
+    if (!testPhongTran2<uword32 > ())++failures;
+    if (!testPhongTran2<uword64 > ())++failures;
+
     if (!testRunningLengthWord<uword16 > ())++failures;
     if (!testRunningLengthWord<uword32 > ())++failures;
     if (!testRunningLengthWord<uword64 > ())++failures;

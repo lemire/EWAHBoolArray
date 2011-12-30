@@ -952,12 +952,12 @@ template <class uword>
 template <class container>
 void EWAHBoolArray<uword>::appendRowIDs(container & out, const size_t offset) const {
     size_t pointer(0);
-    ulong currentoffset(offset);
+    size_t currentoffset(offset);
     if(RESERVEMEMORY) out.reserve(buffer.size()+64);// trading memory for speed.
     while(pointer <buffer.size()) {
         ConstRunningLengthWord<uword> rlw(buffer[pointer]);
         if(rlw.getRunningBit()) {
-            for(ulong x = 0; x<  static_cast<ulong>(rlw.getRunningLength()*wordinbits); ++x) {
+            for(size_t x = 0; x<  static_cast<size_t>(rlw.getRunningLength()*wordinbits); ++x) {
                 out.push_back(currentoffset + x);
             }
         }

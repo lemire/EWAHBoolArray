@@ -9,7 +9,7 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
 // for Microsoft compilers
 #if _MSC_VER >= 1400
-        #define unlink _unlink
+#define unlink _unlink
 #endif
 
 template<class uword>
@@ -132,23 +132,23 @@ bool testEWAHBoolArrayAppend() {
 // unit test contributed by Phong Tran
 bool testPhongTran() {
     cout << "[testing PhongTran]" << endl;
-     bool isOk(true);
-     EWAHBoolArray<uword32> myarray;
-     for(uword32 x = 0;x< 10000; x++) {
-               myarray.add(x);
-     }
-     string indexfile("testingewahboolarray.bin");
-     ::unlink(indexfile.c_str());
-     ofstream out(indexfile.c_str(), ios::out | ios::binary);
-     myarray.write(out);
-     out.close();
-     EWAHBoolArray<uword32> lmyarray;
-     ifstream in(indexfile.c_str());
-     lmyarray.read(in);
-     in.close();
-     EWAHBoolArrayIterator<uword32> i = myarray.uncompress();
-     EWAHBoolArrayIterator<uword32> j = lmyarray.uncompress();
-     while (i.hasNext() or j.hasNext()) {
+    bool isOk(true);
+    EWAHBoolArray<uword32> myarray;
+    for(uword32 x = 0; x< 10000; x++) {
+        myarray.add(x);
+    }
+    string indexfile("testingewahboolarray.bin");
+    ::unlink(indexfile.c_str());
+    ofstream out(indexfile.c_str(), ios::out | ios::binary);
+    myarray.write(out);
+    out.close();
+    EWAHBoolArray<uword32> lmyarray;
+    ifstream in(indexfile.c_str());
+    lmyarray.read(in);
+    in.close();
+    EWAHBoolArrayIterator<uword32> i = myarray.uncompress();
+    EWAHBoolArrayIterator<uword32> j = lmyarray.uncompress();
+    while (i.hasNext() or j.hasNext()) {
         if ((!j.hasNext()) or (!i.hasNext())) {
             cout<<"the two arrays don't have the same size?"<<endl;
             isOk = false;
@@ -171,45 +171,45 @@ bool testPhongTran() {
 // another unit test contributed by Phong Tran
 template<class uword>
 bool testPhongTran2() {
-        cout << "[testing PhongTran2]" << endl;
-        bool isOk(true);
-        uword iTotal = static_cast<uword>(1000); // when 1000 does not fit in uword, then it will be casted
-        EWAHBoolArray<uword> myarray;
-        for(uword x = static_cast<uword>(100);x< iTotal; x++)  {
-                myarray.add(x);
+    cout << "[testing PhongTran2]" << endl;
+    bool isOk(true);
+    uword iTotal = static_cast<uword>(1000); // when 1000 does not fit in uword, then it will be casted
+    EWAHBoolArray<uword> myarray;
+    for(uword x = static_cast<uword>(100); x< iTotal; x++)  {
+        myarray.add(x);
+    }
+    string indexfile("testingewahboolarray.bin");
+    ::unlink(indexfile.c_str());
+    ofstream out(indexfile.c_str(), ios::out | ios::binary);
+    myarray.write(out);
+    out.close();
+    EWAHBoolArray<uword> lmyarray;
+    ifstream in(indexfile.c_str());
+    lmyarray.read(in);
+    in.close();
+    if (!(myarray == lmyarray)) {
+        cout << "bad news, they are not equal" << endl;
+        cout << "size in bits: " << myarray.sizeInBits() << " vs. " << lmyarray.sizeInBits() << endl;
+        isOk = false;
+    }
+    EWAHBoolArrayIterator<uword> i = myarray.uncompress();
+    EWAHBoolArrayIterator<uword> j = lmyarray.uncompress();
+    while (i.hasNext())    {
+        if (!j.hasNext())    {
+            cout<<"the two arrays don't have the same size?"<<endl;
+            isOk = false;
+            break;
         }
-        string indexfile("testingewahboolarray.bin");
-        ::unlink(indexfile.c_str());
-        ofstream out(indexfile.c_str(), ios::out | ios::binary);
-        myarray.write(out);
-        out.close();
-        EWAHBoolArray<uword> lmyarray;
-        ifstream in(indexfile.c_str());
-        lmyarray.read(in);
-        in.close();
-        if (!(myarray == lmyarray)) {
-                cout << "bad news, they are not equal" << endl;
-                cout << "size in bits: " << myarray.sizeInBits() << " vs. " << lmyarray.sizeInBits() << endl;
-                isOk = false;
+        uword val = i.next();
+        uword val2 = j.next();
+        if (val != val2)    {
+            cout<<"the two arrays differ " << endl;
+            isOk = false;
         }
-        EWAHBoolArrayIterator<uword> i = myarray.uncompress();
-        EWAHBoolArrayIterator<uword> j = lmyarray.uncompress();
-        while (i.hasNext())    {
-                if (!j.hasNext())    {
-                        cout<<"the two arrays don't have the same size?"<<endl;
-                        isOk = false;
-                        break;
-                }
-                uword val = i.next();
-                uword val2 = j.next();
-                if (val != val2)    {
-                        cout<<"the two arrays differ " << endl;
-                        isOk = false;
-                }
-        }
-        if (isOk) ::unlink(indexfile.c_str());
-        if (!isOk) cout << testfailed << endl;
-        return isOk;
+    }
+    if (isOk) ::unlink(indexfile.c_str());
+    if (!isOk) cout << testfailed << endl;
+    return isOk;
 }
 
 
@@ -296,8 +296,8 @@ bool testEWAHBoolArrayLogical() {
     EWAHBoolArray<uword> myarray2;
     const uint N=15;
     uword allones = static_cast<uword>(~0L);
-    uword x1[N] ={1,54,24,145,0,0,0,allones,allones,allones,43,0,0,0,1};
-    uword x2[N] ={allones,0,0,0,0,0,0,0,allones,allones,allones,0,4,0,0};
+    uword x1[N] = {1,54,24,145,0,0,0,allones,allones,allones,43,0,0,0,1};
+    uword x2[N] = {allones,0,0,0,0,0,0,0,allones,allones,allones,0,4,0,0};
     uword xand[N];
     uword xxor[N];
     for(uint k = 0; k < N; ++k) {
@@ -317,34 +317,40 @@ bool testEWAHBoolArrayLogical() {
     EWAHBoolArrayIterator<uword> j = myor.uncompress();
     EWAHBoolArrayIterator<uword> it1 = myarray1.uncompress();
     EWAHBoolArrayIterator<uword> it2 = myarray2.uncompress();
-    for(uint k = 0; k <N;++k) {
+    for(uint k = 0; k <N; ++k) {
         const uword m1 = it1.next();
         const uword m2 = it2.next();
         if(!i.hasNext()) {
             cout<<"type 1 error"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
         if(!ii.hasNext()) {
             cout<<"type 2 error"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
         if(!j.hasNext()) {
             cout<<"type 3 error"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
-        if(i.next()!= xand[k]){
+        if(i.next()!= xand[k]) {
             cout<<"type 4 error"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
-        if(ii.next()!= xand[k]){
+        if(ii.next()!= xand[k]) {
             cout<<"type 5 error"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
         const uword jor = j.next();
-        if(jor!= xxor[k]){
+        if(jor!= xxor[k]) {
             cout<<m1<<" or "<< m2<<" = "<< xxor[k] << " but got "<<jor <<endl;
             cout<<"type 6 error OR"<<endl;
-            isOk=false; break;
+            isOk=false;
+            break;
         }
     }
     if (!isOk) cout << testfailed << endl;
@@ -355,6 +361,7 @@ bool testEWAHBoolArrayLogical() {
 
 void tellmeaboutmachine() {
     cout << "number of bytes in ostream::pos_type = " << sizeof (ostream::pos_type) << endl;
+    cout << "number of bytes in size_t = " << sizeof (size_t) << endl;
     if (sizeof (ulong) > 4)
         cout << "you have a 64-bit machine" << endl;
     else

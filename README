@@ -9,7 +9,8 @@ The class EWAHBoolArray is a compressed bitset data structure.
 
 == Licensing ==
 
-Apache License 2.0 and GPL 2.0. (Other licenses are possible.)
+Apache License 2.0. (Other licenses are possible.)
+
 
 
 == Limitations ==

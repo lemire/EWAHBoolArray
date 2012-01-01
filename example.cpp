@@ -2,7 +2,6 @@
 
 
 int main(void) {
-    vector<ulong> ids;
     EWAHBoolArray<uword32> bitset1;
     bitset1.set(1);
     bitset1.set(2);
@@ -14,9 +13,7 @@ int main(void) {
     bitset1.set(1009);
     bitset1.set(100000);
     cout<<"first bitset : "<<endl;
-    ids.clear();
-    bitset1.appendRowIDs(ids);
-    for(vector<ulong>::const_iterator i = ids.begin(); i!=ids.end(); ++i)
+    for(EWAHBoolArray<uword32>::const_iterator i = bitset1.begin(); i!=bitset1.end(); ++i)
         cout<<*i<<endl;
     cout<<endl;
     EWAHBoolArray<uword32> bitset2;
@@ -26,32 +23,27 @@ int main(void) {
     bitset2.set(1007);
     bitset2.set(100000);
     cout<<"second bitset : "<<endl;
-    ids.clear();
-    bitset2.appendRowIDs(ids);
-    for(vector<ulong>::const_iterator i = ids.begin(); i!=ids.end(); ++i)
+    for(EWAHBoolArray<uword32>::const_iterator i = bitset2.begin(); i!=bitset2.end(); ++i)
         cout<<*i<<endl;
     cout<<endl;
     EWAHBoolArray<uword32> orbitset;
     EWAHBoolArray<uword32> andbitset;
-    bitset1.rawlogicalor(bitset2,orbitset);
-    bitset1.rawlogicaland(bitset2,andbitset);
+    bitset1.logicalor(bitset2,orbitset);
+    bitset1.logicaland(bitset2,andbitset);
     // we will display the or
     cout<<"logical and: "<<endl;
-    ids.clear();
-    orbitset.appendRowIDs(ids);
-    for(vector<ulong>::const_iterator i = ids.begin(); i!=ids.end(); ++i)
-        cout<<*i<<endl;
-    cout<<endl;
-    cout<<"memory usage of compressed bitset = "<<orbitset.sizeInBytes()<<" bytes"<<endl;
-    cout<<endl;
-    // we will display the and
-    cout<<"logical or: "<<endl;
-    ids.clear();
-    andbitset.appendRowIDs(ids);
-    for(vector<ulong>::const_iterator i = ids.begin(); i!=ids.end(); ++i)
+    for(EWAHBoolArray<uword32>::const_iterator i = andbitset.begin(); i!=andbitset.end(); ++i)
         cout<<*i<<endl;
     cout<<endl;
     cout<<"memory usage of compressed bitset = "<<andbitset.sizeInBytes()<<" bytes"<<endl;
+    cout<<endl;
+    // we will display the and
+    cout<<"logical or: "<<endl;
+    for(EWAHBoolArray<uword32>::const_iterator i = orbitset.begin(); i!=orbitset.end(); ++i)
+        cout<<*i<<endl;
+    cout<<endl;
+    cout<<endl;
+    cout<<"memory usage of compressed bitset = "<<orbitset.sizeInBytes()<<" bytes"<<endl;
     cout<<endl;
     return EXIT_SUCCESS;
 }

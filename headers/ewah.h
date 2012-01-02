@@ -906,14 +906,16 @@ size_t EWAHBoolArray<uword>::add(const uword  newdata, const uint bitsthatmatter
 
 template <class uword>
 inline void EWAHBoolArray<uword>::writeBuffer(ostream & out) const {
-    out.write(reinterpret_cast<const char *>(& buffer[0]),sizeof(uword)*buffer.size());
+	if(buffer.size()>0)
+	    out.write(reinterpret_cast<const char *>(& buffer[0]),sizeof(uword)*buffer.size());
 }
 
 
 template <class uword>
 inline void EWAHBoolArray<uword>::readBuffer(istream & in, const size_t buffersize) {
     buffer.resize(buffersize);
-    in.read(reinterpret_cast<char *>(&buffer[0]),sizeof(uword)*buffersize);
+    if(buffersize>0)
+	    in.read(reinterpret_cast<char *>(&buffer[0]),sizeof(uword)*buffersize);
 }
 
 
@@ -922,7 +924,8 @@ void EWAHBoolArray<uword>::write(ostream & out, const bool savesizeinbits) const
     if(savesizeinbits)out.write(reinterpret_cast<const char *>( & sizeinbits), sizeof(sizeinbits));
     const size_t buffersize = buffer.size();
     out.write(reinterpret_cast<const char *>(& buffersize),sizeof(buffersize));
-    out.write(reinterpret_cast<const char *>(& buffer[0]),sizeof(uword)*buffersize);
+    if(buffersize>0)
+	    out.write(reinterpret_cast<const char *>(& buffer[0]),sizeof(uword)*buffersize);
 }
 
 
@@ -933,7 +936,8 @@ void EWAHBoolArray<uword>::read(istream & in, const bool savesizeinbits) {
     size_t buffersize(0);
     in.read(reinterpret_cast<char *>(&buffersize), sizeof(buffersize));
     buffer.resize(buffersize);
-    in.read(reinterpret_cast<char *>(&buffer[0]),sizeof(uword)*buffersize);
+    if(buffersize>0)
+	    in.read(reinterpret_cast<char *>(&buffer[0]),sizeof(uword)*buffersize);
 }
 
 

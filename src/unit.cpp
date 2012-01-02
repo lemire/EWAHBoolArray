@@ -158,7 +158,7 @@ bool testJoergBukowski() {
 	    myarray.write(out);
     	out.close();
     	EWAHBoolArray<uword> recovered;
-    	ifstream in(indexfile.c_str());
+    	ifstream in(indexfile.c_str(),ios::binary);
     	recovered.read(in);
     	in.close();
     	vector<uint> vals;
@@ -192,7 +192,7 @@ bool testPhongTran() {
     myarray.write(out);
     out.close();
     EWAHBoolArray<uword32> lmyarray;
-    ifstream in(indexfile.c_str());
+    ifstream in(indexfile.c_str(),ios::binary);
     lmyarray.read(in);
     in.close();
     EWAHBoolArrayIterator<uword32> i = myarray.uncompress();
@@ -233,7 +233,7 @@ bool testPhongTran2() {
     myarray.write(out);
     out.close();
     EWAHBoolArray<uword> lmyarray;
-    ifstream in(indexfile.c_str());
+    ifstream in(indexfile.c_str(),ios::binary);
     lmyarray.read(in);
     in.close();
     if (!(myarray == lmyarray)) {
@@ -301,7 +301,7 @@ bool testEWAHBoolArray() {
     myarray.write(out);
     out.close();
     EWAHBoolArray<uword> lmyarray;
-    ifstream in(indexfile.c_str());
+    ifstream in(indexfile.c_str(),ios::binary);
     lmyarray.read(in);
     in.close();
     if (!(myarray == lmyarray)) {

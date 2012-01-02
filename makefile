@@ -1,5 +1,5 @@
 VPATH = src:headers
-CXXFLAGS=-Iheaders -O2 -Wall -Wextra -Weffc++ -Wconversion  -Wshorten-64-to-32 
+CXXFLAGS=-Iheaders -O2 -Wall -Wextra -Weffc++ -Wshadow -Wcast-align -Wwrite-strings -Wstrict-overflow=5  -Wpointer-arith -Winit-self  
 HEADERS=ewah.h boolarray.h
 
 

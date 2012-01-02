@@ -1,12 +1,14 @@
 #ifndef EWAH_H
 #define EWAH_H
 
-#include "boolarray.h"
+#include <string.h>
+#include <stdlib.h>
 #include <cassert>
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 
+#include "boolarray.h"
 
 using namespace std;
 
@@ -194,7 +196,7 @@ public:
      * followed by how many literal words?
      */
     uword getNumberOfLiteralWords() const {
-        return mydata >> (1+RunningLengthWord<uword>::runninglengthbits);
+        return static_cast<uword>(mydata >> (1+RunningLengthWord<uword>::runninglengthbits));
     }
 
     uword size() const {
@@ -214,7 +216,7 @@ class BufferedRunningLengthWord {
 public:
     BufferedRunningLengthWord (const uword & data) : RunningBit(data & static_cast<uword>(1)),
         RunningLength((data >> 1) & RunningLengthWord<uword>::largestrunninglengthcount),
-        NumberOfLiteralWords(data >> (1+RunningLengthWord<uword>::runninglengthbits)) {
+        NumberOfLiteralWords(static_cast<uword>(data >> (1+RunningLengthWord<uword>::runninglengthbits))) {
     }
     BufferedRunningLengthWord (const RunningLengthWord<uword> & p) : RunningBit(p.mydata & static_cast<uword>(1)),
         RunningLength((p.mydata >> 1) & RunningLengthWord<uword>::largestrunninglengthcount),
@@ -224,7 +226,7 @@ public:
     void read(const uword & data) {
         RunningBit = data & static_cast<uword>(1);
         RunningLength = (data >> 1) & RunningLengthWord<uword>::largestrunninglengthcount;
-        NumberOfLiteralWords = data >> (1+RunningLengthWord<uword>::runninglengthbits);
+        NumberOfLiteralWords = static_cast<uword>(data >> (1+RunningLengthWord<uword>::runninglengthbits));
     }
     bool getRunningBit() const {
         return RunningBit;
@@ -233,12 +235,12 @@ public:
     void discardFirstWords(uword x) {
         assert(x<= size());
         if(RunningLength >= x) {
-            RunningLength -= x;
+            RunningLength = static_cast<uword>(RunningLength - x);
             return;
         }
-        x -= RunningLength;
+        x = static_cast<uword>( x - RunningLength);
         RunningLength = 0;
-        NumberOfLiteralWords -= x;
+        NumberOfLiteralWords = static_cast<uword>(NumberOfLiteralWords -  x);
     }
 
     /**
@@ -256,7 +258,7 @@ public:
     }
 
     uword size() const {
-        return RunningLength + NumberOfLiteralWords;
+        return static_cast<uword>(RunningLength + NumberOfLiteralWords);
     }
     bool RunningBit;
     uword RunningLength;
@@ -1170,9 +1172,9 @@ void EWAHBoolArray<uword>::appendRowIDs(container & out, const size_t offset) co
         ++pointer;
         for(uword k = 0; k<rlw.getNumberOfLiteralWords(); ++k) {
             const uword currentword = buffer[pointer];
-            for(uint k = 0; k < wordinbits; ++k) {
-                if ( (currentword & (static_cast<uword>(1) << k)) != 0) 
-                    out.push_back(currentoffset + k);
+            for(uint kk = 0; kk < wordinbits; ++kk) {
+                if ( (currentword & (static_cast<uword>(1) << kk)) != 0) 
+                    out.push_back(currentoffset + kk);
             }
             currentoffset+=wordinbits;
             ++pointer;

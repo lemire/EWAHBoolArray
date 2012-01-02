@@ -129,6 +129,55 @@ bool testEWAHBoolArrayAppend() {
 }
 
 
+
+// unit test contributed by Joerg Bukowski ✆
+template<class uword>
+bool testJoergBukowski() {
+    cout << "[testing JoergBukowski]" << endl;
+    bool isOk(true);
+    vector<uint> positions;
+    positions.push_back(0);
+    positions.push_back(36778);
+    positions.push_back(51863);
+    positions.push_back(134946);
+    positions.push_back(137330);
+    positions.push_back(147726);
+    positions.push_back(147990);
+    positions.push_back(151884);
+    positions.push_back(156404);
+    positions.push_back(158486);
+    positions.push_back(159622);
+    positions.push_back(163159);
+    positions.push_back(164599);
+    string indexfile("testingewahboolarray.bin");
+    ::unlink(indexfile.c_str());
+    EWAHBoolArray<uword> myarray;
+    for(vector<uint>::const_iterator i = positions.begin(); i!=positions.end(); ++i) {
+    	myarray.set(*i);
+	    ofstream out(indexfile.c_str(), ios::out | ios::binary);
+	    myarray.write(out);
+    	out.close();
+    	EWAHBoolArray<uword> recovered;
+    	ifstream in(indexfile.c_str());
+    	recovered.read(in);
+    	in.close();
+    	vector<uint> vals;
+    	recovered.appendSetBits(vals);
+    	if(vals.size()!= i-positions.begin()+1) {
+    	  cout<<"failed to recover right number"<<endl; 
+    	  isOk= false;
+    	}
+    	if(!equal(vals.begin(),vals.end(),positions.begin())) {
+    	  cout<<"failed to recover"<<endl; 
+    	  isOk= false;
+    	}
+
+    }
+    if (isOk) ::unlink(indexfile.c_str());
+    if (!isOk) cout << testfailed << endl;
+    return isOk;
+}
+
 // unit test contributed by Phong Tran
 bool testPhongTran() {
     cout << "[testing PhongTran]" << endl;
@@ -388,6 +437,11 @@ int main(void) {
     if (!testPhongTran2<uword16 > ())++failures;
     if (!testPhongTran2<uword32 > ())++failures;
     if (!testPhongTran2<uword64 > ())++failures;
+
+    if (!testJoergBukowski<uword16 > ())++failures;
+    if (!testJoergBukowski<uword32 > ())++failures;
+    if (!testJoergBukowski<uword64 > ())++failures;
+
 
     if (!testRunningLengthWord<uword16 > ())++failures;
     if (!testRunningLengthWord<uword32 > ())++failures;

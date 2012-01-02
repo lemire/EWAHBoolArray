@@ -110,7 +110,7 @@ public:
      */
     static inline void setRunningBit(uword & data, bool b) {
         if(b) data |= static_cast<uword>(1);
-        else data &= ~static_cast<uword>(1);
+        else data &= static_cast<uword>(~1);
     }
     
     
@@ -419,7 +419,7 @@ private:
 
 	bool advanceToNextSetBit() {
 		if(!ready) return false;
-		if (currentrunoffset<rlw.getRunningLength() * wordinbits) {
+		if (currentrunoffset<static_cast<size_t>(rlw.getRunningLength() * wordinbits)) {
 			if(rlw.getRunningBit())
 			  return true;// nothing to do
 			currentrunoffset=rlw.getRunningLength() * wordinbits;//skipping
@@ -435,7 +435,9 @@ private:
 				}
 			}
 			const uword currentword = buffer[pointer + 1 +  indexoflitword];
-			for(uint inwordpointer = (currentrunoffset-rlw.getRunningLength() * wordinbits)%wordinbits; inwordpointer<wordinbits;++inwordpointer,++currentrunoffset) {
+			for(uint inwordpointer = 
+			static_cast<uint>((currentrunoffset-rlw.getRunningLength() * wordinbits)%wordinbits);
+			 inwordpointer<wordinbits;++inwordpointer,++currentrunoffset) {
 				if((currentword & (static_cast<uword>(1) << inwordpointer))!=0)
 				  return true;
 			}
@@ -450,7 +452,8 @@ private:
 		  rlw.mydata = buffer[pointer];
 		} else {
 			return false;
-		}  
+		}
+		return true;  
 	}
 	
 
@@ -826,13 +829,13 @@ template <class uword>
 void EWAHBoolArray<uword>::set(size_t i) {
         // must I complete a word?
         if ( (sizeinbits % (8*sizeof(uword))) != 0) {
-            const uint  possiblesizeinbits = (sizeinbits /(8*sizeof(uword)))*(8*sizeof(uword)) + (8*sizeof(uword));
+            const size_t  possiblesizeinbits = (sizeinbits /(8*sizeof(uword)))*(8*sizeof(uword)) + (8*sizeof(uword));
             if(possiblesizeinbits<i+1) {
                 sizeinbits = possiblesizeinbits;
             }
         }
         addStreamOfEmptyWords(false, (i/(8*sizeof(uword))) - sizeinbits/(8*sizeof(uword)));
-        uint bittoflip = i-(sizeinbits/(8*sizeof(uword)) * (8*sizeof(uword)));
+        size_t bittoflip = i-(sizeinbits/(8*sizeof(uword)) * (8*sizeof(uword)));
         // next, we set the bit
         RunningLengthWord<uword> lastRunningLengthWord(buffer[lastRLW]);
         if(( lastRunningLengthWord.getNumberOfLiteralWords() == 0) || ((sizeinbits
@@ -842,7 +845,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
         } else {
             buffer[buffer.size()-1] |= static_cast<uword>(1)<<bittoflip;
             // check if we just completed a stream of 1s
-            if(buffer[buffer.size()-1] == ~static_cast<uword>(0))  {
+            if(buffer[buffer.size()-1] == static_cast<uword>(~0))  {
                 // we remove the last dirty word
                 buffer[buffer.size()-1] = 0;
                 buffer.resize(buffer.size()-1);

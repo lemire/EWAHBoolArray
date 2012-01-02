@@ -163,7 +163,7 @@ bool testJoergBukowski() {
     	in.close();
     	vector<uint> vals;
     	recovered.appendSetBits(vals);
-    	if(vals.size()!= i-positions.begin()+1) {
+    	if(vals.size()!= static_cast<size_t>(i-positions.begin()+1)) {
     	  cout<<"failed to recover right number"<<endl; 
     	  isOk= false;
     	}
@@ -171,7 +171,18 @@ bool testJoergBukowski() {
     	  cout<<"failed to recover"<<endl; 
     	  isOk= false;
     	}
-
+    	vals.clear();
+    	for(typename EWAHBoolArray<uword>::const_iterator j = recovered.begin();
+    	  j!= recovered.end(); ++j)
+    	  vals.push_back(static_cast<uint>(*j));
+    	if(vals.size()!= static_cast<size_t>(i-positions.begin()+1)) {
+    	  cout<<"failed to recover right number -- iterator"<<endl; 
+    	  isOk= false;
+    	}
+    	if(!equal(vals.begin(),vals.end(),positions.begin())) {
+    	  cout<<"failed to recover -- iterator"<<endl; 
+    	  isOk= false;
+    	}
     }
     if (isOk) ::unlink(indexfile.c_str());
     if (!isOk) cout << testfailed << endl;
@@ -211,6 +222,7 @@ bool testPhongTran() {
             break;
         }
     }
+    
     if (isOk) ::unlink(indexfile.c_str());
     if (!isOk) cout << testfailed << endl;
     return isOk;

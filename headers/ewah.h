@@ -394,10 +394,10 @@ public:
     size_t operator*() {
     	return currentrunoffset+offsetofpreviousrun; 
     }
-    size_t operator++() {
+    EWAHBoolArraySetBitForwardIterator & operator++() {
     	++currentrunoffset;
     	advanceToNextSetBit();
-    	return currentrunoffset+offsetofpreviousrun;
+    	return *this;
     }
     
     bool operator==(const EWAHBoolArraySetBitForwardIterator<uword> & o) {

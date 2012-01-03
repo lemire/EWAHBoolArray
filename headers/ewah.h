@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <cstddef>
 
 #include "boolarray.h"
 
@@ -46,7 +47,9 @@ public:
     }
 
 
-
+	/**
+	* Which bit is being repeated?
+	*/
     bool getRunningBit() const {
         return mydata & static_cast<uword>(1);
     }
@@ -167,7 +170,7 @@ private:
 
 
 /**
-* For expert users.
+* Same as RunningLengthWord, except that the values cannot be modified.
 */
 template <class uword=uword32>
 class ConstRunningLengthWord {
@@ -181,6 +184,9 @@ public:
 
     ConstRunningLengthWord(const ConstRunningLengthWord & rlw) : mydata(rlw.mydata) {}
 
+	/**
+	* Which bit is being repeated?
+	*/
     bool getRunningBit() const {
         return mydata & static_cast<uword>(1);
     }
@@ -209,7 +215,8 @@ public:
 
 
 /**
-* For expert users.
+* Same as RunningLengthWord, except that the values are buffered for quick
+* access.
 */
 template <class uword=uword32>
 class BufferedRunningLengthWord {
@@ -228,6 +235,10 @@ public:
         RunningLength = (data >> 1) & RunningLengthWord<uword>::largestrunninglengthcount;
         NumberOfLiteralWords = static_cast<uword>(data >> (1+RunningLengthWord<uword>::runninglengthbits));
     }
+    
+    /**
+	* Which bit is being repeated?
+	*/
     bool getRunningBit() const {
         return RunningBit;
     }
@@ -270,23 +281,26 @@ template <class uword>
 class EWAHBoolArray;
 
 
-/**
-* For expert users.
-*/
 template <class uword>
 class EWAHBoolArraySparseIterator;
 
 
 /**
-* For expert users.
+* Iterate over words of bits from a compressed bitmap.
 */
 template <class uword=uword32>
 class EWAHBoolArrayIterator {
 public:
+	/**
+	* is there a new word?
+	*/
     bool hasNext()  const {
         return pointer < myparent.size();
     }
 
+	/**
+	* return next word.
+	*/
     uword next() {
         uword returnvalue;
         if(compressedwords < rl) {
@@ -332,180 +346,17 @@ private:
     bool b;
 };
 
-
-/**
-* For expert users.
-*/
-template <class uword=uword32>
-class EWAHBoolArraySparseIterator {
-public:
-    bool hasNext() const {
-        return i.hasNext();
-    }
-
-    size_t position() const {
-        return mPosition;
-    }
-
-    uword next() {
-        uword returnvalue;
-        if(i.compressedwords < i.rl) {
-            if(i.b) {
-                ++mPosition;
-                ++i.compressedwords;
-                returnvalue = EWAHBoolArrayIterator<uword>::notzero;
-            } else {
-                mPosition += i.rl;
-                i.compressedwords = i.rl;
-                returnvalue = EWAHBoolArrayIterator<uword>::zero;//next();
-            }
-        } else {
-            assert  (i.literalwords < i.lw);
-            ++i.literalwords;
-            ++i.pointer;
-            ++mPosition;
-            assert(i.pointer <i.myparent.size());
-            returnvalue =  i.myparent[i.pointer];
-        }
-        if((i.compressedwords == i.rl) && (i.literalwords == i.lw)) {
-            ++i.pointer;
-            if(i.pointer < i.myparent.size()) i.readNewRunningLengthWord();
-        }
-        return returnvalue;
-    }
-
-    EWAHBoolArraySparseIterator(const EWAHBoolArraySparseIterator<uword> & other):i(other.i),mPosition(other.mPosition) {}
-
-private:
-    EWAHBoolArraySparseIterator(const vector<uword> & parent) : i(parent), mPosition(0) {}
-    EWAHBoolArrayIterator<uword> i;
-    size_t mPosition;
-    friend class EWAHBoolArray<uword>;
-};
-
-
-/**
-* Used to go through the set bits. Not optimally fast, but convenient.
-*/
 template <class uword>
-class EWAHBoolArraySetBitForwardIterator {
-public:
-    enum { wordinbits =  sizeof(uword) * 8};
-
-    
-    size_t operator*() {
-    	return currentrunoffset+offsetofpreviousrun; 
-    }
-    EWAHBoolArraySetBitForwardIterator & operator++() {
-    	++currentrunoffset;
-    	advanceToNextSetBit();
-    	return *this;
-    }
-    
-    bool operator==(const EWAHBoolArraySetBitForwardIterator<uword> & o) {
-    	// if they are both over, return true
-    	if((!o.ready) && (!(this->ready)))
-    	  return true;
-    	return (buffer == o.buffer) && (pointer == o.pointer) && 
-    	(offsetofpreviousrun == o.offsetofpreviousrun) && (currentrunoffset == o.currentrunoffset);
-    }
-
-    bool operator!=(const EWAHBoolArraySetBitForwardIterator<uword> & o) {
-    	// if they are both over, return false
-    	if((!o.ready) && (!(this->ready)))
-    	  return false;
-    	return (buffer != o.buffer) || (pointer != o.pointer) || 
-    	(offsetofpreviousrun != o.offsetofpreviousrun) || (currentrunoffset != o.currentrunoffset);
-    }
-private:
-
-	bool advanceToNextSetBit() {
-		if(!ready) return false;
-		if (currentrunoffset<static_cast<size_t>(rlw.getRunningLength() * wordinbits)) {
-			if(rlw.getRunningBit())
-			  return true;// nothing to do
-			currentrunoffset=rlw.getRunningLength() * wordinbits;//skipping
-		}
-		while(true) {
-			const size_t indexoflitword = (currentrunoffset-rlw.getRunningLength() * wordinbits)/wordinbits;
-			if(indexoflitword>= rlw.getNumberOfLiteralWords() ) {
-				if(advanceToNextRun())
-					return advanceToNextSetBit();
-				else {
-					ready = false;
-					return false;
-				}
-			}
-			const uword currentword = buffer[pointer + 1 +  indexoflitword];
-			for(uint inwordpointer = 
-			static_cast<uint>((currentrunoffset-rlw.getRunningLength() * wordinbits)%wordinbits);
-			 inwordpointer<wordinbits;++inwordpointer,++currentrunoffset) {
-				if((currentword & (static_cast<uword>(1) << inwordpointer))!=0)
-				  return true;
-			}
-		}
-	}
-	
-	bool advanceToNextRun() {
-		offsetofpreviousrun += currentrunoffset;
-		currentrunoffset = 0;
-		pointer += 1 + rlw.getNumberOfLiteralWords();
-		if(pointer<buffer.size()) {
-		  rlw.mydata = buffer[pointer];
-		} else {
-			return false;
-		}
-		return true;  
-	}
-	
-
-    EWAHBoolArraySetBitForwardIterator(const vector<uword> & parent, size_t startpointer = 0) : buffer(parent), pointer(startpointer), 
-    offsetofpreviousrun(0), currentrunoffset(0), rlw(0), ready(true)  {
-    	if(pointer<buffer.size()) {
-    	  rlw.mydata = buffer[pointer];
-    	  advanceToNextSetBit();
-    	} else
-    	  ready = false;
-    }
-    const vector<uword> & buffer;
-    size_t pointer;
-    size_t offsetofpreviousrun;
-    size_t currentrunoffset;
-    friend class EWAHBoolArray<uword>;
-    ConstRunningLengthWord<uword> rlw;
-    bool ready;
-};
+class EWAHBoolArraySparseIterator;
 
 
-/**
-* For experts.
-*/
-class BitmapStatistics {
-public:
-    BitmapStatistics() : totalliteral(0), totalcompressed(0), runningwordmarker(0), maximumofrunningcounterreached(0) {}
-    size_t getCompressedSize() const  {
-        return totalliteral+ runningwordmarker;
-    }
-    size_t getUncompressedSize() const  {
-        return totalliteral+ totalcompressed;
-    }
-    size_t getNumberOfDirtyWords() const  {
-        return totalliteral;
-    }
-    size_t getNumberOfCleanWords() const  {
-        return totalcompressed;
-    }
-    size_t getNumberOfMarkers() const  {
-        return runningwordmarker;
-    }
-    size_t getOverRuns() const {
-        return maximumofrunningcounterreached;
-    }
-    size_t totalliteral;
-    size_t totalcompressed;
-    size_t runningwordmarker;
-    size_t maximumofrunningcounterreached;
-};
+
+
+template <class uword>
+class EWAHBoolArraySetBitForwardIterator;
+
+
+class BitmapStatistics;
 
 template <class uword>
 class EWAHBoolArrayRawIterator;
@@ -826,6 +677,252 @@ private:
     size_t sizeinbits;
     size_t lastRLW;
 };
+
+
+
+/**
+* Iterator over the words of the compressed bitmap.
+*/
+template <class uword=uword32>
+class EWAHBoolArraySparseIterator {
+public:
+	/**
+	* is there more words?
+	*/
+    bool hasNext() const {
+        return i.hasNext();
+    }
+
+    size_t position() const {
+        return mPosition;
+    }
+	/**
+	* return next word. If the word is either 0x00 or 0x11
+	* the you need to call position() to know how many times it
+	* was repeated
+	*/
+    uword next() {
+        uword returnvalue;
+        if(i.compressedwords < i.rl) {
+            if(i.b) {
+                ++mPosition;
+                ++i.compressedwords;
+                returnvalue = EWAHBoolArrayIterator<uword>::notzero;
+            } else {
+                mPosition += i.rl;
+                i.compressedwords = i.rl;
+                returnvalue = EWAHBoolArrayIterator<uword>::zero;//next();
+            }
+        } else {
+            assert  (i.literalwords < i.lw);
+            ++i.literalwords;
+            ++i.pointer;
+            ++mPosition;
+            assert(i.pointer <i.myparent.size());
+            returnvalue =  i.myparent[i.pointer];
+        }
+        if((i.compressedwords == i.rl) && (i.literalwords == i.lw)) {
+            ++i.pointer;
+            if(i.pointer < i.myparent.size()) i.readNewRunningLengthWord();
+        }
+        return returnvalue;
+    }
+
+    EWAHBoolArraySparseIterator(const EWAHBoolArraySparseIterator<uword> & other):i(other.i),mPosition(other.mPosition) {}
+
+private:
+    EWAHBoolArraySparseIterator(const vector<uword> & parent) : i(parent), mPosition(0) {}
+    EWAHBoolArrayIterator<uword> i;
+    size_t mPosition;
+    friend class EWAHBoolArray<uword>;
+};
+
+
+/**
+* Used to go through the set bits. Not optimally fast, but convenient.
+*/
+template <class uword>
+class EWAHBoolArraySetBitForwardIterator {
+public:
+    enum { wordinbits =  sizeof(uword) * 8};
+    typedef forward_iterator_tag iterator_category;
+    typedef size_t * pointer;
+    typedef size_t & reference_type;
+    typedef size_t  value_type;
+	typedef ptrdiff_t  difference_type;
+    typedef EWAHBoolArraySetBitForwardIterator<uword> type_of_iterator; 
+
+	/**
+	* Provides the location of the set bit.
+	*/
+    size_t operator*() const {
+    	return currentrunoffset+offsetofpreviousrun; 
+    }
+    
+    // this can be expensive
+    difference_type operator-(const type_of_iterator& o) {
+    	type_of_iterator& smaller = *this<o ? *this : o;
+    	type_of_iterator& bigger = *this>=o ? *this : o;
+    	if(smaller.mpointer==smaller.buffer.size())
+    	  return 0;
+    	difference_type absdiff = static_cast<difference_type>(0);
+    	EWAHBoolArraySetBitForwardIterator<uword> buf(smaller);
+    	while(buf!= bigger) {
+    		++absdiff;
+    		++buf;
+    	}
+    	if(*this<o) 
+    		return absdiff;
+    	else 
+    		return - absdiff;
+    }
+    
+    bool operator<(const type_of_iterator& o) {
+    	if(buffer != o.buffer) return false;
+		if(mpointer==buffer.size()) return false;
+		if(o.mpointer==o.buffer.size()) return true;
+		if(offsetofpreviousrun<o.offsetofpreviousrun)
+			return true;
+		if(offsetofpreviousrun>o.offsetofpreviousrun)
+			return false;
+		if(currentrunoffset<o.currentrunoffset)
+			return true;
+		return false;
+    }
+    bool operator<=(const type_of_iterator& o) {
+    	return ( (*this) < o ) || ((*this) == o);
+    }
+    
+    bool operator>(const type_of_iterator& o) {
+    	return ! ((*this) <= o ) ;
+    }
+    
+    bool operator>=(const type_of_iterator& o) {
+    	return ! ((*this) < o ) ;
+    }
+    
+    EWAHBoolArraySetBitForwardIterator & operator++() {
+    	++currentrunoffset;
+    	advanceToNextSetBit();
+    	return *this;
+    }
+    EWAHBoolArraySetBitForwardIterator  operator++(int) {
+    	EWAHBoolArraySetBitForwardIterator old(*this);
+    	++currentrunoffset;
+    	advanceToNextSetBit();
+    	return old;
+    }
+    bool operator==(const EWAHBoolArraySetBitForwardIterator<uword> & o) {
+    	// if they are both over, return true
+    	if((mpointer==buffer.size()) && (o.mpointer==o.buffer.size()))
+    	  return true;
+    	return (buffer == o.buffer) && (mpointer == o.mpointer) && 
+    	(offsetofpreviousrun == o.offsetofpreviousrun) && (currentrunoffset == o.currentrunoffset);
+    }
+
+    bool operator!=(const EWAHBoolArraySetBitForwardIterator<uword> & o) {
+    	// if they are both over, return false
+    	if((mpointer==buffer.size()) && (o.mpointer==o.buffer.size()))
+    	  return false;
+    	return (buffer != o.buffer) || (mpointer != o.mpointer) || 
+    	(offsetofpreviousrun != o.offsetofpreviousrun) || (currentrunoffset != o.currentrunoffset);
+    }
+
+
+    EWAHBoolArraySetBitForwardIterator(const EWAHBoolArraySetBitForwardIterator & o) : buffer(o.buffer), mpointer(o.mpointer), 
+    offsetofpreviousrun(o.offsetofpreviousrun), currentrunoffset(o.currentrunoffset), rlw(o.rlw) {}
+
+private:
+
+	bool advanceToNextSetBit() {
+		if(mpointer==buffer.size()) return false;
+		if (currentrunoffset<static_cast<size_t>(rlw.getRunningLength() * wordinbits)) {
+			if(rlw.getRunningBit())
+			  return true;// nothing to do
+			currentrunoffset=rlw.getRunningLength() * wordinbits;//skipping
+		}
+		while(true) {
+			const size_t indexoflitword = (currentrunoffset-rlw.getRunningLength() * wordinbits)/wordinbits;
+			if(indexoflitword>= rlw.getNumberOfLiteralWords() ) {
+				if(advanceToNextRun())
+					return advanceToNextSetBit();
+				else {
+					return false;
+				}
+			}
+			const uword currentword = buffer[mpointer + 1 +  indexoflitword];
+			for(uint inwordpointer = 
+			static_cast<uint>((currentrunoffset-rlw.getRunningLength() * wordinbits)%wordinbits);
+			 inwordpointer<wordinbits;++inwordpointer,++currentrunoffset) {
+				if((currentword & (static_cast<uword>(1) << inwordpointer))!=0)
+				  return true;
+			}
+		}
+	}
+	
+	bool advanceToNextRun() {
+		offsetofpreviousrun += currentrunoffset;
+		currentrunoffset = 0;
+		mpointer += 1 + rlw.getNumberOfLiteralWords();
+		if(mpointer<buffer.size()) {
+		  rlw.mydata = buffer[mpointer];
+		} else {
+			return false;
+		}
+		return true;  
+	}
+	
+
+    EWAHBoolArraySetBitForwardIterator(const vector<uword> & parent, size_t startpointer = 0) : buffer(parent), mpointer(startpointer), 
+    offsetofpreviousrun(0), currentrunoffset(0), rlw(0)  {
+    	if(mpointer<buffer.size()) {
+    	  rlw.mydata = buffer[mpointer];
+    	  advanceToNextSetBit();
+    	}
+    }
+
+
+    const vector<uword> & buffer;
+    size_t mpointer;
+    size_t offsetofpreviousrun;
+    size_t currentrunoffset;
+    friend class EWAHBoolArray<uword>;
+    ConstRunningLengthWord<uword> rlw;
+};
+
+
+
+/**
+* This object is returned by the compressed bitmap as a
+* statistical descriptor.
+*/
+class BitmapStatistics {
+public:
+    BitmapStatistics() : totalliteral(0), totalcompressed(0), runningwordmarker(0), maximumofrunningcounterreached(0) {}
+    size_t getCompressedSize() const  {
+        return totalliteral+ runningwordmarker;
+    }
+    size_t getUncompressedSize() const  {
+        return totalliteral+ totalcompressed;
+    }
+    size_t getNumberOfDirtyWords() const  {
+        return totalliteral;
+    }
+    size_t getNumberOfCleanWords() const  {
+        return totalcompressed;
+    }
+    size_t getNumberOfMarkers() const  {
+        return runningwordmarker;
+    }
+    size_t getOverRuns() const {
+        return maximumofrunningcounterreached;
+    }
+    size_t totalliteral;
+    size_t totalcompressed;
+    size_t runningwordmarker;
+    size_t maximumofrunningcounterreached;
+};
+
 
 template <class uword>
 void EWAHBoolArray<uword>::set(size_t i) {

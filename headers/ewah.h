@@ -8,6 +8,7 @@
 #include <vector>
 #include <stdexcept>
 #include <cstddef>
+#include <iso646.h> // mostly for Microsoft compilers
 
 #include "boolarray.h"
 
@@ -404,7 +405,7 @@ public:
     typedef EWAHBoolArraySetBitForwardIterator<uword> const_iterator;
     
     
-    /*
+    /**
     * Returns an iterator that can be used to access the position of the
     * set bits. The running time complexity of a full scan is proportional to the number
     * of set bits: be aware that if you have long strings of 1s, this can be
@@ -415,7 +416,7 @@ public:
     }
     
     
-    /*
+    /**
     * Basically a bogus iterator that can be used together with begin()
     * for constructions such as for(EWAHBoolArray<uword>::iterator i = b.begin(); i!=b.end(); ++i) {}
     */
@@ -423,23 +424,23 @@ public:
 	   return EWAHBoolArraySetBitForwardIterator<uword>(buffer,buffer.size());
     }
 
-    /*
-    * compute the logical and with another compressed bitmap
+    /**
+    * computes the logical and with another compressed bitmap
     * answer goes into container, though rawlogicaland is the
     * default, sometimes this version is faster.
     */
     void sparselogicaland( EWAHBoolArray &a, EWAHBoolArray &out) ;
     
-    /*
-    * compute the logical and with another compressed bitmap
+    /**
+    * computes the logical and with another compressed bitmap
     * answer goes into container
     * Running time complexity is proportional to the sum of the compressed
     * bitmap sizes.
      */
     void rawlogicaland( EWAHBoolArray &a, EWAHBoolArray &container) ;
 
-    /*
-    * compute the logical and with another compressed bitmap
+    /**
+    * computes the logical and with another compressed bitmap
     * answer goes into container
     * Running time complexity is proportional to the sum of the compressed
     * bitmap sizes.
@@ -447,8 +448,8 @@ public:
     void rawlogicalor( EWAHBoolArray &a, EWAHBoolArray &container) ;
 
 
-    /*
-    * compute the logical and with another compressed bitmap
+    /**
+    * computes the logical and with another compressed bitmap
     * answer goes into container
     * Running time complexity is proportional to the sum of the compressed
     * bitmap sizes.
@@ -458,7 +459,7 @@ public:
        rawlogicaland(a,container);
     }
 
-    /*
+    /**
     * compute the logical and with another compressed bitmap
     * answer goes into container.
     * Running time complexity is proportional to the sum of the compressed
@@ -505,7 +506,8 @@ public:
     }
 
     /**
-    * set size in bits.
+    * set size in bits. This does not affect the compressed size. It
+    * runs in constant time.
     */
     inline void setSizeInBits(const size_t size) {
         sizeinbits = size;
@@ -521,28 +523,28 @@ public:
 
 
 
-    /*
+    /**
     * same as addEmptyWord, but you can do several in one shot!
     * returns the number of words added (storage cost increase)
     */
     size_t addStreamOfEmptyWords(const bool v, const size_t number);
     
-    /*
+    /**
     * add a stream of dirty words,, returns the number of words added 
     * (storage cost increase)
     */
     size_t addStreamOfDirtyWords(const uword * v, const size_t number);
 
-    /*
+    /**
     * make sure the size of the array is totalbits bits by padding with zeroes.
     * returns the number of words added (storage cost increase)
     */
     inline size_t padWithZeroes(const size_t totalbits);
     
-    /*
+    /**
     * Compute the size on disk assuming that it was saved using
     * the method "save".
-	*/
+    */
     size_t sizeOnDisk() const;
     
     
@@ -560,12 +562,12 @@ public:
     inline void write(ostream & out, const bool savesizeinbits=true) const;
     
     /**
-    * This only writes the buffer content (see write() method.
+    * This only writes the content of the buffer (see write()) method.
     * It is for advanced users.
     */
     inline void writeBuffer(ostream & out) const;
     
-    /*
+    /**
     * size (in words) of the underlying STL vector.
     */
     inline size_t bufferSize() const {
@@ -618,7 +620,7 @@ public:
     */
     EWAHBoolArrayRawIterator<uword> raw_iterator() const ;
 
-    /*
+    /**
     * Appends the content of some other compressed bitmap 
     * at the end of the current bitmap.
     */

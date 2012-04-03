@@ -232,6 +232,29 @@ bool testPhongTran() {
 
 // another unit test contributed by Phong Tran
 template<class uword>
+bool testHemeury() {
+    cout << "[testing Hemeury]" << endl;
+    bool isOk(true);
+    EWAHBoolArray<uword>  test,test1,test2;
+    for (uint i = 0 ; i <=  10000 ; ++i) {
+        test.set(i);
+        test.logicaland(test1, test2);
+        // because test1 is empty, test2 should be empty as well
+        vector<uint> vals;
+        test2.appendSetBits(vals);
+        if(vals.size() != 0 ) {
+          isOk= false;
+          cout<<"failed!"<<endl;
+          break;
+        }
+    }
+    return isOk;
+}
+
+
+
+// another unit test contributed by Phong Tran
+template<class uword>
 bool testPhongTran2() {
     cout << "[testing PhongTran2]" << endl;
     bool isOk(true);
@@ -446,6 +469,9 @@ void tellmeaboutmachine() {
 int main(void) {
     int failures = 0;
     if (!testPhongTran()) ++failures;
+    if(!testHemeury<uword16 >()) ++failures;
+    if(!testHemeury<uword32 >()) ++failures;
+    if(!testHemeury<uword64 >()) ++failures;
 
     if (!testPhongTran2<uword16 > ())++failures;
     if (!testPhongTran2<uword32 > ())++failures;

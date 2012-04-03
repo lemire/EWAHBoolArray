@@ -984,9 +984,11 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray & x) const {
     while(i.hasNext()) {
         BufferedRunningLengthWord<uword> & rlw = i.next();
         x.addStreamOfEmptyWords(! rlw.getRunningBit(), rlw.getRunningLength());
-        const uword * dw = i.dirtyWords();
-        for(size_t k = 0 ; k <rlw.getNumberOfLiteralWords(); ++k) {
-            x.addLiteralWord(~ dw[k]);
+        if(rlw.getNumberOfLiteralWords()>0) {
+          const uword * dw = i.dirtyWords();
+          for(size_t k = 0 ; k <rlw.getNumberOfLiteralWords(); ++k) {
+              x.addLiteralWord(~ dw[k]);
+          }
         }
     }
     x.sizeinbits = this->sizeinbits;
@@ -1466,10 +1468,12 @@ void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a, EWAHBoolArray &contain
                 const uword tobediscarded =  preyrl ;
                 container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
             } else {
-                const uword tobediscarded =   predatorrl ;
+                const uword tobediscarded = predatorrl ;
                 container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-                const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
-                container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+                if(preyrl - tobediscarded>0) {
+                  const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
+                  container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+                }
             }
             predator.discardFirstWords(preyrl);
             prey.discardFirstWords(preyrl);
@@ -1484,11 +1488,13 @@ void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a, EWAHBoolArray &contain
         if(predatorrl>0) {
             if(predator.getRunningBit() == 0) {
                 const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword * dw_prey (i_is_prey ? i.dirtyWords(): j.dirtyWords());
                 const uword tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey : predatorrl;
-                container.addStreamOfDirtyWords(dw_prey, tobediscarded);
-                predator.discardFirstWords(tobediscarded);
-                prey.discardFirstWords(tobediscarded);
+                if(tobediscarded>0) {
+                  const uword * dw_prey (i_is_prey ? i.dirtyWords(): j.dirtyWords());
+                  container.addStreamOfDirtyWords(dw_prey, tobediscarded);
+                  predator.discardFirstWords(tobediscarded);
+                  prey.discardFirstWords(tobediscarded);
+                }
             } else {
                 const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
                 const uword tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey : predatorrl;
@@ -1502,8 +1508,10 @@ void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a, EWAHBoolArray &contain
         uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
         if(nbre_dirty_prey > 0) {
             assert(predator.getRunningLength() ==0);
+            const uword * idirty = i.dirtyWords();
+            const uword * jdirty = j.dirtyWords();
             for(uword k = 0; k< nbre_dirty_prey; ++k) {
-                container.add(i.dirtyWords()[k] | j.dirtyWords()[k]);
+                container.add(idirty[k] | jdirty[k]);
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }
@@ -1550,8 +1558,10 @@ void EWAHBoolArray<uword>::rawlogicaland(EWAHBoolArray &a, EWAHBoolArray &contai
             const uword preyrl (prey.getRunningLength());
             const uword tobediscarded = (predatorrl >= preyrl) ?  preyrl : predatorrl;
             container.addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-            const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
-            container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+            if(preyrl - tobediscarded>0) {
+              const uword * dw_predator (i_is_prey ? j.dirtyWords(): i.dirtyWords());
+              container.addStreamOfDirtyWords(dw_predator, preyrl - tobediscarded);
+            }
             predator.discardFirstWords(preyrl);
             prey.discardFirstWords(preyrl);
         }
@@ -1565,11 +1575,13 @@ void EWAHBoolArray<uword>::rawlogicaland(EWAHBoolArray &a, EWAHBoolArray &contai
                 container.addStreamOfEmptyWords(0, tobediscarded);
             } else {
                 const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword * dw_prey (i_is_prey ? i.dirtyWords(): j.dirtyWords());
                 const uword tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey : predatorrl;
-                container.addStreamOfDirtyWords(dw_prey, tobediscarded);
-                predator.discardFirstWords(tobediscarded);
-                prey.discardFirstWords(tobediscarded);
+                if(tobediscarded>0) {
+                  const uword * dw_prey (i_is_prey ? i.dirtyWords(): j.dirtyWords());
+                  container.addStreamOfDirtyWords(dw_prey, tobediscarded);
+                  predator.discardFirstWords(tobediscarded);
+                  prey.discardFirstWords(tobediscarded);
+                }
             }
         }
         assert(prey.getRunningLength() ==0);
@@ -1577,8 +1589,10 @@ void EWAHBoolArray<uword>::rawlogicaland(EWAHBoolArray &a, EWAHBoolArray &contai
         uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
         if(nbre_dirty_prey > 0) {
             assert(predator.getRunningLength() ==0);
+            const uword * idirty = i.dirtyWords();
+            const uword * jdirty = j.dirtyWords();
             for(uword k = 0; k< nbre_dirty_prey; ++k) {
-                container.add(i.dirtyWords()[k] & j.dirtyWords()[k]);
+                container.add(idirty[k] & jdirty[k]);
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }

@@ -18,9 +18,9 @@ typedef unsigned long long  uword64;
 using namespace std;
 
 /**
- * A dynamic bitset implementation. (without compression)
+ * A dynamic bitset implementation. (without compression).
+ * This is not tremendously useful, but it is provided as a reference.
  */
-
 template <class uword=uword32>
 class BoolArray {
 public:

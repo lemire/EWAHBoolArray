@@ -24,7 +24,7 @@ bool testRunningLengthWord() {
         cout << "failed to set the running bit " << sizeof (uword) << endl;
         isOk = false;
     }
-    for (uword myrl = 0; myrl <= RunningLengthWord<uword>::largestrunninglengthcount; myrl+=RunningLengthWord<uword>::largestrunninglengthcount/10) {
+    for (uword myrl = 0; myrl <= RunningLengthWord<uword>::largestrunninglengthcount; myrl=static_cast<uword>( myrl + RunningLengthWord<uword>::largestrunninglengthcount/10)) {
         rlw.setRunningLength(myrl);
         if (rlw.getRunningBit() != true) {
             cout << "failed to set the running bit (2) " << sizeof (uword) << endl;
@@ -36,7 +36,7 @@ bool testRunningLengthWord() {
         }
     }
     rlw.setRunningLength(12);
-    for (uword mylw = 0; mylw <= RunningLengthWord<uword>::largestliteralcount; mylw+=RunningLengthWord<uword>::largestliteralcount/10) {
+    for (uword mylw = 0; mylw <= RunningLengthWord<uword>::largestliteralcount; mylw= static_cast<uword>(mylw+RunningLengthWord<uword>::largestliteralcount/10)) {
         rlw.setNumberOfLiteralWords(mylw);
         if (rlw.getRunningBit() != true) {
             cout << "failed to set the running bit (3) " << sizeof (uword) << endl;
@@ -76,7 +76,7 @@ bool testEWAHBoolArrayAppend() {
     bool isOk(true);
     uword zero = 0;
     uword specialval = 1UL + (1UL << 4)+(static_cast<uword>(1) << (sizeof(uword)*8-1));
-    uword notzero = ~zero;
+    uword notzero = static_cast<uword>(~zero);
     EWAHBoolArray<uword> myarray1;
     BoolArray<uword> ba1;
     myarray1.add(zero);
@@ -162,7 +162,7 @@ bool testJoergBukowski() {
     	ifstream in(indexfile.c_str(),ios::binary);
     	recovered.read(in);
     	in.close();
-    	vector<uint> vals;
+    	vector<size_t> vals;
     	recovered.appendSetBits(vals);
     	if(vals.size()!= static_cast<size_t>(i-positions.begin()+1)) {
     	  cout<<"failed to recover right number"<<endl; 
@@ -305,7 +305,7 @@ bool testEWAHBoolArray() {
     EWAHBoolArray<uword> myarray;
     BoolArray<uword> ba(10 * sizeof (uword) * 8);
     uword zero = 0;
-    uword notzero = ~zero;
+    uword notzero = static_cast<uword>(~zero);
     myarray.add(zero);
     ba.setWord(0, zero);
     myarray.add(zero);

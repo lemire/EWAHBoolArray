@@ -374,6 +374,28 @@ bool testEWAHBoolArray() {
 
 
 template<class uword>
+bool testSTLCompatibility() {
+    cout << "[testing STL compatibility]" << endl;
+    bool isOk = true;
+    EWAHBoolArray<uword> bitset1;
+    bitset1.set(1);
+    bitset1.set(2);
+    bitset1.set(1000);
+    bitset1.set(1001);
+    vector< EWAHBoolArray<uword> > testVec(1);
+    testVec[0].set(1);
+    testVec[0].set(2);
+    testVec[0].set(1000);
+    testVec[0].set(1001);
+    if(testVec[0]!= bitset1) {
+      isOk = false;
+    }
+    return isOk;
+}
+
+
+
+template<class uword>
 bool testEWAHBoolArrayLogical() {
     cout << "[testing EWAHBoolArrayLogical]" << endl;
     bool isOk(true);
@@ -469,6 +491,11 @@ void tellmeaboutmachine() {
 int main(void) {
     int failures = 0;
     if (!testPhongTran()) ++failures;
+    
+    if(!testSTLCompatibility<uword16 >()) ++ failures;
+    if(!testSTLCompatibility<uword32 >()) ++ failures;    
+    if(!testSTLCompatibility<uword64 >()) ++ failures;    
+    
     if(!testHemeury<uword16 >()) ++failures;
     if(!testHemeury<uword32 >()) ++failures;
     if(!testHemeury<uword64 >()) ++failures;

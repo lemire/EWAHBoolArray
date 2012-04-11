@@ -11,12 +11,46 @@ The class EWAHBoolArray is a compressed bitset data structure.
 
 Apache License 2.0. (Other licenses are possible.)
 
-
-
 == Limitations ==
 
 Because of the compression type being used, you must set the bits
 in increasing order (no random access).
+
+
+== STL and copy constructors ==
+
+I expect most people to construct rather large bitmaps. For this
+reason, you should avoid copies.
+
+Thus, the code will warn you against doing this:
+
+    EWAHBoolArray<uword> bitset1;
+    bitset1.set(1);
+    bitset1.set(2);
+    bitset1.set(1000);
+    bitset1.set(1001);
+    vector< EWAHBoolArray<uword> > testVec;
+    testVec.push_back(bitset1);
+
+Instead, do this:
+
+    vector< EWAHBoolArray<uword> > testVec(1);
+    testVec[0].set(1);
+    testVec[0].set(2);
+    testVec[0].set(1000);
+    testVec[0].set(1001);
+
+
+Or you can use the "swap" method.
+
+    EWAHBoolArray<uword> bitset1;
+    bitset1.set(1);
+    bitset1.set(2);
+    bitset1.set(1000);
+    bitset1.set(1001);
+    vector< EWAHBoolArray<uword> > testVec(1);
+    testVec.swap(bitset1);
+
 
 == Dependencies ==
 

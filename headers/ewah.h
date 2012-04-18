@@ -27,8 +27,32 @@
 #endif
 
 
-
 using namespace std;
+
+
+/**
+* count the number of bits set to one (32 bit version)
+*/ 
+uint countOnes(uword32 v) {
+  v = v - ((v >> 1) & 0x55555555);                    
+  v = (v & 0x33333333) + ((v >> 2) & 0x33333333);     
+  return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24; 
+}
+/**
+* count the number of bits set to one (64 bit version)
+*/ 
+uint countOnes(uword64 v) {
+	return countOnes(static_cast<uword32>(v))+ countOnes(static_cast<uword32>(v>>32));
+}
+
+
+uint countOnes(uword16 v) {
+  uint c;
+  for ( c = 0; v; c++) {
+    v &= v - 1;
+  }
+  return c;
+}
 
 /**
 * Returns the binary representation of a binary word.
@@ -1319,10 +1343,13 @@ size_t EWAHBoolArray<uword>::numberOfOnes() {
     EWAHBoolArraySparseIterator<uword> i = sparse_uncompress();
     while(i.hasNext()) {
         const uword currentword = i.next();
+        c += countOnes(currentword);
+        /*
         for(int k = 0; k < wordinbits; ++k) {
             if ( (currentword & (static_cast<uword>(1) << k)) != 0)
                 ++c;
-        }
+        }*/
+        
     }
     return c;
 

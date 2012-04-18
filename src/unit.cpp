@@ -372,6 +372,26 @@ bool testEWAHBoolArray() {
 }
 
 
+template<class uword>
+bool testNot() {
+    cout << "[testing Not]" << endl;
+    bool isOk = true;
+    EWAHBoolArray<uword> bitset;
+    for (int i = 0; i <= 184; i++) {
+               bitset.set(i);
+    }
+    if(bitset.numberOfOnes() != 185) {
+    	isOk = false;
+    }
+    
+    bitset.inplace_logicalnot();
+    if(bitset.numberOfOnes() != 0) {
+    	isOk = false;
+    }
+    return isOk;
+}
+
+
 
 template<class uword>
 bool testSTLCompatibility() {

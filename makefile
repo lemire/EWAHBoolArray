@@ -21,6 +21,7 @@ doxygen:
 	doxygen doxyconfig.txt
 
 package: 
-	zip -9 EWAHBoolArray_`date +%Y-%m-%d`.zip README makefile example.cpp headers/*.h src/*.cpp
+	zip -9 EWAHBoolArray_`date +%Y-%m-%d`.zip README CHANGELOG makefile example.cpp headers/*.h src/*.cpp
+	zip -9 EWAHBoolArray.0.1.0-src.zip README CHANGELOG makefile example.cpp headers/*.h src/*.cpp
 clean: 
 	rm -f *.o unit example unit32bits

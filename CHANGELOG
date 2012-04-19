@@ -1,0 +1,3 @@
+0.1.0 (April 19th 2012)
+  Added a unit test related to how we compute the cardinality
+  Accelerated the computation of the cardinality

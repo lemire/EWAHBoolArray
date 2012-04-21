@@ -1,6 +1,25 @@
 #include <stdlib.h>
 #include "ewah.h"
 
+void demoSerialization() {
+	stringstream ss;
+	EWAHBoolArray<uword64> myarray;
+	myarray.add(234321);
+	myarray.add(0);
+	myarray.add(0);
+	myarray.add(999999);
+	//
+	myarray.write(ss);
+    //
+    EWAHBoolArray<uword64> lmyarray;
+    lmyarray.read(ss);
+    //
+    if(lmyarray == myarray) 
+    	cout<<"serialization works"<<endl;
+    else 
+    	cout<<"serialization does not works"<<endl;
+}
+
 
 int main(void) {
     EWAHBoolArray<uword32> bitset1;
@@ -46,5 +65,6 @@ int main(void) {
     cout<<endl;
     cout<<"memory usage of compressed bitset = "<<orbitset.sizeInBytes()<<" bytes"<<endl;
     cout<<endl;
+    demoSerialization();
     return EXIT_SUCCESS;
 }

@@ -67,6 +67,15 @@ make example
 
 Please see example.cpp
 
+== Ruby wrapper ==
+
+Josh Ferguson wrote a wrapper for Ruby. 
+The implementation is packaged and installable as a ruby gem.
+
+You can install it by typing:
+
+gem install ewah-bitset
+
 == Further reading ==
 
 Please see

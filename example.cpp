@@ -2,22 +2,22 @@
 #include "ewah.h"
 
 void demoSerialization() {
-	stringstream ss;
-	EWAHBoolArray<uword64> myarray;
-	myarray.add(234321);
-	myarray.add(0);
-	myarray.add(0);
-	myarray.add(999999);
-	//
-	myarray.write(ss);
+    stringstream ss;
+    EWAHBoolArray<uword64> myarray;
+    myarray.add(234321);
+    myarray.add(0);
+    myarray.add(0);
+    myarray.add(999999);
+    //
+    myarray.write(ss);
     //
     EWAHBoolArray<uword64> lmyarray;
     lmyarray.read(ss);
     //
     if(lmyarray == myarray) 
-    	cout<<"serialization works"<<endl;
+        cout<<"serialization works"<<endl;
     else 
-    	cout<<"serialization does not works"<<endl;
+        cout<<"serialization does not works"<<endl;
 }
 
 

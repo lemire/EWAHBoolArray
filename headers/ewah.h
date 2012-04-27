@@ -15,11 +15,8 @@
 
 #include "runninglengthword.h"
 
-using namespace std;template<class uword>
-class EWAHBoolArray;
+using namespace std;
 
-template<class uword>
-class EWAHBoolArraySparseIterator;
 
 template<class uword>
 class EWAHBoolArrayIterator;
@@ -88,12 +85,6 @@ public:
         return EWAHBoolArraySetBitForwardIterator<uword> (buffer, buffer.size());
     }
 
-    /**
-     * computes the logical and with another compressed bitmap
-     * answer goes into container, though rawlogicaland is the
-     * default, sometimes this version is faster.
-     */
-    void sparselogicaland(EWAHBoolArray &a, EWAHBoolArray &out);
 
     /**
      * computes the logical and with another compressed bitmap
@@ -101,7 +92,7 @@ public:
      * Running time complexity is proportional to the sum of the compressed
      * bitmap sizes.
      */
-    void rawlogicaland(EWAHBoolArray &a, EWAHBoolArray &container);
+    void logicaland(EWAHBoolArray &a, EWAHBoolArray &container);
 
     /**
      * computes the logical and with another compressed bitmap
@@ -109,29 +100,7 @@ public:
      * Running time complexity is proportional to the sum of the compressed
      * bitmap sizes.
      */
-    void rawlogicalor(EWAHBoolArray &a, EWAHBoolArray &container);
-
-    /**
-     * computes the logical and with another compressed bitmap
-     * answer goes into container
-     * Running time complexity is proportional to the sum of the compressed
-     * bitmap sizes.
-     * (alias for rawlogicaland)
-     */
-    void logicaland(EWAHBoolArray &a, EWAHBoolArray &container) {
-        rawlogicaland(a, container);
-    }
-
-    /**
-     * compute the logical and with another compressed bitmap
-     * answer goes into container.
-     * Running time complexity is proportional to the sum of the compressed
-     * bitmap sizes.
-     * (alias for rawlogicalor)
-     */
-    void logicalor(EWAHBoolArray &a, EWAHBoolArray &container) {
-        rawlogicalor(a, container);
-    }
+    void logicalor(EWAHBoolArray &a, EWAHBoolArray &container);
 
     /**
      * clear the content of the bitmap. It does not
@@ -201,7 +170,7 @@ public:
      * make sure the size of the array is totalbits bits by padding with zeroes.
      * returns the number of words added (storage cost increase)
      */
-    inline size_t padWithZeroes(const size_t totalbits);
+    size_t padWithZeroes(const size_t totalbits);
 
     /**
      * Compute the size on disk assuming that it was saved using
@@ -220,18 +189,18 @@ public:
      * that the word size is not saved. For robust persistent
      * storage, you need to save this extra information elsewhere.
      */
-    inline void write(ostream & out, const bool savesizeinbits = true) const;
+    void write(ostream & out, const bool savesizeinbits = true) const;
 
     /**
      * This only writes the content of the buffer (see write()) method.
      * It is for advanced users.
      */
-    inline void writeBuffer(ostream & out) const;
+    void writeBuffer(ostream & out) const;
 
     /**
      * size (in words) of the underlying STL vector.
      */
-    inline size_t bufferSize() const {
+    size_t bufferSize() const {
         return buffer.size();
     }
 
@@ -240,13 +209,13 @@ public:
      * if you set savesizeinbits=false, then you are responsible
      * for setting the value fo the attribute sizeinbits (see method setSizeInBits).
      */
-    inline void read(istream & in, const bool savesizeinbits = true);
+    void read(istream & in, const bool savesizeinbits = true);
 
     /**
      * read the buffer from a stream, see method writeBuffer.
      * this is for advanced users.
      */
-    inline void readBuffer(istream & in, const size_t buffersize);
+    void readBuffer(istream & in, const size_t buffersize);
 
     bool operator==(const EWAHBoolArray & x) const;
 
@@ -264,13 +233,6 @@ public:
      */
     EWAHBoolArrayIterator<uword> uncompress() const ;
 
-    /**
-     * To iterate over non-zero uncompressed words.
-     * Can be considerably faster than begin()/end().
-     * Running time complexity of a fun scan is proportional to the number of
-     * non-zero uncompressed words.
-     */
-    EWAHBoolArraySparseIterator<uword> sparse_uncompress() const ;
 
     /**
      * To iterate over the compressed data.
@@ -292,6 +254,10 @@ public:
      */
     BitmapStatistics computeStatistics() const;
 
+    /**
+     * For convenience, this fully uncompresses the bitmap.
+     * Not fast!
+     */
     BoolArray<uword> toBoolArray() const;
 
     /**
@@ -401,11 +367,11 @@ private:
 /**
  * Iterate over words of bits from a compressed bitmap.
  */
-template<class uword = uint32_t>
+template<class uword>
 class EWAHBoolArrayIterator {
 public:
     /**
-     * are there a new word?
+     * is there a new word?
      */
     bool hasNext() const {
         return pointer < myparent.size();
@@ -450,7 +416,6 @@ private:
     EWAHBoolArrayIterator(const vector<uword> & parent);
     void readNewRunningLengthWord();
     friend class EWAHBoolArray<uword> ;
-    friend class EWAHBoolArraySparseIterator<uword> ;
     size_t pointer;
     const vector<uword> & myparent;
     uword compressedwords;
@@ -460,69 +425,6 @@ private:
 };
 
 
-
-/**
- * Iterator over the words of the compressed bitmap.
- */
-template<class uword = uint32_t>
-class EWAHBoolArraySparseIterator {
-public:
-    /**
-     * are there more words?
-     */
-    bool hasNext() const {
-        return i.hasNext();
-    }
-
-    size_t position() const {
-        return mPosition;
-    }
-    /**
-     * return next word. If the word is either 0x00 or 0x11
-     * the you need to call position() to know how many times it
-     * was repeated
-     */
-    uword next() {
-        uword returnvalue;
-        if (i.compressedwords < i.rl) {
-            if (i.b) {
-                ++mPosition;
-                ++i.compressedwords;
-                returnvalue = EWAHBoolArrayIterator<uword>::notzero;
-            } else {
-                mPosition = static_cast<size_t> (mPosition + i.rl);
-                i.compressedwords = i.rl;
-                returnvalue = EWAHBoolArrayIterator<uword>::zero;//next();
-            }
-        } else {
-            assert(i.literalwords < i.lw);
-            ++i.literalwords;
-            ++i.pointer;
-            ++mPosition;
-            assert(i.pointer < i.myparent.size());
-            returnvalue = i.myparent[i.pointer];
-        }
-        if ((i.compressedwords == i.rl) && (i.literalwords == i.lw)) {
-            ++i.pointer;
-            if (i.pointer < i.myparent.size())
-                i.readNewRunningLengthWord();
-        }
-        return returnvalue;
-    }
-
-    EWAHBoolArraySparseIterator(
-            const EWAHBoolArraySparseIterator<uword> & other) :
-        i(other.i), mPosition(other.mPosition) {
-    }
-
-private:
-    EWAHBoolArraySparseIterator(const vector<uword> & parent) :
-        i(parent), mPosition(0) {
-    }
-    EWAHBoolArrayIterator<uword> i;
-    size_t mPosition;
-    friend class EWAHBoolArray<uword> ;
-};
 
 /**
  * Used to go through the set bits. Not optimally fast, but convenient.
@@ -816,7 +718,7 @@ size_t EWAHBoolArray<uword>::add(const uword newdata, const uint32_t bitsthatmat
 
 template<class uword>
 inline void EWAHBoolArray<uword>::writeBuffer(ostream & out) const {
-    if (buffer.size() > 0)
+    if (!buffer.empty())
         out.write(reinterpret_cast<const char *> (&buffer[0]),
                 sizeof(uword) * buffer.size());
 }
@@ -958,11 +860,6 @@ EWAHBoolArrayRawIterator<uword> EWAHBoolArray<uword>::raw_iterator() const {
 }
 
 template<class uword>
-EWAHBoolArraySparseIterator<uword> EWAHBoolArray<uword>::sparse_uncompress() const {
-    return EWAHBoolArraySparseIterator<uword> (buffer);
-}
-
-template<class uword>
 bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray & x) const {
     if (sizeinbits != x.sizeinbits)
         return false;
@@ -1059,16 +956,10 @@ BoolArray<uword> EWAHBoolArray<uword>::toBoolArray() const {
 template<class uword>
 size_t EWAHBoolArray<uword>::numberOfOnes() {
     size_t c(0);
-    EWAHBoolArraySparseIterator<uword> i = sparse_uncompress();
+    EWAHBoolArrayRawIterator<uword> i = uncompress();
     while (i.hasNext()) {
         const uword currentword = i.next();
         c += countOnes(currentword);
-        /*
-         for(int k = 0; k < wordinbits; ++k) {
-         if ( (currentword & (static_cast<uword>(1) << k)) != 0)
-         ++c;
-         }*/
-
     }
     return c;
 
@@ -1254,56 +1145,8 @@ size_t EWAHBoolArray<uword>::addEmptyWord(const bool v) {
         return 1;
     }
 }
-
 template<class uword>
-void EWAHBoolArray<uword>::sparselogicaland(EWAHBoolArray &a,
-        EWAHBoolArray &container) {
-    makeSameSize(a);
-    container.reset();
-    if (RESERVEMEMORY)
-        container.buffer.reserve(
-                buffer.size() > a.buffer.size() ? buffer.size()
-                        : a.buffer.size());
-    assert(sizeInBits() == a.sizeInBits());
-    /**
-     * This could possibly be faster if we go around
-     * the uncompress calls.
-     */
-    EWAHBoolArraySparseIterator<uword> i = a.sparse_uncompress();
-    EWAHBoolArraySparseIterator<uword> j = sparse_uncompress();
-    size_t pos(0);
-    uword x, y;
-    bool ibehindj, jbehindi;
-    while (i.hasNext() and j.hasNext()) {
-        x = i.next();
-        y = j.next();
-        ibehindj = i.position() < j.position();
-        jbehindi = j.position() < i.position();
-        while ((ibehindj and i.hasNext()) or (jbehindi and j.hasNext())) {
-            if (ibehindj)
-                x = i.next();
-            else if (jbehindi)
-                y = j.next();
-            ibehindj = i.position() < j.position();
-            jbehindi = j.position() < i.position();
-        }
-        size_t nextnonzero = i.position() < j.position() ? i.position()
-                : j.position();
-        if (nextnonzero > pos + 1) {
-            container.addStreamOfEmptyWords(0, nextnonzero - pos - 1);
-            pos += nextnonzero - pos - 1;
-        }
-        if (i.position() == j.position()) {
-            container.add(x & y);
-            ++pos;
-        }
-    }
-    container.setSizeInBits(sizeInBits());
-    //return answer;
-}
-
-template<class uword>
-void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a,
+void EWAHBoolArray<uword>::logicalor(EWAHBoolArray &a,
         EWAHBoolArray &container) {
     makeSameSize(a);
     container.reset();
@@ -1404,7 +1247,7 @@ void EWAHBoolArray<uword>::rawlogicalor(EWAHBoolArray &a,
 }
 
 template<class uword>
-void EWAHBoolArray<uword>::rawlogicaland(EWAHBoolArray &a,
+void EWAHBoolArray<uword>::logicaland(EWAHBoolArray &a,
         EWAHBoolArray &container) {
     makeSameSize(a);
     container.reset();

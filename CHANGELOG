@@ -1,3 +1,5 @@
+0.2.0 (April 27th 2012)
+  Minor refactor, cleaned the code somewhat. Removed less useful methods.
 0.1.0 (April 19th 2012)
   Added a unit test related to how we compute the cardinality
   Accelerated the computation of the cardinality

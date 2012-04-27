@@ -263,7 +263,7 @@ bool testHemeury() {
         test.set(i);
         test.logicaland(test1, test2);
         // because test1 is empty, test2 should be empty as well
-        vector<uint32_t> vals;
+        vector<size_t> vals;
         test2.appendSetBits(vals);
         if (vals.size() != 0) {
             isOk = false;
@@ -461,13 +461,10 @@ bool testEWAHBoolArrayLogical() {
         xxor[k] = x1[k] | x2[k];
     }
     EWAHBoolArray<uword> myand;
-    EWAHBoolArray<uword> mysparseand;
     EWAHBoolArray<uword> myor;
-    myarray1.rawlogicaland(myarray2, myand);
-    myarray1.sparselogicaland(myarray2, mysparseand);
-    myarray1.rawlogicalor(myarray2, myor);
+    myarray1.logicaland(myarray2, myand);
+    myarray1.logicalor(myarray2, myor);
     EWAHBoolArrayIterator<uword> i = myand.uncompress();
-    EWAHBoolArrayIterator<uword> ii = mysparseand.uncompress();
     EWAHBoolArrayIterator<uword> j = myor.uncompress();
     EWAHBoolArrayIterator<uword> it1 = myarray1.uncompress();
     EWAHBoolArrayIterator<uword> it2 = myarray2.uncompress();
@@ -479,11 +476,6 @@ bool testEWAHBoolArrayLogical() {
             isOk = false;
             break;
         }
-        if (!ii.hasNext()) {
-            cout << "type 2 error" << endl;
-            isOk = false;
-            break;
-        }
         if (!j.hasNext()) {
             cout << "type 3 error" << endl;
             isOk = false;
@@ -491,11 +483,6 @@ bool testEWAHBoolArrayLogical() {
         }
         if (i.next() != xand[k]) {
             cout << "type 4 error" << endl;
-            isOk = false;
-            break;
-        }
-        if (ii.next() != xand[k]) {
-            cout << "type 5 error" << endl;
             isOk = false;
             break;
         }

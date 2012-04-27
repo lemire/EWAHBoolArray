@@ -50,7 +50,7 @@ typedef unsigned long long uint64_t;
 uint32_t countOnes(uint32_t v) {
     v = v - ((v >> 1) & 0x55555555);
     v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-    return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+    return ((v + ((v >> 4) & 0xF0F0F0F)) * 0x1010101) >> 24;
 }
 /**
  * count the number of bits set to one (64 bit version)
@@ -63,7 +63,7 @@ uint32_t countOnes(uint64_t v) {
 uint32_t countOnes(uint16_t v) {
     uint32_t c;
     for (c = 0; v; c++) {
-        v &= v - 1;
+        v &= static_cast<uint16_t>(v - 1);
     }
     return c;
 }

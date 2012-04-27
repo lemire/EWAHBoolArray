@@ -1,9 +1,15 @@
+/**
+ * This is code is released under the
+ * Apache License Version 2.0 http://www.apache.org/licenses/.
+ *
+ * (c) Daniel Lemire, http://lemire.me/en/
+ */
 #include <stdlib.h>
 #include "ewah.h"
 
 void demoSerialization() {
     stringstream ss;
-    EWAHBoolArray<uword64> myarray;
+    EWAHBoolArray<uint64_t> myarray;
     myarray.add(234321);
     myarray.add(0);
     myarray.add(0);
@@ -11,18 +17,17 @@ void demoSerialization() {
     //
     myarray.write(ss);
     //
-    EWAHBoolArray<uword64> lmyarray;
+    EWAHBoolArray<uint64_t> lmyarray;
     lmyarray.read(ss);
     //
-    if(lmyarray == myarray) 
-        cout<<"serialization works"<<endl;
-    else 
-        cout<<"serialization does not works"<<endl;
+    if (lmyarray == myarray)
+        cout << "serialization works" << endl;
+    else
+        cout << "serialization does not works" << endl;
 }
 
-
 int main(void) {
-    EWAHBoolArray<uword32> bitset1;
+    EWAHBoolArray<uint32_t> bitset1;
     bitset1.set(1);
     bitset1.set(2);
     bitset1.set(1000);
@@ -32,39 +37,45 @@ int main(void) {
     bitset1.set(1007);
     bitset1.set(1009);
     bitset1.set(100000);
-    cout<<"first bitset : "<<endl;
-    for(EWAHBoolArray<uword32>::const_iterator i = bitset1.begin(); i!=bitset1.end(); ++i)
-        cout<<*i<<endl;
-    cout<<endl;
-    EWAHBoolArray<uword32> bitset2;
+    cout << "first bitset : " << endl;
+    for (EWAHBoolArray<uint32_t>::const_iterator i = bitset1.begin(); i
+            != bitset1.end(); ++i)
+        cout << *i << endl;
+    cout << endl;
+    EWAHBoolArray<uint32_t> bitset2;
     bitset2.set(1);
     bitset2.set(3);
     bitset2.set(1000);
     bitset2.set(1007);
     bitset2.set(100000);
-    cout<<"second bitset : "<<endl;
-    for(EWAHBoolArray<uword32>::const_iterator i = bitset2.begin(); i!=bitset2.end(); ++i)
-        cout<<*i<<endl;
-    cout<<endl;
-    EWAHBoolArray<uword32> orbitset;
-    EWAHBoolArray<uword32> andbitset;
-    bitset1.logicalor(bitset2,orbitset);
-    bitset1.logicaland(bitset2,andbitset);
+    cout << "second bitset : " << endl;
+    for (EWAHBoolArray<uint32_t>::const_iterator i = bitset2.begin(); i
+            != bitset2.end(); ++i)
+        cout << *i << endl;
+    cout << endl;
+    EWAHBoolArray<uint32_t> orbitset;
+    EWAHBoolArray<uint32_t> andbitset;
+    bitset1.logicalor(bitset2, orbitset);
+    bitset1.logicaland(bitset2, andbitset);
     // we will display the or
-    cout<<"logical and: "<<endl;
-    for(EWAHBoolArray<uword32>::const_iterator i = andbitset.begin(); i!=andbitset.end(); ++i)
-        cout<<*i<<endl;
-    cout<<endl;
-    cout<<"memory usage of compressed bitset = "<<andbitset.sizeInBytes()<<" bytes"<<endl;
-    cout<<endl;
+    cout << "logical and: " << endl;
+    for (EWAHBoolArray<uint32_t>::const_iterator i = andbitset.begin(); i
+            != andbitset.end(); ++i)
+        cout << *i << endl;
+    cout << endl;
+    cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
+            << " bytes" << endl;
+    cout << endl;
     // we will display the and
-    cout<<"logical or: "<<endl;
-    for(EWAHBoolArray<uword32>::const_iterator i = orbitset.begin(); i!=orbitset.end(); ++i)
-        cout<<*i<<endl;
-    cout<<endl;
-    cout<<endl;
-    cout<<"memory usage of compressed bitset = "<<orbitset.sizeInBytes()<<" bytes"<<endl;
-    cout<<endl;
+    cout << "logical or: " << endl;
+    for (EWAHBoolArray<uint32_t>::const_iterator i = orbitset.begin(); i
+            != orbitset.end(); ++i)
+        cout << *i << endl;
+    cout << endl;
+    cout << endl;
+    cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
+            << " bytes" << endl;
+    cout << endl;
     demoSerialization();
     return EXIT_SUCCESS;
 }

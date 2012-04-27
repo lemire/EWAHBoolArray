@@ -1,17 +1,17 @@
 VPATH = src:headers
 CXXFLAGS=-Iheaders -O2 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wwrite-strings -Wstrict-overflow=5  -Wpointer-arith -Winit-self  
-HEADERS=ewah.h boolarray.h
+HEADERS=ewah.h ewahutil.h boolarray.h runninglengthword.h
 
 all: unit unit32bits example
 
 unit32bits: $(HEADERS) unit.cpp
-	g++ $(CXXFLAGS) -m32 -o unit32bits src/unit.cpp 
+	$(CXX) $(CXXFLAGS) -m32 -o unit32bits src/unit.cpp 
 	
 unit: $(HEADERS) unit.cpp 
-	g++ $(CXXFLAGS) -o unit src/unit.cpp 
+	$(CXX) $(CXXFLAGS) -o unit src/unit.cpp 
 		
 example: $(HEADERS) example.cpp
-	g++ $(CXXFLAGS) -o example example.cpp
+	$(CXX) $(CXXFLAGS) -o example example.cpp
 
 cppcheck: 
 	cppcheck --enable=all headers/*.h src/*.cpp *.cpp

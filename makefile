@@ -1,5 +1,5 @@
 VPATH = src:headers
-CXXFLAGS=-Iheaders -O2 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wwrite-strings -Wstrict-overflow=5  -Wpointer-arith -Winit-self  
+CXXFLAGS=-Iheaders -O2 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wunsafe-loop-optimizations  -Wpointer-arith -Winit-self  
 HEADERS=ewah.h ewahutil.h boolarray.h runninglengthword.h
 
 all: unit unit32bits example
@@ -22,6 +22,6 @@ doxygen:
 
 package: 
 	zip -9 EWAHBoolArray_`date +%Y-%m-%d`.zip README CHANGELOG makefile example.cpp headers/*.h src/*.cpp
-	cd ..;zip -9 ./EWAHBoolArray/EWAHBoolArray.0.2.0-src.zip ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
+	cd ..;zip -9 ./EWAHBoolArray/EWAHBoolArray.0.2.1-src.zip ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
 clean: 
 	rm -f *.o unit example unit32bits

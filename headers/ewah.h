@@ -555,14 +555,11 @@ private:
                     return false;
                 }
             }
-            const uword currentword = buffer[mpointer + 1 + indexoflitword];
-            for (uint32_t inwordpointer = static_cast<uint32_t> ((currentrunoffset
-                    - rlw.getRunningLength() * wordinbits) % wordinbits); inwordpointer
-                    < wordinbits; ++inwordpointer, ++currentrunoffset) {
-                if ((currentword & (static_cast<uword> (1) << inwordpointer))
-                        != 0)
-                    return true;
-            }
+            const uint32_t tinwordpointer = static_cast<uint32_t> ((currentrunoffset
+                                - rlw.getRunningLength() * wordinbits) % wordinbits);
+            const uword modcurrentword = static_cast<uword>(buffer[mpointer + 1 + indexoflitword] >> tinwordpointer);
+            if(modcurrentword!=0) {currentrunoffset += numberOfTrailingZeros(modcurrentword);return true;}
+            else {currentrunoffset += wordinbits-tinwordpointer;}
         }
     }
 

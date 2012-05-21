@@ -68,6 +68,23 @@ uint32_t countOnes(uint16_t v) {
     return c;
 }
 
+uint32_t numberOfTrailingZeros(uint32_t x) {
+    if (x == 0) return 32;
+    return __builtin_ctz(x);// specific to GCC, TODO: find equiv. for MS compilers
+}
+
+uint32_t numberOfTrailingZeros(uint64_t x) {
+    if(static_cast<uint32_t> (x)!= 0) {
+        return numberOfTrailingZeros(static_cast<uint32_t> (x));
+    }
+    else return 32+numberOfTrailingZeros(static_cast<uint32_t> (x >> 32));
+}
+
+uint32_t numberOfTrailingZeros(uint16_t x) {
+    if (x == 0) return 16;
+    return __builtin_ctz(x);// specific to GCC, TODO: find equiv. for MS compilers
+}
+
 /**
  * Returns the binary representation of a binary word.
  */

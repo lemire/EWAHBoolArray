@@ -17,7 +17,6 @@
 
 using namespace std;
 
-
 template<class uword>
 class EWAHBoolArrayIterator;
 
@@ -84,7 +83,6 @@ public:
     const_iterator end() const {
         return EWAHBoolArraySetBitForwardIterator<uword> (buffer, buffer.size());
     }
-
 
     /**
      * computes the logical and with another compressed bitmap
@@ -233,7 +231,6 @@ public:
      */
     EWAHBoolArrayIterator<uword> uncompress() const ;
 
-
     /**
      * To iterate over the compressed data.
      * Can be faster than any other iterator.
@@ -362,8 +359,6 @@ private:
     size_t lastRLW;
 };
 
-
-
 /**
  * Iterate over words of bits from a compressed bitmap.
  */
@@ -423,8 +418,6 @@ private:
     uword rl, lw;
     bool b;
 };
-
-
 
 /**
  * Used to go through the set bits. Not optimally fast, but convenient.
@@ -555,11 +548,20 @@ private:
                     return false;
                 }
             }
-            const uint32_t tinwordpointer = static_cast<uint32_t> ((currentrunoffset
-                                - rlw.getRunningLength() * wordinbits) % wordinbits);
-            const uword modcurrentword = static_cast<uword>(buffer[mpointer + 1 + indexoflitword] >> tinwordpointer);
-            if(modcurrentword!=0) {currentrunoffset += numberOfTrailingZeros(modcurrentword);return true;}
-            else {currentrunoffset += wordinbits-tinwordpointer;}
+            const uint32_t
+                    tinwordpointer =
+                            static_cast<uint32_t> ((currentrunoffset
+                                    - rlw.getRunningLength() * wordinbits)
+                                    % wordinbits);
+            const uword modcurrentword = static_cast<uword> (buffer[mpointer
+                    + 1 + indexoflitword] >> tinwordpointer);
+            if (modcurrentword != 0) {
+                currentrunoffset += static_cast<size_t> (numberOfTrailingZeros(
+                        modcurrentword));
+                return true;
+            } else {
+                currentrunoffset += wordinbits - tinwordpointer;
+            }
         }
     }
 
@@ -702,7 +704,8 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray & x) const {
 }
 
 template<class uword>
-size_t EWAHBoolArray<uword>::add(const uword newdata, const uint32_t bitsthatmatter) {
+size_t EWAHBoolArray<uword>::add(const uword newdata,
+        const uint32_t bitsthatmatter) {
     sizeinbits += bitsthatmatter;
     if (newdata == 0) {
         return addEmptyWord(0);
@@ -738,7 +741,7 @@ void EWAHBoolArray<uword>::write(ostream & out, const bool savesizeinbits) const
     out.write(reinterpret_cast<const char *> (&buffersize), sizeof(buffersize));
     if (buffersize > 0)
         out.write(reinterpret_cast<const char *> (&buffer[0]),
-                sizeof(uword) * buffersize);
+                static_cast<streamsize> (sizeof(uword) * buffersize));
 }
 
 template<class uword>
@@ -752,7 +755,7 @@ void EWAHBoolArray<uword>::read(istream & in, const bool savesizeinbits) {
     buffer.resize(buffersize);
     if (buffersize > 0)
         in.read(reinterpret_cast<char *> (&buffer[0]),
-                sizeof(uword) * buffersize);
+                static_cast<streamsize>(sizeof(uword) * buffersize));
 }
 
 template<class uword>
@@ -943,7 +946,7 @@ template<class uword>
 BoolArray<uword> EWAHBoolArray<uword>::toBoolArray() const {
     BoolArray<uword> ans(sizeinbits);
     EWAHBoolArrayIterator<uword> i = uncompress();
-    int counter = 0;
+    size_t counter = 0;
     while (i.hasNext()) {
         ans.setWord(counter++, i.next());
     }
@@ -1143,8 +1146,7 @@ size_t EWAHBoolArray<uword>::addEmptyWord(const bool v) {
     }
 }
 template<class uword>
-void EWAHBoolArray<uword>::logicalor(EWAHBoolArray &a,
-        EWAHBoolArray &container) {
+void EWAHBoolArray<uword>::logicalor(EWAHBoolArray &a, EWAHBoolArray &container) {
     makeSameSize(a);
     container.reset();
     if (RESERVEMEMORY)

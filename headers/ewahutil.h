@@ -13,7 +13,7 @@
 #include <iso646.h> // mostly for Microsoft compilers
 #include <inttypes.h>
 
-#ifdef UINT32_MAX
+#if defined __UINT32_MAX__ or UINT32_MAX
 #include <stdint.h> // for old compilers?
 //#include <cstdint>
 #else

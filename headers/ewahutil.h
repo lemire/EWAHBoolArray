@@ -15,10 +15,10 @@
 
 
 #if defined __UINT32_MAX__ or UINT32_MAX
-//#include <stdint.h> // for old compilers?
+// unclear whether we need these headers:
+//#include <stdint.h>
 //#include <cstdint>
 #else
-// next bit won't work under microsoft compilers, I don't know how to fix
 typedef unsigned short uint16_t;
 typedef unsigned long uint32_t;
 typedef unsigned long long uint64_t;
@@ -46,14 +46,25 @@ typedef unsigned long long uint64_t;
 #   define ASSERT(condition, message) do { } while (false)
 #endif
 
+
+#ifdef _MSC_VER
+#include <intrin.h>
 /**
  * count the number of bits set to one (32 bit version)
  */
-uint32_t countOnes(uint32_t v) {
-    v = v - ((v >> 1) & 0x55555555);
-    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-    return ((v + ((v >> 4) & 0xF0F0F0F)) * 0x1010101) >> 24;
+uint32_t countOnes(uint32_t x) {
+    return __popcnt((x);
 }
+#else
+/**
+ * count the number of bits set to one (32 bit version)
+ */
+uint32_t countOnes(uint32_t x) {
+    return __builtin_popcount(x);
+}
+#endif
+
+
 /**
  * count the number of bits set to one (64 bit version)
  */
@@ -63,11 +74,7 @@ uint32_t countOnes(uint64_t v) {
 }
 
 uint32_t countOnes(uint16_t v) {
-    uint32_t c;
-    for (c = 0; v; c++) {
-        v &= static_cast<uint16_t>(v - 1);
-    }
-    return c;
+    return countOnes(static_cast<uint32_t>(v));
 }
 
 #ifdef _MSC_VER

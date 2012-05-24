@@ -122,7 +122,7 @@ public:
     /**
      * set to true (whether it was already set to true or not)
      *
-     * TODO this is an expensive (random access) API, you really ought to
+     * This is an expensive (random access) API, you really ought to
      * prepare a new word and then append it.
      */
     void set(const size_t pos) {
@@ -133,7 +133,7 @@ public:
     /**
      * set to false (whether it was already set to false or not)
      *
-     * TODO this is an expensive (random access) API, you really ought to
+     * This is an expensive (random access) API, you really ought to
      * prepare a new word and then append it.
      */
     void unset(const size_t pos) {

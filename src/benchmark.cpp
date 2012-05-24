@@ -167,31 +167,19 @@ public:
     void fillUniform(iterator begin, iterator end, uint32_t Min, uint32_t Max) {
         vector<uint32_t> v = unidg.generateUniform(
                 static_cast<uint32_t> (end - begin), Max - Min);
-        for (size_t k = 0; k < v.size(); ++k) {
-            assert(v[k] < Max - Min);
-        }
         for (size_t k = 0; k < v.size(); ++k)
             *(begin + k) = Min + v[k];
-        for (iterator j = begin; j < end - 1; ++j) {
-            assert(*j != *(j + 1));
-        }
-        for (iterator j = begin; j < end; ++j) {
-            assert(*j < Max);
-        }
     }
 
     template<class iterator>
     void fillClustered(iterator begin, iterator end, uint32_t Min, uint32_t Max) {
         const uint32_t N = static_cast<uint32_t> (end - begin);
         const uint32_t range = Max - Min;
-        assert(range >= N);
         if ((range == N) or (N <= 10)) {
             fillUniform(begin, end, Min, Max);
             return;
         }
         const uint32_t cut = N / 2 + unidg.rand.getValue(range - N - 1);
-        assert(cut >= N / 2);
-        assert(Max - Min - cut >= N - N / 2);
         const double p = unidg.rand.getDouble();
         if (p < 0.25) {
             fillUniform(begin, begin + N / 2, Min, Min + cut);
@@ -229,8 +217,8 @@ public:
         t2 = t1;
     }
     int elapsed() {
-        return  (static_cast<int>(t2.tv_sec - t1.tv_sec) * 1000) + static_cast<int>(t2.tv_usec
-                - t1. tv_usec) / 1000;
+        return (static_cast<int> (t2.tv_sec - t1.tv_sec) * 1000)
+                + static_cast<int> (t2.tv_usec - t1. tv_usec) / 1000;
     }
     int split() {
         gettimeofday(&t2, 0);
@@ -264,11 +252,9 @@ void test(vector<vector<uint32_t> > & data, int repeat) {
     timer.reset();
     for (int r = 0; r < repeat; ++r)
         for (size_t k = 0; k < data.size(); ++k) {
-            vector<uint32_t> vals;
-            for (typename EWAHBoolArray<uword>::const_iterator j =
-                    ewah[k].begin(); j != ewah[k].end(); ++j)
-                vals.push_back(static_cast<uint32_t> (*j));
+            vector < size_t > vals = ewah[k].toArray();
             bogus += vals.size();
+            assert(vals.size() == data[k].size());
         }
     cout << timer.split() << "\t";
     timer.reset();
@@ -309,7 +295,6 @@ void test(int N, int nbr, int repeat) {
             data[k] = cdg.generateClustered(1 << nbr, Max);
         }
         cout << "# generating data...ok" << endl;
-
         cout << "#64 bits" << endl;
         test<uint64_t> (data, repeat);
         cout << "#32 bits" << endl;
@@ -318,6 +303,6 @@ void test(int N, int nbr, int repeat) {
 }
 
 int main(void) {
-    test(100, 18, 1000);
+    test(10, 18, 1);
 }
 

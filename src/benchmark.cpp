@@ -8,8 +8,11 @@
 #include <algorithm>
 #include <vector>
 #include <set>
+#ifdef _MSC_VER
+#include <winsock2.h>
+#else
 #include <sys/time.h>
-
+#endif
 #include "ewah.h"
 using namespace std;
 

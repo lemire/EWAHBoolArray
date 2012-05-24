@@ -13,10 +13,12 @@
 #include <iso646.h> // mostly for Microsoft compilers
 #include <inttypes.h>
 
+
 #if defined __UINT32_MAX__ or UINT32_MAX
 #include <stdint.h> // for old compilers?
 //#include <cstdint>
 #else
+// next bit won't work under microsoft compilers, I don't know how to fix
 typedef unsigned short uint16_t;
 typedef unsigned long uint32_t;
 typedef unsigned long long uint64_t;
@@ -68,10 +70,23 @@ uint32_t countOnes(uint16_t v) {
     return c;
 }
 
+#ifdef _MSC_VER
+#include <intrin.h>
+
+// I can't promise that this will compile:
+int numberOfTrailingZeros(uint32_t x) {
+    int r = 0;
+    if(_BitScanReverse(&r, x))
+        return 32;
+    return r;
+}
+#else
 int numberOfTrailingZeros(uint32_t x) {
     if (x == 0) return 32;
     return __builtin_ctz(x);// specific to GCC, TODO: find equiv. for MS compilers
 }
+
+#endif
 
 int numberOfTrailingZeros(uint64_t x) {
     if(static_cast<uint32_t> (x)!= 0) {
@@ -82,7 +97,7 @@ int numberOfTrailingZeros(uint64_t x) {
 
 int numberOfTrailingZeros(uint16_t x) {
     if (x == 0) return 16;
-    return __builtin_ctz(x);// specific to GCC, TODO: find equiv. for MS compilers
+    return __builtin_ctz(static_cast<uint32_t>(x));// specific to GCC, TODO: find equiv. for MS compilers
 }
 
 /**

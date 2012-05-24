@@ -20,6 +20,27 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #define unlink _unlink
 #endif
 
+
+template<class uword>
+bool testSetGet() {
+    cout << "[testing EWAH set/get]"<<endl;
+    EWAHBoolArray<uword> ewcb;
+    uint32_t val[] = { 5, 4400, 44600, 55400, 1000000 };
+    for (int k = 0; k < 5; ++k) {
+      ewcb.set(val[k]);
+    }
+    size_t counter = 0;
+    bool isOk = true;
+    for (typename EWAHBoolArray<uword>::const_iterator i = ewcb.begin(); i
+            != ewcb.end(); ++i) {
+        if(val[counter++]!=*i) {
+            cout<<"Failed test set/get"<<endl;
+            isOk = false;
+        }
+    }
+    return isOk;
+}
+
 template<class uword>
 bool testRunningLengthWord() {
     cout << "[testing RunningLengthWord]" << endl;
@@ -263,7 +284,7 @@ bool testHemeury() {
         test.set(i);
         test.logicaland(test1, test2);
         // because test1 is empty, test2 should be empty as well
-        vector<size_t> vals;
+        vector < size_t > vals;
         test2.appendSetBits(vals);
         if (vals.size() != 0) {
             isOk = false;
@@ -520,6 +541,15 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+
+    if (!testSetGet<uint16_t> ())
+        ++failures;
+    if (!testSetGet<uint32_t> ())
+        ++failures;
+    if (!testSetGet<uint64_t> ())
+        ++failures;
+
+
     if (!testPhongTran())
         ++failures;
 
@@ -543,14 +573,6 @@ int main(void) {
         ++failures;
     if (!testPhongTran2<uint64_t> ())
         ++failures;
-
-    if (!testJoergBukowski<uint16_t> ())
-        ++failures;
-    if (!testJoergBukowski<uint32_t> ())
-        ++failures;
-    if (!testJoergBukowski<uint64_t> ())
-        ++failures;
-
     if (!testRunningLengthWord<uint16_t> ())
         ++failures;
     if (!testRunningLengthWord<uint32_t> ())
@@ -577,6 +599,14 @@ int main(void) {
         ++failures;
     if (!testEWAHBoolArrayAppend<uint64_t> ())
         ++failures;
+
+    if (!testJoergBukowski<uint16_t> ())
+        ++failures;
+    if (!testJoergBukowski<uint32_t> ())
+        ++failures;
+    if (!testJoergBukowski<uint64_t> ())
+        ++failures;
+
     tellmeaboutmachine();
     if (failures == 0) {
         cout << "Your code is ok." << endl;

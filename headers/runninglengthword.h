@@ -68,14 +68,23 @@ public:
      * Total of getRunningLength() and getNumberOfLiteralWords()
      */
     uword size() const {
-        return getRunningLength() + getNumberOfLiteralWords();
+        return static_cast<uword>(getRunningLength() + getNumberOfLiteralWords());
+    }
+
+
+
+    /**
+     * Total of getRunningLength() and getNumberOfLiteralWords()
+     */
+    static inline uword size(uword data) {
+        return static_cast<uword>(getRunningLength(data) + getNumberOfLiteralWords(data));
     }
 
     /**
      * followed by how many literal words?
      */
     static inline uword getNumberOfLiteralWords(uword data) {
-        return data >> (1 + runninglengthbits);
+        return static_cast<uword> (data >> (1 + runninglengthbits));
     }
 
     /**

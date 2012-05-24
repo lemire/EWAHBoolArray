@@ -156,7 +156,7 @@ public:
      * same as addEmptyWord, but you can do several in one shot!
      * returns the number of words added (storage cost increase)
      */
-    size_t addStreamOfEmptyWords(const bool v, const size_t number);
+    size_t addStreamOfEmptyWords(const bool v, size_t number);
 
     /**
      * add a stream of dirty words,, returns the number of words added
@@ -302,7 +302,7 @@ public:
     EWAHBoolArray(const EWAHBoolArray& other) :
         buffer(other.buffer), sizeinbits(other.sizeinbits),
                 lastRLW(other.lastRLW) {
-        ASSERT(buffer.size()<=1,"You are trying to copy the bitmap, a terrible idea in general, for performance reasons.");// performance assert!
+        //ASSERT(buffer.size()<=1,"You are trying to copy the bitmap, a terrible idea in general, for performance reasons.");// performance assert!
     }
 
     /**
@@ -631,6 +631,7 @@ public:
 
 template<class uword>
 void EWAHBoolArray<uword>::set(size_t i) {
+    assert(i>=sizeinbits);
     // must I complete a word?
     if ((sizeinbits % (8 * sizeof(uword))) != 0) {
         const size_t possiblesizeinbits = (sizeinbits / (8 * sizeof(uword)))
@@ -639,8 +640,8 @@ void EWAHBoolArray<uword>::set(size_t i) {
             sizeinbits = possiblesizeinbits;
         }
     }
-    addStreamOfEmptyWords(false,
-            (i / (8 * sizeof(uword))) - sizeinbits / (8 * sizeof(uword)));
+    const size_t paddingwords = (i / (8 * sizeof(uword))) - sizeinbits / (8 * sizeof(uword));
+    addStreamOfEmptyWords(false,paddingwords);
     size_t bittoflip = i - (sizeinbits / (8 * sizeof(uword)) * (8
             * sizeof(uword)));
     // next, we set the bit
@@ -755,7 +756,7 @@ void EWAHBoolArray<uword>::read(istream & in, const bool savesizeinbits) {
     buffer.resize(buffersize);
     if (buffersize > 0)
         in.read(reinterpret_cast<char *> (&buffer[0]),
-                static_cast<streamsize>(sizeof(uword) * buffersize));
+                static_cast<streamsize> (sizeof(uword) * buffersize));
 }
 
 template<class uword>
@@ -1012,58 +1013,48 @@ bool EWAHBoolArray<uword>::operator!=(const BoolArray<uword> & x) const {
     // could be more efficient
     return (this->toBoolArray() != x);
 }
-
 template<class uword>
 size_t EWAHBoolArray<uword>::addStreamOfEmptyWords(const bool v,
-        const size_t number) {
+        size_t number) {
     if (number == 0)
         return 0;
-    RunningLengthWord<uword> lastRunningLengthWord(buffer[lastRLW]);
-    const bool noliteralword = (lastRunningLengthWord.getNumberOfLiteralWords()
-            == 0);
-    //firts, if the last running length word is empty, we align it
-    // this
-    const uword runlen = lastRunningLengthWord.getRunningLength();
-    if ((noliteralword) && (runlen == 0)) {
-        lastRunningLengthWord.setRunningBit(v);
-    }
-    size_t wordsadded(0);
-    if ((noliteralword) && (lastRunningLengthWord.getRunningBit() == v)
-            && (runlen < RunningLengthWord<uword>::largestrunninglengthcount)) {
-        // that's the easy case, we are just continuing
-        uword
-                whatwecanadd =
-                        static_cast<uword> (number
-                                < static_cast<uword> (RunningLengthWord<uword>::largestrunninglengthcount
-                                        - runlen) ? number
-                                : static_cast<size_t> (RunningLengthWord<uword>::largestrunninglengthcount
-                                        - runlen));
-        lastRunningLengthWord.setRunningLength(
-                static_cast<uword> (runlen + whatwecanadd));
-        sizeinbits = static_cast<size_t> (sizeinbits + whatwecanadd
-                * wordinbits);
-        if (number - whatwecanadd > 0)
-            wordsadded = static_cast<size_t> (wordsadded
-                    + addStreamOfEmptyWords(v,
-                            static_cast<size_t> (number - whatwecanadd)));
-    } else {
+    sizeinbits += number * wordinbits;
+    size_t wordsadded = 0;
+    if ((RunningLengthWord<uword>::getRunningBit(buffer[lastRLW]) != v) && (RunningLengthWord<uword>::size(buffer[lastRLW]) == 0)) {
+        RunningLengthWord<uword>::setRunningBit(buffer[lastRLW],v);
+    } else if ((RunningLengthWord<uword>::getNumberOfLiteralWords(buffer[lastRLW]) != 0)
+            || (RunningLengthWord<uword>::getRunningBit(buffer[lastRLW]) != v)) {
         buffer.push_back(0);
         ++wordsadded;
         lastRLW = buffer.size() - 1;
-        RunningLengthWord<uword> lastRunningLengthWord2(buffer[lastRLW]);
-        uword
-                whatwecanadd =
-                        static_cast<uword> (number
-                                < RunningLengthWord<uword>::largestrunninglengthcount ? number
-                                : static_cast<size_t> (RunningLengthWord<uword>::largestrunninglengthcount));
-        lastRunningLengthWord2.setRunningBit(v);
-        lastRunningLengthWord2.setRunningLength(whatwecanadd);
-        sizeinbits = static_cast<size_t> (sizeinbits + whatwecanadd
-                * wordinbits);
-        if (number - whatwecanadd > 0)
-            wordsadded = static_cast<size_t> (wordsadded
-                    + addStreamOfEmptyWords(v,
-                            static_cast<size_t> (number - whatwecanadd)));
+        if (v)
+            RunningLengthWord<uword>::setRunningBit(buffer[lastRLW],v);
+    }
+    const uword runlen = RunningLengthWord<uword>::getRunningLength(buffer[lastRLW]);
+
+    const uword whatwecanadd = number < static_cast<size_t>(RunningLengthWord<uword>::largestrunninglengthcount
+    - runlen) ?
+            static_cast<uword>(number)
+            : static_cast<uword>(RunningLengthWord<uword>::largestrunninglengthcount - runlen);
+    RunningLengthWord<uword>::setRunningLength(buffer[lastRLW],static_cast<uword>(runlen + whatwecanadd));
+
+    number -= static_cast<size_t>(whatwecanadd);
+    while (number >= RunningLengthWord<uword>::largestrunninglengthcount) {
+        buffer.push_back(0);
+        ++wordsadded;
+        lastRLW = buffer.size() - 1;
+        if (v)
+            RunningLengthWord<uword>::setRunningBit(buffer[lastRLW],v);
+        RunningLengthWord<uword>::setRunningLength(buffer[lastRLW],RunningLengthWord<uword>::largestrunninglengthcount);
+        number -= static_cast<size_t>(RunningLengthWord<uword>::largestrunninglengthcount);
+    }
+    if (number > 0) {
+        buffer.push_back(0);
+        ++wordsadded;
+        lastRLW = buffer.size() - 1;
+        if (v)
+            RunningLengthWord<uword>::setRunningBit(buffer[lastRLW],v);
+        RunningLengthWord<uword>::setRunningLength(buffer[lastRLW],static_cast<uword>(number));
     }
     return wordsadded;
 }

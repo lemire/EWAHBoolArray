@@ -13,7 +13,6 @@
 #include "ewah.h"
 using namespace std;
 
-
 /**
  *  Mersenne twister - random number generator.
  *  Generate uniform distribution of 32 bit integers with the MT19937 algorithm.
@@ -101,7 +100,6 @@ unsigned int ZRandom::getValue() {
     return y;
 }
 
-
 class UniformDataGenerator {
 public:
     UniformDataGenerator(unsigned int seed = time(NULL)) :
@@ -122,19 +120,19 @@ public:
         if (N == Max) {
             for (uint32_t k = 0; k < Max; ++k)
                 ans.push_back(k);
-            assert(ans.back()<Max);
+            assert(ans.back() < Max);
             return ans;
         }
         if (N > Max / 2) {
             set<uint32_t> s;
             while (s.size() < N)
-                s.insert(rand.getValue(Max-1));
+                s.insert(rand.getValue(Max - 1));
             ans.assign(s.begin(), s.end());
             return ans;
         }
         while (ans.size() < N) {
             while (ans.size() < N) {
-                ans.push_back(rand.getValue(Max-1));
+                ans.push_back(rand.getValue(Max - 1));
             }
             sort(ans.begin(), ans.end());
             vector<uint32_t>::iterator it = unique(ans.begin(), ans.end());
@@ -150,7 +148,8 @@ public:
 class ClusteredDataGenerator {
 public:
     UniformDataGenerator unidg;
-    ClusteredDataGenerator(unsigned int seed = static_cast<unsigned int>(time(NULL))) :
+    ClusteredDataGenerator(
+            unsigned int seed = static_cast<unsigned int> (time(NULL))) :
         unidg(seed) {
     }
 
@@ -163,23 +162,24 @@ public:
 
     template<class iterator>
     void fillUniform(iterator begin, iterator end, uint32_t Min, uint32_t Max) {
-        vector<uint32_t> v = unidg.generateUniform(static_cast<uint32_t>(end - begin), Max - Min);
-        for(size_t k = 0; k<v.size();++k) {
-                    assert(v[k]<Max-Min);
-                 }
+        vector<uint32_t> v = unidg.generateUniform(
+                static_cast<uint32_t> (end - begin), Max - Min);
+        for (size_t k = 0; k < v.size(); ++k) {
+            assert(v[k] < Max - Min);
+        }
         for (size_t k = 0; k < v.size(); ++k)
             *(begin + k) = Min + v[k];
-        for(iterator j = begin; j<end-1; ++j) {
-            assert(*j!=*(j+1));
-         }
-        for(iterator j = begin; j<end; ++j) {
-                    assert(*j<Max);
-                 }
+        for (iterator j = begin; j < end - 1; ++j) {
+            assert(*j != *(j + 1));
+        }
+        for (iterator j = begin; j < end; ++j) {
+            assert(*j < Max);
+        }
     }
 
     template<class iterator>
     void fillClustered(iterator begin, iterator end, uint32_t Min, uint32_t Max) {
-        const uint32_t N = static_cast<uint32_t>(end - begin);
+        const uint32_t N = static_cast<uint32_t> (end - begin);
         const uint32_t range = Max - Min;
         assert(range >= N);
         if ((range == N) or (N <= 10)) {
@@ -226,8 +226,8 @@ public:
         t2 = t1;
     }
     int elapsed() {
-        return static_cast<int>((t2.tv_sec - t1.tv_sec) * 1000) + ((t2.tv_usec - t1. tv_usec)
-                / 1000);
+        return static_cast<int> ((t2.tv_sec - t1.tv_sec) * 1000) + ((t2.tv_usec
+                - t1. tv_usec) / 1000);
     }
     int split() {
         gettimeofday(&t2, 0);
@@ -235,9 +235,8 @@ public:
     }
 };
 
-
 template<class uword>
-void test( vector < vector<uint32_t> > & data, int repeat) {
+void test(vector<vector<uint32_t> > & data, int repeat) {
     WallClockTimer timer;
     long bogus = 0;
     // building
@@ -254,11 +253,11 @@ void test( vector < vector<uint32_t> > & data, int repeat) {
                 ewah[k].set(data.at(k).at(x));
             }
 
-            size+=ewah[k].sizeInBytes();
+            size += ewah[k].sizeInBytes();
         }
     }
-    cout<<size<<"\t";
-    cout << timer.split() << "\t" ;
+    cout << size << "\t";
+    cout << timer.split() << "\t";
     timer.reset();
     for (int r = 0; r < repeat; ++r)
         for (size_t k = 0; k < data.size(); ++k) {
@@ -268,7 +267,7 @@ void test( vector < vector<uint32_t> > & data, int repeat) {
                 vals.push_back(static_cast<uint32_t> (*j));
             bogus += vals.size();
         }
-    cout << timer.split() << "\t" ;
+    cout << timer.split() << "\t";
     timer.reset();
     for (int r = 0; r < repeat; ++r)
         for (size_t k = 0; k < data.size(); ++k) {
@@ -280,7 +279,7 @@ void test( vector < vector<uint32_t> > & data, int repeat) {
             }
             bogus += ewahor.sizeInBits();
         }
-    cout << timer.split() << "\t" ;
+    cout << timer.split() << "\t";
     timer.reset();
     for (int r = 0; r < repeat; ++r)
         for (size_t k = 0; k < data.size(); ++k) {
@@ -293,25 +292,25 @@ void test( vector < vector<uint32_t> > & data, int repeat) {
             bogus += ewahand.sizeInBits();
 
         }
-    cout << timer.split() << "\t" <<bogus<< endl;
+    cout << timer.split() << "\t" << bogus << endl;
 
 }
 void test(int N, int nbr, int repeat) {
     for (int sparsity = 1; sparsity < 31 - nbr; sparsity += 1) {
         ClusteredDataGenerator cdg;
-        cout<<"# sparsity="<<sparsity<<"\t";
+        cout << "# sparsity=" << sparsity << "\t";
         vector < vector<uint32_t> > data(N);
         uint32_t Max = (1 << (nbr + sparsity));
-        cout<<"# generating data..."<<endl;
+        cout << "# generating data..." << endl;
         for (int k = 0; k < N; ++k) {
             data[k] = cdg.generateClustered(1 << nbr, Max);
         }
-        cout<<"# generating data...ok"<<endl;
+        cout << "# generating data...ok" << endl;
 
-        cout<<"#64 bits"<<endl;
-        test<uint64_t>(data,repeat);
-        cout<<"#32 bits"<<endl;
-        test<uint32_t>(data,repeat);
+        cout << "#64 bits" << endl;
+        test<uint64_t> (data, repeat);
+        cout << "#32 bits" << endl;
+        test<uint32_t> (data, repeat);
     }
 }
 

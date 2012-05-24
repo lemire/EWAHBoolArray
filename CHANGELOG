@@ -1,3 +1,8 @@
+0.2.2 (May 24th, 2012)
+  Fix a compilation problem under GCC 4.5.
+  Added a benchmarking utility. 
+  Minor improvements.
+
 0.2.1 (May 21st, 2012)
   Performance boost when decoding (uses GCC intrinsics, please contribute MS-equivalent)
   

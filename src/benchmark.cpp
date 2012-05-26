@@ -105,7 +105,7 @@ unsigned int ZRandom::getValue() {
 
 class UniformDataGenerator {
 public:
-    UniformDataGenerator(unsigned int seed = time(NULL)) :
+    UniformDataGenerator(unsigned int seed = static_cast<unsigned int>(time(NULL))) :
         rand(seed) {
     }
 
@@ -139,7 +139,7 @@ public:
             }
             sort(ans.begin(), ans.end());
             vector<uint32_t>::iterator it = unique(ans.begin(), ans.end());
-            ans.resize(it - ans.begin());
+            ans.resize(static_cast<uint32_t>(it - ans.begin()));
         }
         return ans;
     }
@@ -167,8 +167,8 @@ public:
     void fillUniform(iterator begin, iterator end, uint32_t Min, uint32_t Max) {
         vector<uint32_t> v = unidg.generateUniform(
                 static_cast<uint32_t> (end - begin), Max - Min);
-        for (size_t k = 0; k < v.size(); ++k)
-            *(begin + k) = Min + v[k];
+        for (uint32_t k = 0; k < v.size(); ++k)
+            begin[k] = Min + v[k];
     }
 
     template<class iterator>
@@ -284,14 +284,14 @@ void test(vector<vector<uint32_t> > & data, int repeat) {
     cout << timer.split() << "\t" << bogus << endl;
 
 }
-void test(int N, int nbr, int repeat) {
+void test(size_t N, int nbr, int repeat) {
     for (int sparsity = 1; sparsity < 31 - nbr; sparsity += 1) {
         ClusteredDataGenerator cdg;
         cout << "# sparsity=" << sparsity << "\t";
         vector < vector<uint32_t> > data(N);
         uint32_t Max = (1 << (nbr + sparsity));
         cout << "# generating data..." << endl;
-        for (int k = 0; k < N; ++k) {
+        for (size_t k = 0; k < N; ++k) {
             data[k] = cdg.generateClustered(1 << nbr, Max);
         }
         cout << "# generating data...ok" << endl;

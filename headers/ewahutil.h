@@ -60,7 +60,7 @@ uint32_t countOnes(uint32_t x) {
  * count the number of bits set to one (32 bit version)
  */
 uint32_t countOnes(uint32_t x) {
-    return __builtin_popcount(x);
+    return static_cast<uint32_t>(__builtin_popcount(x));
 }
 #endif
 

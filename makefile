@@ -1,5 +1,5 @@
 VPATH = src:headers
-CXXFLAGS=-Iheaders -O3 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wunsafe-loop-optimizations  -Wpointer-arith -Winit-self  
+CXXFLAGS=-Iheaders -O3 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wpointer-arith -Winit-self  
 HEADERS=ewah.h ewahutil.h boolarray.h runninglengthword.h
 
 all: unit unit32bits example benchmark

@@ -757,7 +757,7 @@ vector<size_t> EWAHBoolArray<uword>::toArray() const {
                 const uword myword = buffer[pointer];
                 for(uint32_t offset = 0; offset<wordinbits;++offset) {
                     if((myword >> offset) == 0) break;
-                    offset+=numberOfTrailingZeros((myword >> offset));
+                    offset+=static_cast<uint32_t>(numberOfTrailingZeros((myword >> offset)));
                     ans.push_back(pos + offset);
                 }
                 pos += wordinbits;

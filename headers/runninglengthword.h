@@ -39,7 +39,7 @@ public:
     /**
      * how many words should be filled by the running bit
      */
-    static inline bool getRunningBit(uword data) {
+    static inline bool getRunningBit(uword data)  {
         return data & static_cast<uword> (1);
     }
 

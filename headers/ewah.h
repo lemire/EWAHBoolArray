@@ -664,7 +664,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
     assert(i >= sizeinbits);
     const size_t dist = (i + wordinbits) / wordinbits - (sizeinbits
             + wordinbits - 1) / wordinbits;
-    if ((dist > 0) || (sizeinbits == 0)) {// easy
+    if (dist > 0) {// easy
         addStreamOfEmptyWords(false, dist - 1);
         addLiteralWord(
                 static_cast<uword> (static_cast<uword> (1) << (i % wordinbits)));

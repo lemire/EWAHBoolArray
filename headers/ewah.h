@@ -670,7 +670,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
             + wordinbits - 1) / wordinbits;
     sizeinbits = i + 1;
     if (dist > 0) {// easy
-        fastaddStreamOfEmptyWords(false, dist - 1);
+        if(dist>1) fastaddStreamOfEmptyWords(false, dist - 1);
         addLiteralWord(
                 static_cast<uword> (static_cast<uword> (1) << (i % wordinbits)));
         return;

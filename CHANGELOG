@@ -1,3 +1,6 @@
+0.3.1 (May 28th, 2012)
+  Fixed a perf. regression bug.
+
 0.3.0  (May 24th, 2012)
   Fix a bug with the computation of the cardinality.
   Improved compatibility with microsoft compilers.

@@ -11,13 +11,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iso646.h> // mostly for Microsoft compilers
-#include <inttypes.h>
+
 
 
 #if defined __UINT32_MAX__ or UINT32_MAX
-// unclear whether we need these headers:
-//#include <stdint.h>
-//#include <cstdint>
+#include <inttypes.h>
 #else
 typedef unsigned short uint16_t;
 typedef unsigned long uint32_t;
@@ -53,7 +51,7 @@ typedef unsigned long long uint64_t;
  * count the number of bits set to one (32 bit version)
  */
 uint32_t countOnes(uint32_t x) {
-    return __popcnt((x);
+    return __popcnt((x));
 }
 #else
 /**

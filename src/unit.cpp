@@ -4,7 +4,7 @@
  *
  * (c) Daniel Lemire, http://lemire.me/en/
  */
-#include <stdlib.h>
+#include <stdio.h>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -191,7 +191,7 @@ bool testJoergBukowski() {
     positions.push_back(163159);
     positions.push_back(164599);
     string indexfile("testingewahboolarray.bin");
-    ::unlink(indexfile.c_str());
+    ::remove(indexfile.c_str());
     EWAHBoolArray<uword> myarray;
     for (vector<uint32_t>::const_iterator i = positions.begin(); i
             != positions.end(); ++i) {
@@ -227,7 +227,7 @@ bool testJoergBukowski() {
         }
     }
     if (isOk)
-        ::unlink(indexfile.c_str());
+        ::remove(indexfile.c_str());
     if (!isOk)
         cout << testfailed << endl;
     return isOk;
@@ -242,7 +242,7 @@ bool testPhongTran() {
         myarray.add(x);
     }
     string indexfile("testingewahboolarray.bin");
-    ::unlink(indexfile.c_str());
+    ::remove(indexfile.c_str());
     ofstream out(indexfile.c_str(), ios::out | ios::binary);
     myarray.write(out);
     out.close();
@@ -268,7 +268,7 @@ bool testPhongTran() {
     }
 
     if (isOk)
-        ::unlink(indexfile.c_str());
+        ::remove(indexfile.c_str());
     if (!isOk)
         cout << testfailed << endl;
     return isOk;
@@ -306,7 +306,7 @@ bool testPhongTran2() {
         myarray.add(x);
     }
     string indexfile("testingewahboolarray.bin");
-    ::unlink(indexfile.c_str());
+    ::remove(indexfile.c_str());
     ofstream out(indexfile.c_str(), ios::out | ios::binary);
     myarray.write(out);
     out.close();
@@ -336,7 +336,7 @@ bool testPhongTran2() {
         }
     }
     if (isOk)
-        ::unlink(indexfile.c_str());
+        ::remove(indexfile.c_str());
     if (!isOk)
         cout << testfailed << endl;
     return isOk;
@@ -378,7 +378,7 @@ bool testEWAHBoolArray() {
         isOk = false;
     }
     string indexfile("testingewahboolarray.bin");
-    ::unlink(indexfile.c_str());
+    ::remove(indexfile.c_str());
     ofstream out(indexfile.c_str(), ios::out | ios::binary);
     myarray.write(out);
     out.close();
@@ -416,7 +416,7 @@ bool testEWAHBoolArray() {
         }
     }
     if (isOk)
-        ::unlink(indexfile.c_str());
+        ::remove(indexfile.c_str());
     if (!isOk)
         cout << testfailed << endl;
     return isOk;

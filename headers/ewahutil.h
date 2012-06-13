@@ -83,7 +83,7 @@ int numberOfTrailingZeros(uint32_t x) {
     unsigned long r = 0;
     if(_BitScanReverse(&r, x))// specific to MS compilers
         return 32;
-    return r;
+    return r - 1;
 }
 #else
 int numberOfTrailingZeros(uint32_t x) {
@@ -105,7 +105,7 @@ int numberOfTrailingZeros(uint16_t x) {
   unsigned long r = 0;
   if(x == 0) return 16;
   _BitScanReverse(&r, static_cast<uint32_t>(x));// specific to MS compilers
-  return r;
+  return r - 1;
 }
 #else
 int numberOfTrailingZeros(uint16_t x) {

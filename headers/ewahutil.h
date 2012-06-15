@@ -45,20 +45,20 @@ typedef unsigned long long uint64_t;
 #endif
 
 
-#ifdef _MSC_VER
-#include <intrin.h>
-/**
- * count the number of bits set to one (32 bit version)
- */
-uint32_t countOnes(uint32_t x) {
-    return __popcnt((x));
-}
-#else
+#ifdef __GNUG__
 /**
  * count the number of bits set to one (32 bit version)
  */
 uint32_t countOnes(uint32_t x) {
     return static_cast<uint32_t>(__builtin_popcount(x));
+}
+#else
+uint32_t countOnes(uint32_t x) {
+  uint32_t c; // c accumulates the total bits set in v
+  for (c = 0; x; c++) {
+     x &= x - 1; // clear the least significant bit set
+  }
+  return c;
 }
 #endif
 
@@ -74,22 +74,34 @@ uint32_t countOnes(uint64_t v) {
 uint32_t countOnes(uint16_t v) {
     return countOnes(static_cast<uint32_t>(v));
 }
-
-#ifdef _MSC_VER
-#include <intrin.h>
-
-// contributed by Christopher Batty
-int numberOfTrailingZeros(uint32_t x) {
-    unsigned long r = 0;
-    if(_BitScanReverse(&r, x))// specific to MS compilers
-        return 32;
-    return r - 1;
-}
-#else
+#ifdef __GNUG__
 int numberOfTrailingZeros(uint32_t x) {
     if (x == 0) return 32;
     return __builtin_ctz(x);// specific to GCC
 }
+#else
+int numberOfTrailingZeros(uint32_t v) {
+	if(v == 0) return 32;
+    int c = 1;
+    if ((v & 0xffff) == 0) {  
+      v >>= 16;  
+      c += 16;
+    }
+    if ((v & 0xff) == 0) {  
+      v >>= 8;  
+      c += 8;
+    }
+    if ((v & 0xf) == 0) {  
+      v >>= 4;
+      c += 4;
+    }
+    if ((v & 0x3) == 0) {  
+      v >>= 2;
+      c += 2;
+    }
+    c -= v & 0x1;
+    return c;
+}	
 #endif
 
 int numberOfTrailingZeros(uint64_t x) {
@@ -99,18 +111,29 @@ int numberOfTrailingZeros(uint64_t x) {
     else return 32+numberOfTrailingZeros(static_cast<uint32_t> (x >> 32));
 }
 
-#ifdef _MSC_VER
-// contributed by Christopher Batty
-int numberOfTrailingZeros(uint16_t x) {
-  unsigned long r = 0;
-  if(x == 0) return 16;
-  _BitScanReverse(&r, static_cast<uint32_t>(x));// specific to MS compilers
-  return r - 1;
-}
-#else
+#ifdef __GNUG__
 int numberOfTrailingZeros(uint16_t x) {
     if (x == 0) return 16;
     return __builtin_ctz(x);// specific to GCC
+}
+#else
+int numberOfTrailingZeros(uint16_t v) {
+  if(v == 0) return 16;
+  int c = 1;
+  if ((v & 0xff) == 0) {  
+      v >>= 8;  
+      c += 8;
+  }
+  if ((v & 0xf) == 0) {  
+      v >>= 4;
+      c += 4;
+  }
+  if ((v & 0x3) == 0) {  
+      v >>= 2;
+      c += 2;
+  }
+  c -= v & 0x1;
+  return c;
 }
 #endif
 

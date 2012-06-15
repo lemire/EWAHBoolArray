@@ -25,6 +25,6 @@ doxygen:
 
 package: 
 	zip -9 EWAHBoolArray_`date +%Y-%m-%d`.zip README CHANGELOG makefile example.cpp headers/*.h src/*.cpp
-	cd ..;zip -9 ./EWAHBoolArray/EWAHBoolArray.0.3.3-src.zip ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
+	cd ..;zip -9 ./EWAHBoolArray/EWAHBoolArray.0.3.4-src.zip ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
 clean: 
 	rm -f *.o unit example unit32bits benchmark

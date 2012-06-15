@@ -537,6 +537,12 @@ void tellmeaboutmachine() {
     if (__CHAR_BIT__ != 8)
     cout << "on your machine, chars don't have 8bits???" << endl;
 #endif
+#if __GNUG__
+    cout << "GNU GCC compiler detected." << endl;
+#else
+    cout << "Non-GCC compiler." << endl;
+#endif
+
 }
 
 int main(void) {

@@ -1,3 +1,6 @@
+0.3.2, 0.3.3, 0.3.4 (June 12 to 15th 2012)
+  Minor releases trying to fix compatibility issues with Microsoft compilers.
+
 0.3.1 (May 28th, 2012)
   Fixed a perf. regression bug.
 

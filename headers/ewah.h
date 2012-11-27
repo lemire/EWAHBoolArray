@@ -517,16 +517,15 @@ public:
         // if they are both over, return true
         if ((mpointer == buffer.size()) && (o.mpointer == o.buffer.size()))
             return true;
-        return (buffer == o.buffer) && (mpointer == o.mpointer)
+        return (&buffer == &o.buffer) && (mpointer == o.mpointer)
                 && (offsetofpreviousrun == o.offsetofpreviousrun)
                 && (currentrunoffset == o.currentrunoffset);
     }
-
     bool operator!=(const EWAHBoolArraySetBitForwardIterator<uword> & o) {
         // if they are both over, return false
         if ((mpointer == buffer.size()) && (o.mpointer == o.buffer.size()))
             return false;
-        return (buffer != o.buffer) || (mpointer != o.mpointer)
+        return (&buffer != &o.buffer) || (mpointer != o.mpointer)
                 || (offsetofpreviousrun != o.offsetofpreviousrun)
                 || (currentrunoffset != o.currentrunoffset);
     }

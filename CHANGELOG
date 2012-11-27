@@ -1,3 +1,6 @@
+0.3.5 (November 26th, 2012)
+  Resolved performance issue with EWAHBoolArraySetBitForwardIterator (issue reported by Paul Bowman)
+
 0.3.2, 0.3.3, 0.3.4 (June 12 to 15th 2012)
   Minor releases trying to fix compatibility issues with Microsoft compilers.
 

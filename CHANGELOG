@@ -1,3 +1,7 @@
+0.3.6 (January 22nd, 2012)
+  Resolved issue 'logical operations do not always set trailing run length correctly'
+  submitted by  creitzel@rcn.com with patch from  creitzel@rcn.com. (Issue #4)
+
 0.3.5 (November 26th, 2012)
   Resolved performance issue with EWAHBoolArraySetBitForwardIterator (issue reported by Paul Bowman)
 

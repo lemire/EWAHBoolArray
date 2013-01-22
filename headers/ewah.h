@@ -866,12 +866,43 @@ size_t EWAHBoolArray<uword>::addLiteralWord(const uword newdata) {
 
 template<class uword>
 size_t EWAHBoolArray<uword>::padWithZeroes(const size_t totalbits) {
+	size_t wordsadded = 0;
     assert(totalbits >= sizeinbits);
+	if ( totalbits <= sizeinbits )
+		return wordsadded;
+
     size_t missingbits = totalbits - sizeinbits;
-    size_t wordsadded = addStreamOfEmptyWords(
-            0,
-            missingbits / wordinbits
-                    + ((missingbits % wordinbits != 0) ? 1 : 0));
+
+
+	RunningLengthWord<uword> rlw( buffer[lastRLW] );
+	if ( rlw.getNumberOfLiteralWords() > 0 )
+	{
+		// Consume trailing zeroes of trailing literal word (past sizeinbits)
+		size_t remain = sizeinbits % wordinbits;
+		if ( remain > 0 )	// Is last word partial?
+		{
+			size_t avail = wordinbits - remain;
+			if ( avail > 0 )
+			{
+				if ( missingbits > avail ) {
+					missingbits -= avail;
+				} else {
+					missingbits = 0;
+				}
+				sizeinbits += avail;
+			}
+		}
+	}
+
+	if ( missingbits > 0 )
+	{
+		size_t wordstoadd = missingbits / wordinbits;
+		if ( (missingbits % wordinbits) != 0)
+			++wordstoadd;
+
+		wordsadded = addStreamOfEmptyWords( false, wordstoadd );
+	}
+
     assert(sizeinbits >= totalbits);
     assert(sizeinbits <= totalbits + wordinbits);
     sizeinbits = totalbits;
@@ -1224,6 +1255,7 @@ size_t EWAHBoolArray<uword>::addStreamOfDirtyWords(const uword * v,
     const size_t oldsize(buffer.size());
     buffer.resize(oldsize + whatwecanadd);
     memcpy(&buffer[oldsize], v, whatwecanadd * sizeof(uword));
+	sizeinbits += whatwecanadd * wordinbits;
     size_t wordsadded(whatwecanadd);
     if (leftovernumber > 0) {
         //add

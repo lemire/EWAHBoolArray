@@ -521,6 +521,108 @@ bool testEWAHBoolArrayLogical() {
     return isOk;
 }
 
+#define N_ENTRIES(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+template<class uword>
+void init( EWAHBoolArray<uword>& ba, size_t N, size_t x[] ) 
+{
+	for ( size_t ix= 0; ix < N; ++ix )
+		ba.set( x[ix] );
+}
+
+
+template<class uword>
+std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba ) 
+{
+	os << " (" << ba.sizeInBits() << ") ";
+	typename EWAHBoolArray<uword>::const_iterator it = ba.begin(), last = ba.end();
+	for ( int ix = 0; it != last; ++it, ++ix ) {
+		if ( ix > 0 )
+			os << ", ";
+		os << *it;
+	}
+	os << endl;
+
+	size_t ixBit = 0;
+	const uword wordInBits = EWAHBoolArray<uword>::wordinbits;
+
+	EWAHBoolArrayRawIterator<uword> ir = ba.raw_iterator();
+    for ( int jx = 0; ir.hasNext(); ++jx ) 
+	{
+		BufferedRunningLengthWord<uword> &brlw( ir.next() );
+		string tf = ( brlw.getRunningBit() ? "true" : "false" );
+		size_t runBits = static_cast<size_t>( brlw.getRunningLength() * wordInBits );
+		size_t litBits = static_cast<size_t>( brlw.getNumberOfLiteralWords() * wordInBits );
+		os << jx << ", " << ixBit << ": " 
+			<< tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
+			<< brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
+		ixBit += (runBits + litBits);
+    }
+	string eq = ( ixBit == ba.sizeInBits() ? "==" : "!=" );
+	os << "[" << ixBit << eq << ba.sizeInBits() << "]" << endl;
+	return os;
+}
+
+template<class uword>
+bool testEWAHBoolArrayLogical2() 
+{
+	bool ok = true;
+    cout << "[testing EWAHBoolArrayLogical2]" << endl;
+
+	EWAHBoolArray<uword> ba1, ba2, baAND, baOR, testAND, testOR;
+
+	size_t x1[] = { 1, 3, 24, 54, 145, 3001, 3002, 3004, 10003 };
+    size_t x2[] = { 2, 3, 22, 57, 199, 3000, 3002, 10003, 999999 };
+	size_t x1_AND_x2[] = { 3, 3002, 10003 };
+	size_t x1_OR_x2[] = { 1, 2, 3, 22, 24, 54, 57, 145, 199, 3000, 3001, 3002, 3004, 10003, 999999 };
+
+	init( ba1, N_ENTRIES(x1), x1 );
+	init( ba2, N_ENTRIES(x2), x2 );
+	init( baAND, N_ENTRIES(x1_AND_x2), x1_AND_x2 );
+	init( baOR, N_ENTRIES(x1_OR_x2), x1_OR_x2 );
+
+	// Make 'em all the same size in bits, so equality operators should work.
+	ba1.makeSameSize( ba2 );
+	baAND.makeSameSize( ba2 );
+	baOR.makeSameSize( ba2 );
+
+	ba1.logicaland( ba2, testAND );
+	ba1.logicalor( ba2, testOR );
+
+	if ( baAND != testAND ) {
+		cout << " AND failed:" << endl;
+		cout << "Expected: " << baAND << endl;
+		cout << "Encountered: " << testAND << endl;
+		ok = false;
+	}
+	if ( baOR != testOR ) {
+		cout << " OR failed: " << endl;
+		cout << "Expected: " << baOR << endl;
+		cout << "Encountered: " << testOR << endl;
+		ok = false;
+	}
+
+	// Verify order of operands has no effect on results
+	ba2.logicaland( ba1, testAND );
+	ba2.logicalor( ba1, testOR );
+
+	if ( baAND != testAND ) {
+		cout << " AND failed (2):" << endl;
+		cout << "Expected: " << baAND << endl;
+		cout << "Encountered: " << testAND << endl;
+		ok = false;
+	}
+	if ( baOR != testOR ) {
+		cout << " OR failed (2): " << endl;
+		cout << "Expected: " << baOR << endl;
+		cout << "Encountered: " << testOR << endl;
+		ok = false;
+	}
+    if ( !ok )
+        cout << testfailed << endl;
+    return ok;
+}
+
 void tellmeaboutmachine() {
     cout << "number of bytes in ostream::pos_type = "
             << sizeof(ostream::pos_type) << endl;
@@ -597,6 +699,13 @@ int main(void) {
     if (!testEWAHBoolArrayLogical<uint32_t> ())
         ++failures;
     if (!testEWAHBoolArrayLogical<uint64_t> ())
+        ++failures;
+
+    if (!testEWAHBoolArrayLogical2<uint16_t> ())
+        ++failures;
+    if (!testEWAHBoolArrayLogical2<uint32_t> ())
+        ++failures;
+    if (!testEWAHBoolArrayLogical2<uint64_t> ())
         ++failures;
 
     if (!testEWAHBoolArrayAppend<uint16_t> ())

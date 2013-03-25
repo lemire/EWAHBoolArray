@@ -46,6 +46,11 @@ public:
      * Auto-expands the bitmap. It has constant running time complexity.
      * Note that you must set the bits in increasing order:
      * set(1), set(2) is ok; set(2), set(1) is not ok.
+     * set(100), set(100) is also not ok.
+     *
+     * Note: by design EWAH is not an updatable data structure in 
+     * the sense that once bit 1000 is set, you cannot change the value
+     * of bits 0 to 1000.  
      */
     void set(size_t i);
 

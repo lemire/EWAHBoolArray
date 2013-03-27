@@ -1,7 +1,7 @@
 
 /**
  * This is just a more "practical" example that illustrates how
- * to index a table using a bitmap. It is based off a piece of
+ * to index a table using a bitmap. It is based of a piece of
  * code by Kelly Sommers.
  */
 

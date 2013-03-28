@@ -3,6 +3,8 @@
  * Apache License Version 2.0 http://www.apache.org/licenses/.
  *
  * (c) Daniel Lemire, http://lemire.me/en/
+ *
+ * Some code from the public domain tuklib.
  */
 
 #ifndef EWAHUTIL_H
@@ -45,6 +47,113 @@ typedef unsigned long long uint64_t;
 #endif
 
 
+
+
+
+
+
+static inline uint32_t
+ctz32(uint32_t n)
+{
+#if defined(__INTEL_COMPILER)
+	return _bit_scan_forward(n);
+
+#elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
+	return __builtin_ctz(n);
+
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+	uint32_t i;
+	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
+	return i;
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+	uint32_t i;
+	_BitScanForward((DWORD *)&i, n);
+	return i;
+
+#else
+	uint32_t i = 0;
+
+	if ((n & UINT32_C(0x0000FFFF)) == 0) {
+		n >>= 16;
+		i = 16;
+	}
+
+	if ((n & UINT32_C(0x000000FF)) == 0) {
+		n >>= 8;
+		i += 8;
+	}
+
+	if ((n & UINT32_C(0x0000000F)) == 0) {
+		n >>= 4;
+		i += 4;
+	}
+
+	if ((n & UINT32_C(0x00000003)) == 0) {
+		n >>= 2;
+		i += 2;
+	}
+
+	if ((n & UINT32_C(0x00000001)) == 0)
+		++i;
+
+	return i;
+#endif
+}
+
+
+static inline uint32_t
+ctz16(uint16_t n)
+{
+#if defined(__INTEL_COMPILER)
+	return _bit_scan_forward(n);
+
+#elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
+	return __builtin_ctz(n);
+
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+	uint32_t i;
+	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
+	return i;
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+	uint32_t i;
+	_BitScanForward((DWORD *)&i, n);
+	return i;
+
+#else
+	uint32_t i = 0;
+
+	if ((n & UINT16_C(0x0000FFFF)) == 0) {
+		n >>= 16;
+		i = 16;
+	}
+
+	if ((n & UINT16_C(0x000000FF)) == 0) {
+		n >>= 8;
+		i += 8;
+	}
+
+	if ((n & UINT16_C(0x0000000F)) == 0) {
+		n >>= 4;
+		i += 4;
+	}
+
+	if ((n & UINT16_C(0x00000003)) == 0) {
+		n >>= 2;
+		i += 2;
+	}
+
+	if ((n & UINT16_C(0x00000001)) == 0)
+		++i;
+
+	return i;
+#endif
+}
+
+
+
+
 #ifdef __GNUG__
 /**
  * count the number of bits set to one (32 bit version)
@@ -74,68 +183,26 @@ uint32_t countOnes(uint64_t v) {
 uint32_t countOnes(uint16_t v) {
     return countOnes(static_cast<uint32_t>(v));
 }
-#ifdef __GNUG__
-int numberOfTrailingZeros(uint32_t x) {
-    if (x == 0) return 32;
-    return __builtin_ctz(x);// specific to GCC
-}
-#else
-int numberOfTrailingZeros(uint32_t v) {
-	if(v == 0) return 32;
-    int c = 1;
-    if ((v & 0xffff) == 0) {  
-      v >>= 16;  
-      c += 16;
-    }
-    if ((v & 0xff) == 0) {  
-      v >>= 8;  
-      c += 8;
-    }
-    if ((v & 0xf) == 0) {  
-      v >>= 4;
-      c += 4;
-    }
-    if ((v & 0x3) == 0) {  
-      v >>= 2;
-      c += 2;
-    }
-    c -= v & 0x1;
-    return c;
-}	
-#endif
 
-int numberOfTrailingZeros(uint64_t x) {
+
+uint32_t numberOfTrailingZeros(uint32_t x) {
+    if (x == 0) return 32;
+    return ctz32(x);
+}
+
+
+uint32_t numberOfTrailingZeros(uint64_t x) {
     if(static_cast<uint32_t> (x)!= 0) {
         return numberOfTrailingZeros(static_cast<uint32_t> (x));
     }
     else return 32+numberOfTrailingZeros(static_cast<uint32_t> (x >> 32));
 }
 
-#ifdef __GNUG__
-int numberOfTrailingZeros(uint16_t x) {
+uint32_t numberOfTrailingZeros(uint16_t x) {
     if (x == 0) return 16;
-    return __builtin_ctz(x);// specific to GCC
+    return ctz16(x);
 }
-#else
-int numberOfTrailingZeros(uint16_t v) {
-  if(v == 0) return 16;
-  int c = 1;
-  if ((v & 0xff) == 0) {  
-      v >>= 8;  
-      c += 8;
-  }
-  if ((v & 0xf) == 0) {  
-      v >>= 4;
-      c += 4;
-  }
-  if ((v & 0x3) == 0) {  
-      v >>= 2;
-      c += 2;
-  }
-  c -= v & 0x1;
-  return c;
-}
-#endif
+
 
 /**
  * Returns the binary representation of a binary word.

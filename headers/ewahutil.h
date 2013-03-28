@@ -59,7 +59,7 @@ static inline uint32_t ctz32(uint32_t n) {
 
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
 	uint32_t i;
-	_BitScanForward((DWORD *)&i, n);
+	_BitScanForward(&i, n);
 	return i;
 
 #else
@@ -107,7 +107,7 @@ static inline uint32_t ctz16(uint16_t n) {
 
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
 	uint32_t i;
-	_BitScanForward((DWORD *)&i, n);
+	_BitScanForward(&i, n);
 	return i;
 
 #else

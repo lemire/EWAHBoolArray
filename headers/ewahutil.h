@@ -11,15 +11,33 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iso646.h> // mostly for Microsoft compilers
-
+#include <limits.h>
 
 
 #if defined __UINT32_MAX__ or UINT32_MAX
 #include <inttypes.h>
 #else
+#if UCHAR_MAX == 0xffff
+typedef unsigned char uint16_t;
+#elif USHRT_MAX == 0xffff
 typedef unsigned short uint16_t;
+#elif UINT_MAX == 0xffff
+typedef unsigned int uint16_t;
+#endif
+#if UINT_MAX == 0xffffffff
+typedef unsigned int uint32_t;
+#elif USHRT_MAX == 0xffffffff
+typedef unsigned short uint32_t;
+#elif ULONG_MAX == 0xffffffff
 typedef unsigned long uint32_t;
+#endif
+#if ULONG_LONG_MAX == 0xffffffffffffffff
 typedef unsigned long long uint64_t;
+#elif UINT_MAX == 0xffffffffffffffff
+typedef unsigned int uint64_t;
+#elif ULONG_MAX == 0xffffffffffffffff
+typedef unsigned long uint64_t;
+#endif
 #endif
 #include <cassert>
 #include <iostream>

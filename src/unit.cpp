@@ -23,7 +23,7 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
 template<class uword>
 bool testSetGet() {
-    cout << "[testing EWAH set/get]"<<endl;
+    cout << "[testing EWAH set/get] sizeof(uword)="<<sizeof(uword)<<endl;
     EWAHBoolArray<uword> ewcb;
     uint32_t val[] = { 5, 4400, 44600, 55400, 1000000 };
     for (int k = 0; k < 5; ++k) {

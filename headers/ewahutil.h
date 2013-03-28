@@ -16,31 +16,6 @@
 #include <limits.h>
 #include <stdint.h> // part of Visual Studio 2010 and better
 
-//#if defined __UINT32_MAX__ or UINT32_MAX
-//#include <inttypes.h>
-//#else
-//#if UCHAR_MAX == 0xffff
-//typedef unsigned char uint16_t;
-//#elif USHRT_MAX == 0xffff
-//typedef unsigned short uint16_t;
-//#elif UINT_MAX == 0xffff
-//typedef unsigned int uint16_t;
-//#endif
-//#if UINT_MAX == 0xffffffff
-//typedef unsigned int uint32_t;
-//#elif USHRT_MAX == 0xffffffff
-//typedef unsigned short uint32_t;
-//#elif ULONG_MAX == 0xffffffff
-//typedef unsigned long uint32_t;
-//#endif
-//#if ULONG_LONG_MAX == 0xffffffffffffffff
-//typedef unsigned long long uint64_t;
-//#elif UINT_MAX == 0xffffffffffffffff
-//typedef unsigned int uint64_t;
-//#elif ULONG_MAX == 0xffffffffffffffff
-//typedef unsigned long uint64_t;
-//#endif
-//#endif
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -70,9 +45,7 @@
 
 
 
-static inline uint32_t
-ctz32(uint32_t n)
-{
+static inline uint32_t ctz32(uint32_t n) {
 #if defined(__INTEL_COMPILER)
 	return _bit_scan_forward(n);
 
@@ -120,9 +93,7 @@ ctz32(uint32_t n)
 }
 
 
-static inline uint32_t
-ctz16(uint16_t n)
-{
+static inline uint32_t ctz16(uint16_t n) {
 #if defined(__INTEL_COMPILER)
 	return _bit_scan_forward(n);
 

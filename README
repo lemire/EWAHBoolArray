@@ -54,7 +54,9 @@ Or you can use the "swap" method.
 
 == Dependencies ==
 
-None. (Will work under MacOS or Linux easily.)
+None. (Will work under MacOS, Windows or Linux easily.)
+
+Compilers tested: clang++, g++, Intel compiler, Microsoft Visual Studio
 
 == Usage ==
 

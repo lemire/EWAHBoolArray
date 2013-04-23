@@ -1,5 +1,5 @@
 /**
- * This is code is released under the
+ * This code is released under the
  * Apache License Version 2.0 http://www.apache.org/licenses/.
  *
  * (c) Daniel Lemire, http://lemire.me/en/
@@ -48,9 +48,9 @@ public:
      * set(1), set(2) is ok; set(2), set(1) is not ok.
      * set(100), set(100) is also not ok.
      *
-     * Note: by design EWAH is not an updatable data structure in 
+     * Note: by design EWAH is not an updatable data structure in
      * the sense that once bit 1000 is set, you cannot change the value
-     * of bits 0 to 1000.  
+     * of bits 0 to 1000.
      */
     void set(size_t i);
 
@@ -335,7 +335,7 @@ public:
 
     /**
      * This is equivalent to the operator =. It is used
-     * to keep in mind that assignment can be expensive. 
+     * to keep in mind that assignment can be expensive.
      *
      *if you don't care to copy the bitmap (performance-wise), use this!
      */

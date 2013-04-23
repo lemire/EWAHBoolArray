@@ -1,5 +1,5 @@
 /**
- * This is code is released under the
+ * This code is released under the
  * Apache License Version 2.0 http://www.apache.org/licenses/.
  *
  * (c) Daniel Lemire, http://lemire.me/en/
@@ -524,7 +524,7 @@ bool testEWAHBoolArrayLogical() {
 #define N_ENTRIES(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 template<class uword>
-void init( EWAHBoolArray<uword>& ba, size_t N, size_t x[] ) 
+void init( EWAHBoolArray<uword>& ba, size_t N, size_t x[] )
 {
 	for ( size_t ix= 0; ix < N; ++ix )
 		ba.set( x[ix] );
@@ -532,7 +532,7 @@ void init( EWAHBoolArray<uword>& ba, size_t N, size_t x[] )
 
 
 template<class uword>
-std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba ) 
+std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba )
 {
 	os << " (" << ba.sizeInBits() << ") ";
 	typename EWAHBoolArray<uword>::const_iterator it = ba.begin(), last = ba.end();
@@ -547,13 +547,13 @@ std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba )
 	const uword wordInBits = EWAHBoolArray<uword>::wordinbits;
 
 	EWAHBoolArrayRawIterator<uword> ir = ba.raw_iterator();
-    for ( int jx = 0; ir.hasNext(); ++jx ) 
+    for ( int jx = 0; ir.hasNext(); ++jx )
 	{
 		BufferedRunningLengthWord<uword> &brlw( ir.next() );
 		string tf = ( brlw.getRunningBit() ? "true" : "false" );
 		size_t runBits = static_cast<size_t>( brlw.getRunningLength() * wordInBits );
 		size_t litBits = static_cast<size_t>( brlw.getNumberOfLiteralWords() * wordInBits );
-		os << jx << ", " << ixBit << ": " 
+		os << jx << ", " << ixBit << ": "
 			<< tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
 			<< brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
 		ixBit += (runBits + litBits);
@@ -564,7 +564,7 @@ std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba )
 }
 
 template<class uword>
-bool testEWAHBoolArrayLogical2() 
+bool testEWAHBoolArrayLogical2()
 {
 	bool ok = true;
     cout << "[testing EWAHBoolArrayLogical2]" << endl;

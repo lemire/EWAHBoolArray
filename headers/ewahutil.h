@@ -143,7 +143,7 @@ static inline uint32_t ctz16(uint16_t n) {
 
 
 
-#ifdef __GNUG__
+#ifdef __GNUC__
 /**
  * count the number of bits set to one (32 bit version)
  */

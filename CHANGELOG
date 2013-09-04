@@ -1,3 +1,15 @@
+0.3.8 (September 4th, 2013)
+  The set method now returns a bool indicating whether the
+  bit was set. This allows you to try and set the bits in 
+  a non-strictly-increasing order (though only bits where 
+  the return value is true will be set). If your code sets 
+  the bits in strictly increasing order, the return value of
+  the set method should always be true.
+
+0.3.7 (March 29th, 2013)
+  Fixed issues with Visual Studio (the portability of the code
+  was improved).
+
 0.3.6 (January 22nd, 2012)
   Resolved issue 'logical operations do not always set trailing run length correctly'
   submitted by  creitzel@rcn.com with patch from  creitzel@rcn.com. (Issue #4)

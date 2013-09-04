@@ -20,6 +20,22 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #define unlink _unlink
 #endif
 
+template<class uword>
+bool testLucaDeri() {
+    cout << "[testing LucaDeri] sizeof(uword)="<<sizeof(uword)<<endl;
+    bool isOk = true;
+    EWAHBoolArray<uword> bitset1;
+    bitset1.set(1);
+    bitset1.set(2);
+    bitset1.set(2);
+    bitset1.set(1000);
+    bitset1.set(1001);
+    if(bitset1.numberOfOnes() != 4) {
+    	cout << "Failed LucaDeri test"<<endl;
+    	isOk = false;
+    }
+    return isOk;
+}
 
 template<class uword>
 bool testSetGet() {
@@ -649,6 +665,13 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+
+    if (!testLucaDeri<uint16_t> ())
+        ++failures;
+    if (!testLucaDeri<uint32_t> ())
+        ++failures;
+    if (!testLucaDeri<uint64_t> ())
+        ++failures;
 
     if (!testSetGet<uint16_t> ())
         ++failures;

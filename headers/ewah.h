@@ -42,7 +42,7 @@ public:
     }
 
     /**
-     * set the ith bit to true (starting at zero).
+     * Set the ith bit to true (starting at zero).
      * Auto-expands the bitmap. It has constant running time complexity.
      * Note that you must set the bits in increasing order:
      * set(1), set(2) is ok; set(2), set(1) is not ok.
@@ -51,8 +51,12 @@ public:
      * Note: by design EWAH is not an updatable data structure in
      * the sense that once bit 1000 is set, you cannot change the value
      * of bits 0 to 1000.
+     *
+     * Returns true if the value of the bit was changed, and false otherwise.
+     * (In practice, if you set the bits in strictly increasing order, it
+     * should always return true.)
      */
-    void set(size_t i);
+    bool set(size_t i);
 
     /**
      * Make sure the two bitmaps have the same size (padding with zeroes
@@ -668,8 +672,8 @@ public:
 };
 
 template<class uword>
-void EWAHBoolArray<uword>::set(size_t i) {
-    assert(i >= sizeinbits);
+bool EWAHBoolArray<uword>::set(size_t i) {
+    if(i < sizeinbits) return false;
     const size_t dist = (i + wordinbits) / wordinbits - (sizeinbits
             + wordinbits - 1) / wordinbits;
     sizeinbits = i + 1;
@@ -677,7 +681,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
         if(dist>1) fastaddStreamOfEmptyWords(false, dist - 1);
         addLiteralWord(
                 static_cast<uword> (static_cast<uword> (1) << (i % wordinbits)));
-        return;
+        return true;
     }
     RunningLengthWord<uword> lastRunningLengthWord(buffer[lastRLW]);
     if (lastRunningLengthWord.getNumberOfLiteralWords() == 0) {
@@ -686,7 +690,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
                         - 1));
         addLiteralWord(
                 static_cast<uword> (static_cast<uword> (1) << (i % wordinbits)));
-        return;
+        return true;
     }
     buffer[buffer.size() - 1] |= static_cast<uword> (static_cast<uword> (1)
             << (i % wordinbits));
@@ -701,7 +705,7 @@ void EWAHBoolArray<uword>::set(size_t i) {
         // next we add one clean word
         addEmptyWord(true);
     }
-    return;
+    return true;
 }
 
 template<class uword>

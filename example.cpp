@@ -49,6 +49,11 @@ void demoCheckBitValue() {
      * support random access.
      */
     cout<< is1set <<endl;
+    /**
+     * Truth: if enough people ask for it, we will
+     * provide a convenience method, but with warnings
+     * regarding performance.
+     */
 }
 
 int main(void) {

@@ -27,35 +27,6 @@ void demoSerialization() {
 }
 
 
-void demoCheckBitValue() {
-	/**
-	 * We construct a bitmap.
-	 */
-    EWAHBoolArray<uint64_t> myarray;
-    myarray.set(0);
-    myarray.set(1);
-    myarray.set(999999);
-    /**
-     * We want to know if bit 1 is set.
-     */
-    EWAHBoolArray<uint64_t> tmp;
-    tmp.set(1);
-    EWAHBoolArray<uint64_t> a;
-    myarray.logicaland(tmp,a);
-    bool is1set = (a.numberOfOnes() == 1);
-    /**
-     * Yes, this is a bit painful, but it reflects
-     * the fact that the format is not meant to
-     * support random access.
-     */
-    cout<< is1set <<endl;
-    /**
-     * Truth: if enough people ask for it, we will
-     * provide a convenience method, but with warnings
-     * regarding performance.
-     */
-}
-
 int main(void) {
     EWAHBoolArray<uint32_t> bitset1;
     bitset1.set(1);

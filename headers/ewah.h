@@ -42,6 +42,36 @@ public:
     }
 
     /**
+     * Query the value of bit i. This runs in time proportional to
+     * the size of the bitmap. This is not meant to be use in
+     * a performance-sensitive context.
+     *
+     *  (This implementation is based on zhenjl's Go version of JavaEWAH.)
+     *
+     */
+    bool get(const size_t pos) const {
+        if ( pos >= sizeinbits )
+                return false;
+        const size_t wordpos = pos / wordinbits;
+        size_t WordChecked = 0;
+        EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+        while(j.hasNext()) {
+        	BufferedRunningLengthWord<uword> & rle = j.next();
+        	WordChecked += rle.getRunningLength();
+
+        	if(wordpos < WordChecked)
+        		return rle.getRunningBit();
+        	if(wordpos < WordChecked + rle.getNumberOfLiteralWords() ) {
+        		const uword w = j.dirtyWords()[wordpos - WordChecked];
+                return (w & (static_cast<uword>(1) << (pos % wordinbits))) != 0;
+        	}
+        	WordChecked += rle.getNumberOfLiteralWords();
+        }
+        return false;
+      }
+
+
+    /**
      * Set the ith bit to true (starting at zero).
      * Auto-expands the bitmap. It has constant running time complexity.
      * Note that you must set the bits in increasing order:

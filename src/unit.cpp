@@ -20,6 +20,34 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #define unlink _unlink
 #endif
 
+
+template<class uword>
+bool testGet() {
+	cout << "[testing Get] sizeof(uword)=" << sizeof(uword) << endl;
+	bool isOk = true;
+
+	for (size_t gap = 29; gap < 10000; gap *= 10) {
+		EWAHBoolArray<uword> x;
+		for (int k = 0; k < 100; ++k)
+			x.set(k * gap);
+		for (size_t k = 0; k < 100 * gap; ++k)
+			if (x.get(k)) {
+				if (k % gap != 0) {
+					cout << "spotted an extra set bit at " << k << " gap = "
+							<< gap << endl;
+					return false;
+			}
+		} else if (k % gap == 0) {
+			cout<<
+			"missed a set bit " << k
+			<< " gap = " << gap<<endl;
+			return false;
+		}
+	}
+	return isOk;
+}
+
+
 template<class uword>
 bool testLucaDeri() {
     cout << "[testing LucaDeri] sizeof(uword)="<<sizeof(uword)<<endl;
@@ -665,6 +693,13 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+
+    if (!testGet<uint16_t> ())
+        ++failures;
+    if (!testGet<uint32_t> ())
+        ++failures;
+    if (!testGet<uint64_t> ())
+        ++failures;
 
     if (!testLucaDeri<uint16_t> ())
         ++failures;

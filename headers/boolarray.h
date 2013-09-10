@@ -18,9 +18,8 @@ using namespace std;
 
 /**
  * A dynamic bitset implementation. (without compression).
- * This is not tremendously useful, but it is provided as a reference.
  */
-template<class uword>
+template<class uword = uint32_t>
 class BoolArray {
 public:
     BoolArray(const size_t n, const uword initval = 0) :
@@ -181,6 +180,20 @@ public:
         wordinbits = sizeof(uword) * 8
     };
 
+    vector<uint32_t> toArray() const {
+		vector<uint32_t> ans;
+		size_t pos = 0;
+		for (size_t k = 0; k < buffer.size(); ++k) {
+			const uword myword = buffer[k];
+			for (uint32_t offset = 0; offset < sizeof(uword) * 8; ++offset) {
+				if ((myword >> offset) == 0)
+					break;
+				offset += numberOfTrailingZeros((myword >> offset));
+				ans.push_back(sizeof(uword) * 8 * k + offset);
+			}
+		}
+		return ans;
+	}
 private:
     vector<uword> buffer;
     size_t sizeinbits;

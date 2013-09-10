@@ -13,7 +13,7 @@
  * a run length. It is defined by the Enhanced Word Aligned  Hybrid (EWAH)
  * format. You don't normally need to access this class.
  */
-template<class uword >
+template<class uword>
 class RunningLengthWord {
 public:
     RunningLengthWord(uword & data) :
@@ -164,7 +164,6 @@ public:
             static_cast<uword> (~largestrunninglengthcount);
 
     uword & mydata;
-private:
 };
 
 /**

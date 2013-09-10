@@ -1,3 +1,6 @@
+0.3.9 (September 10th, 2013)
+  Added a few "inline" attributes.
+
 0.3.8 (September 4th, 2013)
   The set method now returns a bool indicating whether the
   bit was set. This allows you to try and set the bits in 

@@ -58,7 +58,6 @@ public:
         while(j.hasNext()) {
         	BufferedRunningLengthWord<uword> & rle = j.next();
         	WordChecked += rle.getRunningLength();
-
         	if(wordpos < WordChecked)
         		return rle.getRunningBit();
         	if(wordpos < WordChecked + rle.getNumberOfLiteralWords() ) {
@@ -1563,8 +1562,8 @@ void EWAHBoolArray<uword>::debugprintout() const {
     while (pointer < buffer.size()) {
         ConstRunningLengthWord<uword> rlw(buffer[pointer]);
         bool b = rlw.getRunningBit();
-        uword rl = rlw.getRunningLength();
-        uword lw = rlw.getNumberOfLiteralWords();
+        const uword rl = rlw.getRunningLength();
+        const uword lw = rlw.getNumberOfLiteralWords();
         cout << "pointer = " << pointer << " running bit=" << b
                 << " running length=" << rl << " lit. words=" << lw << endl;
         for (uword j = 0; j < lw; ++j) {

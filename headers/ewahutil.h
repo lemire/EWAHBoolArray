@@ -147,11 +147,11 @@ static inline uint32_t ctz16(uint16_t n) {
 /**
  * count the number of bits set to one (32 bit version)
  */
-uint32_t countOnes(uint32_t x) {
+inline uint32_t countOnes(uint32_t x) {
     return static_cast<uint32_t>(__builtin_popcount(x));
 }
 #else
-uint32_t countOnes(uint32_t x) {
+inline uint32_t countOnes(uint32_t x) {
   uint32_t c; // c accumulates the total bits set in v
   for (c = 0; x; c++) {
      x &= x - 1; // clear the least significant bit set
@@ -164,30 +164,30 @@ uint32_t countOnes(uint32_t x) {
 /**
  * count the number of bits set to one (64 bit version)
  */
-uint32_t countOnes(uint64_t v) {
+inline uint32_t countOnes(uint64_t v) {
     return countOnes(static_cast<uint32_t> (v)) + countOnes(
             static_cast<uint32_t> (v >> 32));
 }
 
-uint32_t countOnes(uint16_t v) {
+inline uint32_t countOnes(uint16_t v) {
     return countOnes(static_cast<uint32_t>(v));
 }
 
 
-uint32_t numberOfTrailingZeros(uint32_t x) {
+inline uint32_t numberOfTrailingZeros(uint32_t x) {
     if (x == 0) return 32;
     return ctz32(x);
 }
 
 
-uint32_t numberOfTrailingZeros(uint64_t x) {
+inline uint32_t numberOfTrailingZeros(uint64_t x) {
     if(static_cast<uint32_t> (x)!= 0) {
         return numberOfTrailingZeros(static_cast<uint32_t> (x));
     }
     else return 32+numberOfTrailingZeros(static_cast<uint32_t> (x >> 32));
 }
 
-uint32_t numberOfTrailingZeros(uint16_t x) {
+inline uint32_t numberOfTrailingZeros(uint16_t x) {
     if (x == 0) return 16;
     return ctz16(x);
 }

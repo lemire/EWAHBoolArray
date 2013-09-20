@@ -50,7 +50,7 @@ public:
      *
      */
     bool get(const size_t pos) const {
-        if ( pos >= sizeinbits )
+        if ( pos >= static_cast<size_t>(sizeinbits) )
                 return false;
         const size_t wordpos = pos / wordinbits;
         size_t WordChecked = 0;

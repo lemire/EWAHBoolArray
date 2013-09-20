@@ -50,7 +50,7 @@ static inline uint32_t ctz32(uint32_t n) {
 	return _bit_scan_forward(n);
 
 #elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
-	return __builtin_ctz(n);
+	return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;
@@ -98,7 +98,7 @@ static inline uint32_t ctz16(uint16_t n) {
 	return _bit_scan_forward(n);
 
 #elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
-	return __builtin_ctz(n);
+	return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;

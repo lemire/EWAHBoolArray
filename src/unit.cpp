@@ -28,7 +28,7 @@ bool testGet() {
 
 	for (size_t gap = 29; gap < 10000; gap *= 10) {
 		EWAHBoolArray<uword> x;
-		for (int k = 0; k < 100; ++k)
+		for (uint32_t k = 0; k < 100; ++k)
 			x.set(k * gap);
 		for (size_t k = 0; k < 100 * gap; ++k)
 			if (x.get(k)) {

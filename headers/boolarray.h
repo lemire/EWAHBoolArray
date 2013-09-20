@@ -182,7 +182,6 @@ public:
 
     vector<uint32_t> toArray() const {
 		vector<uint32_t> ans;
-		size_t pos = 0;
 		for (size_t k = 0; k < buffer.size(); ++k) {
 			const uword myword = buffer[k];
 			for (uint32_t offset = 0; offset < sizeof(uword) * 8; ++offset) {

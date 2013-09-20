@@ -522,8 +522,8 @@ bool testEWAHBoolArrayLogical() {
     for (uint32_t k = 0; k < N; ++k) {
         myarray1.add(x1[k]);
         myarray2.add(x2[k]);
-        xand[k] = x1[k] & x2[k];
-        xxor[k] = x1[k] | x2[k];
+        xand[k] = static_cast<uword>(x1[k] & x2[k]);
+        xxor[k] = static_cast<uword>(x1[k] | x2[k]);
     }
     EWAHBoolArray<uword> myand;
     EWAHBoolArray<uword> myor;

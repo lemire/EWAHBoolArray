@@ -1,12 +1,12 @@
 VPATH = src:headers
 ifeq ($(DEBUG),1)
-CXXFLAGS=-Iheaders -O3 -ggdb -D_GLIBCXX_DEBUG -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wpointer-arith -Winit-self  
+CXXFLAGS=-Iheaders -O3 -ggdb -D_GLIBCXX_DEBUG -Wall -Wextra  -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wpointer-arith -Winit-self  
 else
-CXXFLAGS=-Iheaders -O3 -Wall -Wextra -Weffc++ -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wpointer-arith -Winit-self  
+CXXFLAGS=-Iheaders -O3 -Wall -Wextra  -Wconversion -Wshadow -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-overflow=5 -Wpointer-arith -Winit-self  
 endif
 HEADERS=ewah.h ewahutil.h boolarray.h runninglengthword.h
 
-all: unit unit32bits example benchmark
+all: unit  example benchmark
 
 unit32bits: $(HEADERS) unit.cpp
 	$(CXX) $(CXXFLAGS) -m32 -o unit32bits src/unit.cpp 

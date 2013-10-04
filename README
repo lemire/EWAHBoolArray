@@ -16,7 +16,7 @@ Update (May 20th, 2013): though by default I use the Apache License 2.0 (which i
 == Limitations ==
 
 Because of the compression type being used, you must set the bits
-in increasing order (no random access).
+in increasing order (no random access while creating the bitmaps).
 
 
 == Dependencies ==

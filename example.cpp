@@ -7,18 +7,50 @@
 #include <stdlib.h>
 #include "ewah.h"
 
+template<class bitmap>
+void demo() {
+	bitmap bitset1 = bitmap::bitmapOf(9   , 1, 2, 1000, 1001, 1002, 1003, 1007, 1009,
+			100000);
+	cout << "first bitset : " << bitset1 << endl;
+	bitmap bitset2 = bitmap::bitmapOf(5   , 1, 3, 1000, 1007, 100000);
+	cout << "second bitset : " << bitset2 << endl;
+	bitmap orbitset;
+	bitmap andbitset;
+	bitmap xorbitset;
+	bitset1.logicalor(bitset2, orbitset);
+	bitset1.logicaland(bitset2, andbitset);
+	bitset1.logicalxor(bitset2, xorbitset);
+	// we will display the or
+	cout << "logical and: " << andbitset << endl;
+	cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
+			<< " bytes" << endl;
+	// we will display the and
+	cout << "logical or: " << orbitset << endl;
+	cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
+			<< " bytes" << endl;
+	// we will display the xor
+	cout << "logical xor: " << xorbitset << endl;
+	cout << "memory usage of compressed bitset = " << xorbitset.sizeInBytes()
+			<< " bytes" << endl;
+	cout << endl;
+}
+
+
+template<class bitmap>
 void demoSerialization() {
     stringstream ss;
-    EWAHBoolArray<uint64_t> myarray;
-    myarray.add(234321);
+    bitmap myarray;
+    myarray.add(234321);// this is not the same as "set(234321)"!!!
     myarray.add(0);
     myarray.add(0);
     myarray.add(999999);
     //
+    cout<<"Writing: "<<myarray<<endl;
     myarray.write(ss);
     //
-    EWAHBoolArray<uint64_t> lmyarray;
+    bitmap lmyarray;
     lmyarray.read(ss);
+    cout<<"Read back: "<<lmyarray<<endl;
     //
     if (lmyarray == myarray)
         cout << "serialization works" << endl;
@@ -28,55 +60,16 @@ void demoSerialization() {
 
 
 int main(void) {
-    EWAHBoolArray<uint32_t> bitset1;
-    bitset1.set(1);
-    bitset1.set(2);
-    bitset1.set(1000);
-    bitset1.set(1001);
-    bitset1.set(1002);
-    bitset1.set(1003);
-    bitset1.set(1007);
-    bitset1.set(1009);
-    bitset1.set(100000);
-    cout << "first bitset : " << endl;
-    for (EWAHBoolArray<uint32_t>::const_iterator i = bitset1.begin(); i
-            != bitset1.end(); ++i)
-        cout << *i << endl;
-    cout << endl;
-    EWAHBoolArray<uint32_t> bitset2;
-    bitset2.set(1);
-    bitset2.set(3);
-    bitset2.set(1000);
-    bitset2.set(1007);
-    bitset2.set(100000);
-    cout << "second bitset : " << endl;
-    for (EWAHBoolArray<uint32_t>::const_iterator i = bitset2.begin(); i
-            != bitset2.end(); ++i)
-        cout << *i << endl;
-    cout << endl;
-    EWAHBoolArray<uint32_t> orbitset;
-    EWAHBoolArray<uint32_t> andbitset;
-    bitset1.logicalor(bitset2, orbitset);
-    bitset1.logicaland(bitset2, andbitset);
-    // we will display the or
-    cout << "logical and: " << endl;
-    for (EWAHBoolArray<uint32_t>::const_iterator i = andbitset.begin(); i
-            != andbitset.end(); ++i)
-        cout << *i << endl;
-    cout << endl;
-    cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
-            << " bytes" << endl;
-    cout << endl;
-    // we will display the and
-    cout << "logical or: " << endl;
-    for (EWAHBoolArray<uint32_t>::const_iterator i = orbitset.begin(); i
-            != orbitset.end(); ++i)
-        cout << *i << endl;
-    cout << endl;
-    cout << endl;
-    cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
-            << " bytes" << endl;
-    cout << endl;
-    demoSerialization();
+	cout<<endl;
+	cout<<"====uncompressed example===="<<endl;
+	cout<<endl;
+	demo<BoolArray<uint32_t> >();
+	demoSerialization<BoolArray<uint32_t> >();
+
+	cout<<endl;
+	cout<<"====compressed example===="<<endl;
+	cout<<endl;
+	demo<EWAHBoolArray<uint32_t> >();
+	demoSerialization<EWAHBoolArray<uint32_t> >();
     return EXIT_SUCCESS;
 }

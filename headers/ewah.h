@@ -68,14 +68,14 @@ public:
         EWAHBoolArrayRawIterator<uword> j = raw_iterator();
         while(j.hasNext()) {
         	BufferedRunningLengthWord<uword> & rle = j.next();
-        	WordChecked += rle.getRunningLength();
+        	WordChecked += static_cast<size_t>( rle.getRunningLength());
         	if(wordpos < WordChecked)
         		return rle.getRunningBit();
         	if(wordpos < WordChecked + rle.getNumberOfLiteralWords() ) {
         		const uword w = j.dirtyWords()[wordpos - WordChecked];
                 return (w & (static_cast<uword>(1) << (pos % wordinbits))) != 0;
         	}
-        	WordChecked += rle.getNumberOfLiteralWords();
+        	WordChecked += static_cast<size_t>(rle.getNumberOfLiteralWords());
         }
         return false;
       }
@@ -805,7 +805,7 @@ size_t EWAHBoolArray<uword>::numberOfOnes() const {
     while (pointer < buffer.size()) {
         ConstRunningLengthWord<uword> rlw(buffer[pointer]);
         if (rlw.getRunningBit()) {
-            tot += rlw.getRunningLength() * wordinbits;
+            tot += static_cast<size_t>(rlw.getRunningLength() * wordinbits);
         }
         ++pointer;
         for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
@@ -1468,7 +1468,7 @@ void EWAHBoolArray<uword>::logicalor(EWAHBoolArray &a, EWAHBoolArray &container)
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.add(idirty[k] | jdirty[k]);
+                container.add(static_cast<uword>(idirty[k] | jdirty[k]));
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }
@@ -1672,7 +1672,7 @@ void EWAHBoolArray<uword>::logicaland(EWAHBoolArray &a,
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.add(idirty[k] & jdirty[k]);
+                container.add(static_cast<uword>(idirty[k] & jdirty[k]));
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }

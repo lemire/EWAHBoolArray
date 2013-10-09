@@ -787,7 +787,7 @@ int main(void) {
 
     if (!testEWAHBoolArrayLogical<uint16_t> ())
         ++failures;
-/*    if (!testEWAHBoolArrayLogical<uint32_t> ())
+    if (!testEWAHBoolArrayLogical<uint32_t> ())
         ++failures;
     if (!testEWAHBoolArrayLogical<uint64_t> ())
         ++failures;
@@ -812,7 +812,7 @@ int main(void) {
         ++failures;
     if (!testJoergBukowski<uint64_t> ())
         ++failures;
-*/
+
     tellmeaboutmachine();
     if (failures == 0) {
         cout << "Your code is ok." << endl;

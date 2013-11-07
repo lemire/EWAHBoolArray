@@ -23,28 +23,28 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
 template<class uword>
 bool testGet() {
-	cout << "[testing Get] sizeof(uword)=" << sizeof(uword) << endl;
-	bool isOk = true;
+    cout << "[testing Get] sizeof(uword)=" << sizeof(uword) << endl;
+    bool isOk = true;
 
-	for (size_t gap = 29; gap < 10000; gap *= 10) {
-		EWAHBoolArray<uword> x;
-		for (uint32_t k = 0; k < 100; ++k)
-			x.set(k * gap);
-		for (size_t k = 0; k < 100 * gap; ++k)
-			if (x.get(k)) {
-				if (k % gap != 0) {
-					cout << "spotted an extra set bit at " << k << " gap = "
-							<< gap << endl;
-					return false;
-			}
-		} else if (k % gap == 0) {
-			cout<<
-			"missed a set bit " << k
-			<< " gap = " << gap<<endl;
-			return false;
-		}
-	}
-	return isOk;
+    for (size_t gap = 29; gap < 10000; gap *= 10) {
+        EWAHBoolArray<uword> x;
+        for (uint32_t k = 0; k < 100; ++k)
+            x.set(k * gap);
+        for (size_t k = 0; k < 100 * gap; ++k)
+            if (x.get(k)) {
+                if (k % gap != 0) {
+                    cout << "spotted an extra set bit at " << k << " gap = "
+                            << gap << endl;
+                    return false;
+            }
+        } else if (k % gap == 0) {
+            cout<<
+            "missed a set bit " << k
+            << " gap = " << gap<<endl;
+            return false;
+        }
+    }
+    return isOk;
 }
 
 
@@ -59,8 +59,8 @@ bool testLucaDeri() {
     bitset1.set(1000);
     bitset1.set(1001);
     if(bitset1.numberOfOnes() != 4) {
-    	cout << "Failed LucaDeri test"<<endl;
-    	isOk = false;
+        cout << "Failed LucaDeri test"<<endl;
+        isOk = false;
     }
     return isOk;
 }
@@ -584,114 +584,141 @@ bool testEWAHBoolArrayLogical() {
 template<class uword>
 void init( EWAHBoolArray<uword>& ba, size_t N, size_t x[] )
 {
-	for ( size_t ix= 0; ix < N; ++ix )
-		ba.set( x[ix] );
+    for ( size_t ix= 0; ix < N; ++ix )
+        ba.set( x[ix] );
 }
 
 
 template<class uword>
 std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba )
 {
-	os << " (" << ba.sizeInBits() << ") ";
-	typename EWAHBoolArray<uword>::const_iterator it = ba.begin(), last = ba.end();
-	for ( int ix = 0; it != last; ++it, ++ix ) {
-		if ( ix > 0 )
-			os << ", ";
-		os << *it;
-	}
-	os << endl;
-
-	size_t ixBit = 0;
-	const uword wordInBits = EWAHBoolArray<uword>::wordinbits;
-
-	EWAHBoolArrayRawIterator<uword> ir = ba.raw_iterator();
-    for ( int jx = 0; ir.hasNext(); ++jx )
-	{
-		BufferedRunningLengthWord<uword> &brlw( ir.next() );
-		string tf = ( brlw.getRunningBit() ? "true" : "false" );
-		size_t runBits = static_cast<size_t>( brlw.getRunningLength() * wordInBits );
-		size_t litBits = static_cast<size_t>( brlw.getNumberOfLiteralWords() * wordInBits );
-		os << jx << ", " << ixBit << ": "
-			<< tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
-			<< brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
-		ixBit += (runBits + litBits);
+    os << " (" << ba.sizeInBits() << ") ";
+    typename EWAHBoolArray<uword>::const_iterator it = ba.begin(), last = ba.end();
+    for ( int ix = 0; it != last; ++it, ++ix ) {
+        if ( ix > 0 )
+            os << ", ";
+        os << *it;
     }
-	string eq = ( ixBit == ba.sizeInBits() ? "==" : "!=" );
-	os << "[" << ixBit << eq << ba.sizeInBits() << "]" << endl;
-	return os;
+    os << endl;
+
+    size_t ixBit = 0;
+    const uword wordInBits = EWAHBoolArray<uword>::wordinbits;
+
+    EWAHBoolArrayRawIterator<uword> ir = ba.raw_iterator();
+    for ( int jx = 0; ir.hasNext(); ++jx )
+    {
+        BufferedRunningLengthWord<uword> &brlw( ir.next() );
+        string tf = ( brlw.getRunningBit() ? "true" : "false" );
+        size_t runBits = static_cast<size_t>( brlw.getRunningLength() * wordInBits );
+        size_t litBits = static_cast<size_t>( brlw.getNumberOfLiteralWords() * wordInBits );
+        os << jx << ", " << ixBit << ": "
+            << tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
+            << brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
+        ixBit += (runBits + litBits);
+    }
+    string eq = ( ixBit == ba.sizeInBits() ? "==" : "!=" );
+    os << "[" << ixBit << eq << ba.sizeInBits() << "]" << endl;
+    return os;
+}
+
+
+template<class uword>
+bool testSerialization() {
+    cout << "[testing Serialization] word size = " << sizeof(uword)<< endl;
+    EWAHBoolArray<uword> bitmap;
+    for(int i = 0; i < 1<<31; i= 2*i +3) {
+        bitmap.set(static_cast<size_t>(i));
+    }
+    stringstream ss;
+    EWAHBoolArray<uword> lmyarray;
+    for (int k = 0; k < 10; ++k) {
+        bitmap.write(ss);
+
+        lmyarray.read(ss);
+        if (lmyarray != bitmap) {
+            return false;
+        }
+        typename EWAHBoolArray<uword>::const_iterator i = bitmap.begin();
+        typename EWAHBoolArray<uword>::const_iterator j = lmyarray.begin();
+        for (; i != bitmap.end(); ++i, ++j) {
+            if (*i != *j)
+                return false;
+        }
+    }
+    return true;
 }
 
 template<class uword>
 bool testEWAHBoolArrayLogical2()
 {
-	bool ok = true;
+    bool ok = true;
     cout << "[testing EWAHBoolArrayLogical2] word size = " << sizeof(uword)<< endl;
 
-	EWAHBoolArray<uword> ba1, ba2, baAND, baOR, baXOR, testAND, testOR, testXOR;
+    EWAHBoolArray<uword> ba1, ba2, baAND, baOR, baXOR, testAND, testOR, testXOR;
 
-	size_t x1[] = { 1, 3, 24, 54, 145, 3001, 3002, 3004, 10003 };
+    size_t x1[] = { 1, 3, 24, 54, 145, 3001, 3002, 3004, 10003 };
     size_t x2[] = { 2, 3, 22, 57, 199, 3000, 3002, 10003, 999999 };
-	size_t x1_AND_x2[] = { 3, 3002, 10003 };
-	size_t x1_OR_x2[] = { 1, 2, 3, 22, 24, 54, 57, 145, 199, 3000, 3001, 3002, 3004, 10003, 999999 };
-	size_t x1_XOR_x2[] = { 1, 2,  22, 24, 54, 57, 145, 199, 3000, 3001,  3004,  999999 };
+    size_t x1_AND_x2[] = { 3, 3002, 10003 };
+    size_t x1_OR_x2[] = { 1, 2, 3, 22, 24, 54, 57, 145, 199, 3000, 3001, 3002, 3004, 10003, 999999 };
+    size_t x1_XOR_x2[] = { 1, 2,  22, 24, 54, 57, 145, 199, 3000, 3001,  3004,  999999 };
 
-	init( ba1, N_ENTRIES(x1), x1 );
-	init( ba2, N_ENTRIES(x2), x2 );
-	init( baAND, N_ENTRIES(x1_AND_x2), x1_AND_x2 );
-	init( baOR, N_ENTRIES(x1_OR_x2), x1_OR_x2 );
-	init( baXOR, N_ENTRIES(x1_XOR_x2), x1_XOR_x2 );
+    init( ba1, N_ENTRIES(x1), x1 );
+    init( ba2, N_ENTRIES(x2), x2 );
+    init( baAND, N_ENTRIES(x1_AND_x2), x1_AND_x2 );
+    init( baOR, N_ENTRIES(x1_OR_x2), x1_OR_x2 );
+    init( baXOR, N_ENTRIES(x1_XOR_x2), x1_XOR_x2 );
 
-	// Make 'em all the same size in bits, so equality operators should work.
-	ba1.makeSameSize( ba2 );
-	baAND.makeSameSize( ba2 );
-	baOR.makeSameSize( ba2 );
-	baXOR.makeSameSize( ba2 );
+    // Make 'em all the same size in bits, so equality operators should work.
+    ba1.makeSameSize( ba2 );
+    baAND.makeSameSize( ba2 );
+    baOR.makeSameSize( ba2 );
+    baXOR.makeSameSize( ba2 );
 
-	ba1.logicaland( ba2, testAND );
-	ba1.logicalor( ba2, testOR );
-	ba1.logicalxor( ba2, testXOR );
+    ba1.logicaland( ba2, testAND );
+    ba1.logicalor( ba2, testOR );
+    ba1.logicalxor( ba2, testXOR );
 
     if ( baAND != testAND ) {
-		cout << " AND failed:" << endl;
-		cout << "Expected: " << baAND << endl;
-		cout << "Encountered: " << testAND << endl;
-		ok = false;
-	}
-	if ( baOR != testOR ) {
-		cout << " OR failed: " << endl;
-		cout << "Expected: " << baOR << endl;
-		cout << "Encountered: " << testOR << endl;
-		ok = false;
-	}
-	if ( baXOR != testXOR ) {
-		cout << " XOR failed: " << endl;
-		cout << "Expected: " << baXOR << endl;
-		cout << "Encountered: " << testXOR << endl;
-		ok = false;
-	}
+        cout << " AND failed:" << endl;
+        cout << "Expected: " << baAND << endl;
+        cout << "Encountered: " << testAND << endl;
+        ok = false;
+    }
+    if ( baOR != testOR ) {
+        cout << " OR failed: " << endl;
+        cout << "Expected: " << baOR << endl;
+        cout << "Encountered: " << testOR << endl;
+        ok = false;
+    }
+    if ( baXOR != testXOR ) {
+        cout << " XOR failed: " << endl;
+        cout << "Expected: " << baXOR << endl;
+        cout << "Encountered: " << testXOR << endl;
+        ok = false;
+    }
 
-	// Verify order of operands has no effect on results
-	ba2.logicaland( ba1, testAND );
-	ba2.logicalor( ba1, testOR );
-	ba2.logicalxor( ba1, testXOR );
+    // Verify order of operands has no effect on results
+    ba2.logicaland( ba1, testAND );
+    ba2.logicalor( ba1, testOR );
+    ba2.logicalxor( ba1, testXOR );
 
-	if ( baAND != testAND ) {
-		cout << " AND failed (2):" << endl;
-		cout << "Expected: " << baAND << endl;
-		cout << "Encountered: " << testAND << endl;
-		ok = false;
-	}
-	if ( baOR != testOR ) {
-		cout << " OR failed (2): " << endl;
-		cout << "Expected: " << baOR << endl;
-		cout << "Encountered: " << testOR << endl;
-		ok = false;
-	}
-	if ( baXOR != testXOR ) {
-			cout << " XOR failed (2): " << endl;
-			cout << "Expected: " << baXOR << endl;
-			cout << "Encountered: " << testXOR << endl;
-			ok = false;
+    if ( baAND != testAND ) {
+        cout << " AND failed (2):" << endl;
+        cout << "Expected: " << baAND << endl;
+        cout << "Encountered: " << testAND << endl;
+        ok = false;
+    }
+    if ( baOR != testOR ) {
+        cout << " OR failed (2): " << endl;
+        cout << "Expected: " << baOR << endl;
+        cout << "Encountered: " << testOR << endl;
+        ok = false;
+    }
+    if ( baXOR != testXOR ) {
+            cout << " XOR failed (2): " << endl;
+            cout << "Expected: " << baXOR << endl;
+            cout << "Encountered: " << testXOR << endl;
+            ok = false;
     }
     if ( !ok )
         cout << testfailed << endl;
@@ -724,6 +751,12 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+    if (!testSerialization<uint16_t> ())
+            ++failures;
+    if (!testSerialization<uint32_t> ())
+            ++failures;
+    if (!testSerialization<uint64_t> ())
+            ++failures;
 
     if (!testGet<uint16_t> ())
         ++failures;

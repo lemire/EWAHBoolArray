@@ -90,7 +90,7 @@ unsigned int ZRandom::getValue() {
                     & MT[i + 1]);
             register unsigned v = *(map[i]) ^ (y >> 1);
             if (1 & y)
-                v ^= 2567483615;
+                v ^= 2567483615U;
             MT[i] = v;
         }
         nValues = N;

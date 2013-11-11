@@ -829,7 +829,7 @@ vector<size_t> EWAHBoolArray<uword>::toArray() const {
                 ans.push_back(pos);
             }
         } else {
-            pos += rlw.getRunningLength() * wordinbits;
+            pos += static_cast<size_t>(rlw.getRunningLength() * wordinbits);
         }
         ++pointer;
         const bool usetrailing = true; //optimization

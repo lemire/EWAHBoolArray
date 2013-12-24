@@ -278,13 +278,12 @@ public:
     vector<size_t> toArray() const {
 		vector<size_t> ans;
 		for (size_t k = 0; k < buffer.size(); ++k) {
-			const uword myword = buffer[k];
-			for (size_t offset = 0; offset < sizeof(uword) * 8; ++offset) {
-				if ((myword >> offset) == 0)
-					break;
-				offset += numberOfTrailingZeros((myword >> offset));
-				ans.push_back(sizeof(uword) * 8 * k + offset);
-			}
+			uword myword = buffer[k];
+			while (myword != 0) {
+              uint32_t ntz =  numberOfTrailingZeros (myword);
+              ans.push_back(sizeof(uword) * 8 * k + ntz);
+              myword ^= (static_cast<uword>(1) << ntz);
+            }
 		}
 		return ans;
 	}

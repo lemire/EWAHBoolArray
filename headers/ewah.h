@@ -835,11 +835,11 @@ vector<size_t> EWAHBoolArray<uword>::toArray() const {
         const bool usetrailing = true; //optimization
         for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
             if (usetrailing) {
-                const uword myword = buffer[pointer];
-                for(uint32_t offset = 0; offset<wordinbits;++offset) {
-                    if((myword >> offset) == 0) break;
-                    offset+=static_cast<uint32_t>(numberOfTrailingZeros((myword >> offset)));
-                    ans.push_back(pos + offset);
+                uword myword = buffer[pointer];
+                while (myword != 0) {
+                  uint32_t ntz =  numberOfTrailingZeros (myword);
+                  ans.push_back(pos + ntz);
+                  myword ^= (static_cast<uword>(1) << ntz);
                 }
                 pos += wordinbits;
             } else {

@@ -34,7 +34,8 @@ make example
 
 == Example ==
 
-Please see example.cpp
+Please see example.cpp.
+For an example with tabular data, please see example2.cpp.
 
 == Ruby wrapper ==
 

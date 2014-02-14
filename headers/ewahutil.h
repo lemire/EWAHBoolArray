@@ -42,47 +42,38 @@
 
 
 static inline uint32_t ctz64(uint64_t n) {
-#if defined(__INTEL_COMPILER)
-    if(static_cast<uint32_t> (x)!= 0) {
-        return ctz32(static_cast<uint32_t> (x));
-    }
-    else return 32+ctz32(static_cast<uint32_t> (x >> 32));
-#elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
+#if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
 	return static_cast<uint32_t>(__builtin_ctzl(n));
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
 	uint32_t i;
 	_BitScanForward64((unsigned long *) &i, n);
 	return i;
 #else
-	uint32_t i = 0;
-
-	if ((n & UINT64_C(0xFFFFFFFF)) == 0) {
+	uint32_t i = 1;
+	if ((n & static_cast<uint64_t>(4294967295)) == 0) {
 		n >>= 32;
-		i = 32;
+		i += 32;
 	}
-	if ((n & UINT64_C(0x0000FFFF)) == 0) {
+	if ((n & static_cast<uint64_t>(0x0000FFFFUL)) == 0) {
 		n >>= 16;
-		i = 16;
+		i += 16;
 	}
 
-	if ((n & UINT64_C(0x000000FF)) == 0) {
+	if ((n & static_cast<uint64_t>(0x000000FFUL)) == 0) {
 		n >>= 8;
 		i += 8;
 	}
 
-	if ((n & UINT64_C(0x0000000F)) == 0) {
+	if ((n & static_cast<uint64_t>(0x0000000FUL)) == 0) {
 		n >>= 4;
 		i += 4;
 	}
 
-	if ((n & UINT64_C(0x00000003)) == 0) {
+	if ((n & static_cast<uint64_t>(0x00000003UL)) == 0) {
 		n >>= 2;
 		i += 2;
 	}
-
-	if ((n & UINT64_C(0x00000001)) == 0)
-		++i;
-
+    i -= (n & 0x1);
 	return i;
 #endif
 }
@@ -91,10 +82,7 @@ static inline uint32_t ctz64(uint64_t n) {
 
 
 static inline uint32_t ctz32(uint32_t n) {
-#if defined(__INTEL_COMPILER)
-	return _bit_scan_forward(n);
-
-#elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
+#if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
 	return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
@@ -108,30 +96,29 @@ static inline uint32_t ctz32(uint32_t n) {
 	return i;
 
 #else
-	uint32_t i = 0;
+	uint32_t i = 1;
 
-	if ((n & UINT32_C(0x0000FFFF)) == 0) {
+	if ((n & static_cast<uint32_t>(0x0000FFFF)) == 0) {
 		n >>= 16;
-		i = 16;
+		i += 16;
 	}
 
-	if ((n & UINT32_C(0x000000FF)) == 0) {
+	if ((n & static_cast<uint32_t>(0x000000FF)) == 0) {
 		n >>= 8;
 		i += 8;
 	}
 
-	if ((n & UINT32_C(0x0000000F)) == 0) {
+	if ((n & static_cast<uint32_t>(0x0000000F)) == 0) {
 		n >>= 4;
 		i += 4;
 	}
 
-	if ((n & UINT32_C(0x00000003)) == 0) {
+	if ((n & static_cast<uint32_t>(0x00000003)) == 0) {
 		n >>= 2;
 		i += 2;
 	}
 
-	if ((n & UINT32_C(0x00000001)) == 0)
-		++i;
+    i -= (n & 1);
 
 	return i;
 #endif
@@ -139,10 +126,7 @@ static inline uint32_t ctz32(uint32_t n) {
 
 
 static inline uint32_t ctz16(uint16_t n) {
-#if defined(__INTEL_COMPILER)
-	return _bit_scan_forward(n);
-
-#elif defined(__GNUC__) && UINT_MAX >= UINT32_MAX
+#if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
 	return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
@@ -156,30 +140,23 @@ static inline uint32_t ctz16(uint16_t n) {
 	return i;
 
 #else
-	uint32_t i = 0;
+	uint32_t i = 1;
 
-	if ((n & UINT16_C(0x0000FFFF)) == 0) {
-		n >>= 16;
-		i = 16;
-	}
-
-	if ((n & UINT16_C(0x000000FF)) == 0) {
+	if ((n & static_cast<uint16_t>(0x000000FF)) == 0) {
 		n >>= 8;
 		i += 8;
 	}
 
-	if ((n & UINT16_C(0x0000000F)) == 0) {
+	if ((n & static_cast<uint16_t>(0x0000000F)) == 0) {
 		n >>= 4;
 		i += 4;
 	}
 
-	if ((n & UINT16_C(0x00000003)) == 0) {
+	if ((n & static_cast<uint16_t>(0x00000003)) == 0) {
 		n >>= 2;
 		i += 2;
 	}
-
-	if ((n & UINT16_C(0x00000001)) == 0)
-		++i;
+    i -= (n & 1);
 
 	return i;
 #endif

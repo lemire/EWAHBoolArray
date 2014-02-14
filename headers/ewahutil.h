@@ -53,7 +53,6 @@ static inline uint32_t ctz64(uint64_t n) {
 	uint32_t i;
 	_BitScanForward64((unsigned long *) &i, n);
 	return i;
-
 #else
 	uint32_t i = 0;
 
@@ -196,24 +195,39 @@ static inline uint32_t ctz16(uint16_t n) {
 inline uint32_t countOnes(uint32_t x) {
     return static_cast<uint32_t>(__builtin_popcount(x));
 }
-#else
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
 inline uint32_t countOnes(uint32_t x) {
-  uint32_t c; // c accumulates the total bits set in v
-  for (c = 0; x; c++) {
-     x &= x - 1; // clear the least significant bit set
-  }
-  return c;
+	return __popcnt(x);
+}
+#else
+inline uint32_t countOnes(uint32_t v) {
+    v = v - ((v >> 1) & 0x55555555);
+    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+    return static_cast<uint32_t>((((v + (v >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24);
 }
 #endif
 
 
+#ifdef __GNUC__
 /**
  * count the number of bits set to one (64 bit version)
  */
-inline uint32_t countOnes(uint64_t v) {
-    return countOnes(static_cast<uint32_t> (v)) + countOnes(
-            static_cast<uint32_t> (v >> 32));
+inline uint32_t countOnes(uint64_t x) {
+    return static_cast<uint32_t>(__builtin_popcountl(x));
 }
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+inline uint32_t countOnes(uint32_t x) {
+	return static_cast<uint32_t>(__popcnt64(static_cast<__int64>(x)));
+}
+#else
+inline uint32_t countOnes(uint64_t v) {
+    v = v - ((v >> 1) & 0x5555555555555555);
+    v = (v & 0x3333333333333333) +
+        ((v >> 2) & 0x3333333333333333);
+    v = ((v + (v >> 4)) & 0x0F0F0F0F0F0F0F0F);
+    return static_cast<uint32_t>((v*(0x0101010101010101))>>56);
+}
+#endif
 
 inline uint32_t countOnes(uint16_t v) {
     return countOnes(static_cast<uint32_t>(v));

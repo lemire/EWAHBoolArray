@@ -164,34 +164,34 @@ bool testEWAHBoolArrayAppend() {
     uword notzero = static_cast<uword> (~zero);
     EWAHBoolArray<uword> myarray1;
     BoolArray<uword> ba1;
-    myarray1.add(zero);
-    ba1.add(zero);
-    myarray1.add(zero);
-    ba1.add(zero);
-    myarray1.add(zero);
-    ba1.add(zero);
-    myarray1.add(specialval);
-    ba1.add(specialval);
-    myarray1.add(specialval);
-    ba1.add(specialval);
-    myarray1.add(notzero);
-    ba1.add(notzero);
-    myarray1.add(zero);
-    ba1.add(zero);
+    myarray1.addWord(zero);
+    ba1.addWord(zero);
+    myarray1.addWord(zero);
+    ba1.addWord(zero);
+    myarray1.addWord(zero);
+    ba1.addWord(zero);
+    myarray1.addWord(specialval);
+    ba1.addWord(specialval);
+    myarray1.addWord(specialval);
+    ba1.addWord(specialval);
+    myarray1.addWord(notzero);
+    ba1.addWord(notzero);
+    myarray1.addWord(zero);
+    ba1.addWord(zero);
     EWAHBoolArray<uword> myarray2;
     BoolArray<uword> ba2;
-    myarray2.add(notzero);
-    ba2.add(notzero);
-    myarray2.add(zero);
-    ba2.add(zero);
-    myarray2.add(notzero);
-    ba2.add(notzero);
-    myarray2.add(specialval);
-    ba2.add(specialval);
-    myarray2.add(specialval);
-    ba2.add(specialval);
-    myarray2.add(notzero);
-    ba2.add(notzero);
+    myarray2.addWord(notzero);
+    ba2.addWord(notzero);
+    myarray2.addWord(zero);
+    ba2.addWord(zero);
+    myarray2.addWord(notzero);
+    ba2.addWord(notzero);
+    myarray2.addWord(specialval);
+    ba2.addWord(specialval);
+    myarray2.addWord(specialval);
+    ba2.addWord(specialval);
+    myarray2.addWord(notzero);
+    ba2.addWord(notzero);
     BoolArray<uword> aggregate1(ba1);
     BoolArray<uword> aggregate2(ba2);
     aggregate1.append(ba2);
@@ -283,7 +283,7 @@ bool testPhongTran() {
     bool isOk(true);
     EWAHBoolArray<uint32_t> myarray;
     for (uint32_t x = 0; x < 10000; x++) {
-        myarray.add(x);
+        myarray.addWord(x);
     }
     string indexfile("testingewahboolarray.bin");
     ::remove(indexfile.c_str());
@@ -347,7 +347,7 @@ bool testPhongTran2() {
     uword iTotal = static_cast<uword> (1000); // when 1000 does not fit in uword, then it will be casted
     EWAHBoolArray<uword> myarray;
     for (uword x = static_cast<uword> (100); x < iTotal; x++) {
-        myarray.add(x);
+        myarray.addWord(x);
     }
     string indexfile("testingewahboolarray.bin");
     ::remove(indexfile.c_str());
@@ -394,27 +394,27 @@ bool testEWAHBoolArray() {
     BoolArray<uword> ba(10 * sizeof(uword) * 8);
     uword zero = 0;
     uword notzero = static_cast<uword> (~zero);
-    myarray.add(zero);
+    myarray.addWord(zero);
     ba.setWord(0, zero);
-    myarray.add(zero);
+    myarray.addWord(zero);
     ba.setWord(1, zero);
-    myarray.add(zero);
+    myarray.addWord(zero);
     ba.setWord(2, zero);
     uword specialval = 1UL + (1UL << 4) + (static_cast<uword> (1)
             << (sizeof(uword) * 8 - 1));
-    myarray.add(specialval);
+    myarray.addWord(specialval);
     ba.setWord(3, specialval);
-    myarray.add(notzero);
+    myarray.addWord(notzero);
     ba.setWord(4, notzero);
-    myarray.add(notzero);
+    myarray.addWord(notzero);
     ba.setWord(5, notzero);
-    myarray.add(notzero);
+    myarray.addWord(notzero);
     ba.setWord(6, notzero);
-    myarray.add(notzero);
+    myarray.addWord(notzero);
     ba.setWord(7, notzero);
-    myarray.add(specialval);
+    myarray.addWord(specialval);
     ba.setWord(8, specialval);
-    myarray.add(zero);
+    myarray.addWord(zero);
     ba.setWord(9, zero);
     if (myarray.sizeInBits() != 10 * sizeof(uword) * 8) {
         cout << "expected " << 10 * sizeof(uword) * 8 << " bits but found "
@@ -519,8 +519,8 @@ bool testEWAHBoolArrayLogical() {
     uword xxor[N];
 
     for (uint32_t k = 0; k < N; ++k) {
-        myarray1.add(x1[k]);
-        myarray2.add(x2[k]);
+        myarray1.addWord(x1[k]);
+        myarray2.addWord(x2[k]);
         xand[k] = static_cast<uword>(x1[k] & x2[k]);
         xxor[k] = static_cast<uword>(x1[k] | x2[k]);
     }

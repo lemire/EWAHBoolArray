@@ -40,10 +40,10 @@ template<class bitmap>
 void demoSerialization() {
     stringstream ss;
     bitmap myarray;
-    myarray.add(234321);// this is not the same as "set(234321)"!!!
-    myarray.add(0);
-    myarray.add(0);
-    myarray.add(999999);
+    myarray.addWord(234321);// this is not the same as "set(234321)"!!!
+    myarray.addWord(0);
+    myarray.addWord(0);
+    myarray.addWord(999999);
     //
     cout<<"Writing: "<<myarray<<endl;
     myarray.write(ss);

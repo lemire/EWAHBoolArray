@@ -205,7 +205,7 @@ public:
      *
      * returns the number of words added (storage cost increase)
      */
-    inline size_t add(const uword newdata,
+    inline size_t addWord(const uword newdata,
             const uint32_t bitsthatmatter = 8 * sizeof(uword));
 
     inline void printout(ostream &o = cout) {
@@ -873,7 +873,7 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray & x) const {
 }
 
 template<class uword>
-size_t EWAHBoolArray<uword>::add(const uword newdata,
+size_t EWAHBoolArray<uword>::addWord(const uword newdata,
         const uint32_t bitsthatmatter) {
     sizeinbits += bitsthatmatter;
     if (newdata == 0) {
@@ -1468,7 +1468,7 @@ void EWAHBoolArray<uword>::logicalor(EWAHBoolArray &a, EWAHBoolArray &container)
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.add(static_cast<uword>(idirty[k] | jdirty[k]));
+                container.addWord(static_cast<uword>(idirty[k] | jdirty[k]));
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }
@@ -1529,7 +1529,7 @@ void EWAHBoolArray<uword>::logicalxor(EWAHBoolArray &a, EWAHBoolArray &container
 							static_cast<size_t> (preyrl - tobediscarded));
 				} else {
 					for(size_t x = 0; x<static_cast<size_t> (preyrl - tobediscarded);++x)
-								container.add(static_cast<uword>(~dw_predator[x]));
+								container.addWord(static_cast<uword>(~dw_predator[x]));
 				}
 			}
 		}
@@ -1551,7 +1551,7 @@ void EWAHBoolArray<uword>::logicalxor(EWAHBoolArray &a, EWAHBoolArray &container
 							static_cast<size_t> (tobediscarded));
 				} else {
 					for(size_t x = 0; x<tobediscarded;++x)
-						container.add(static_cast<uword>(~dw_prey[x]));
+						container.addWord(static_cast<uword>(~dw_prey[x]));
 				}
 				predator.discardFirstWords(tobediscarded);
 				prey.discardFirstWords(tobediscarded);
@@ -1566,7 +1566,7 @@ void EWAHBoolArray<uword>::logicalxor(EWAHBoolArray &a, EWAHBoolArray &container
             const uword * jdirty = j.dirtyWords();
 
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.add(idirty[k] ^ jdirty[k]);
+                container.addWord(idirty[k] ^ jdirty[k]);
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }
@@ -1664,7 +1664,7 @@ void EWAHBoolArray<uword>::logicaland(EWAHBoolArray &a,
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.add(static_cast<uword>(idirty[k] & jdirty[k]));
+                container.addWord(static_cast<uword>(idirty[k] & jdirty[k]));
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }

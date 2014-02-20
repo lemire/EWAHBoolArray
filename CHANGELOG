@@ -1,4 +1,8 @@
-0.4.1 (February 13th, 2013)
+0.4.2 (February 20th, 2014)
+  Renamed "add" to "addWord".
+  Added "andNot" to BoolArray
+  Optimized the behavior of the operators in BoolArray
+0.4.1 (February 13th, 2014)
   Now compiles under the Intel compiler 
 
 0.4.0 (October 4th, 2013)

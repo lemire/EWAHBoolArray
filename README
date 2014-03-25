@@ -7,21 +7,29 @@ Daniel Lemire
 
 The class EWAHBoolArray is a compressed bitset data structure.
 
+It also provides a basic BoolArray class which can serve as a traditional
+bitmap.
+
+This library is used by database and information retrieval engines
+such as Hustle -- A column oriented, embarrassingly distributed relational event 
+database (see https://github.com/chango/hustle).
+
 == Licensing ==
 
 Apache License 2.0. (Other licenses are possible.)
 
-Update (May 20th, 2013): though by default I use the Apache License 2.0 (which is compatible with GPL 3.0), you can also consider this library licensed under GPL 2.0. 
+Update (May 20th, 2013): though by default I use the Apache License 2.0 (which is compatible with GPL 3.0), you can *also* consider this library licensed under GPL 2.0. 
 
 == Limitations ==
 
 Because of the compression type being used, you must set the bits
-in increasing order (no random access while creating the bitmaps).
+in increasing order (no random access while creating the bitmaps)
+when using EWAHBoolArray.
 
 
 == Dependencies ==
 
-None. (Will work under MacOS, Windows or Linux easily.)
+None. (Will work under MacOS, Windows or Linux.)
 
 Compilers tested: clang++, g++, Intel compiler, Microsoft Visual Studio
 

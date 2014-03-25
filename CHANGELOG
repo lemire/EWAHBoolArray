@@ -1,7 +1,14 @@
+upcoming (TODO)
+  Iterators over set bits for BoolArray
+  Iterators over unset bits for BoolArray
+  Iterators over unset bits for EWAHBoolArray
+  logicalandnot for EWAHBoolArray
+
 0.4.3 (March 25th, 2014)
   Added numberOfOnes to BoolArray
   Fixed behavior of andNot and Not in BoolArray, with unit tests
-
+  Fixed behavior of Not in EWAHBoolArray with unit tests
+ 
 0.4.2 (February 20th, 2014)
   Renamed "add" to "addWord".
   Added "andNot" to BoolArray

@@ -37,6 +37,11 @@ bool testCardinalityBoolArray() {
     if(b.numberOfOnes() != 2) {
         return false;
     }
+    BoolArray<uword> bout;
+    b.logicalnot(bout);
+    if(bout.numberOfOnes() != 99) {
+                return false;
+    }
     b.inplace_logicalnot();
     if(b.numberOfOnes() != 99) {
             return false;
@@ -51,10 +56,77 @@ bool testAndNotBoolArray() {
     BoolArray<uword> b = BoolArray<uword>::bitmapOf(2,1,100);
     BoolArray<uword> bout;
     b.logicalandnot(b1,bout);
-    cout<<bout<<endl;
     if (bout.numberOfOnes() != 1) {
         return false;
     }
+    return true;
+}
+
+template<class uword>
+bool testCardinalityEWAHBoolArray() {
+    cout << "[testing CardinalityEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+    EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
+    if (b1.numberOfOnes() != 1) {
+        return false;
+    }
+    b1.inplace_logicalnot();
+    if (b1.numberOfOnes() != 1) {
+        cout<<"b1 "<<b1<<endl;
+        return false;
+    }
+
+    EWAHBoolArray<uword> b = EWAHBoolArray<uword>::bitmapOf(2,1,100);
+    if(b.numberOfOnes() != 2) {
+        cout<<"b "<<b<<endl;
+        return false;
+    }
+    EWAHBoolArray<uword> bout;
+    b.logicalnot(bout);
+    if(bout.numberOfOnes() != 99) {
+        cout<<"bout "<<bout<<endl;
+        return false;
+    }
+    b.inplace_logicalnot();
+    if(b.numberOfOnes() != 99) {
+        cout<<"b neg "<<b<<endl;
+        return false;
+    }
+    return true;
+}
+
+template<class uword>
+bool testAndNotEWAHBoolArray() {
+    // as of March 25th, logicalandnot is not implemented
+    //cout << "[testing AndNotEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+    /* EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
+    EWAHBoolArray<uword> b = EWAHBoolArray<uword>::bitmapOf(2,1,100);
+    EWAHBoolArray<uword> bout;
+    b.logicalandnot(b1,bout);
+    cout<<bout<<endl;
+    if (bout.numberOfOnes() != 1) {
+        return false;
+    }*/
+    return true;
+}
+
+
+template<class uword>
+bool testNanJiang() {
+    cout << "[testing NanJiang] sizeof(uword)=" << sizeof(uword) << endl;
+    EWAHBoolArray<uword> b;
+    b.set(5);
+    if (b.numberOfOnes() != 1)
+        return false;
+    b.inplace_logicalnot();
+    if (b.numberOfOnes() != 5)
+        return false;
+    BoolArray<uword> b2;
+    b2.set(5);
+    if (b2.numberOfOnes() != 1)
+        return false;
+    b2.inplace_logicalnot();
+    if (b2.numberOfOnes() != 5)
+        return false;
     return true;
 }
 
@@ -789,6 +861,24 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+    if (!testNanJiang<uint16_t>())
+        ++failures;
+    if (!testNanJiang<uint32_t>())
+        ++failures;
+    if (!testNanJiang<uint64_t>())
+        ++failures;
+    if (!testCardinalityEWAHBoolArray<uint16_t>())
+        ++failures;
+    if (!testCardinalityEWAHBoolArray<uint32_t>())
+        ++failures;
+    if (!testCardinalityEWAHBoolArray<uint64_t>())
+        ++failures;
+    if (!testAndNotEWAHBoolArray<uint16_t>())
+        ++failures;
+    if (!testAndNotEWAHBoolArray<uint32_t>())
+        ++failures;
+    if (!testAndNotEWAHBoolArray<uint64_t>())
+        ++failures;
     if (!testCardinalityBoolArray<uint16_t>())
         ++failures;
     if (!testCardinalityBoolArray<uint32_t>())

@@ -430,6 +430,7 @@ public:
     /**
      * Apply the logical not operation on this bitmap.
      * Running time complexity is proportional to the compressed size of the bitmap.
+     * The current bitmap is not modified.
      */
     void inplace_logicalnot();
 
@@ -783,9 +784,10 @@ bool EWAHBoolArray<uword>::set(size_t i) {
 
 template<class uword>
 void EWAHBoolArray<uword>::inplace_logicalnot() {
-    size_t pointer(0);
+    size_t pointer(0), lastrlw(0);
     while (pointer < buffer.size()) {
         RunningLengthWord<uword> rlw(buffer[pointer]);
+        lastrlw = pointer;// we save this up
         if (rlw.getRunningBit())
             rlw.setRunningBit(false);
         else
@@ -794,6 +796,18 @@ void EWAHBoolArray<uword>::inplace_logicalnot() {
         for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
             buffer[pointer] = static_cast<uword>(~buffer[pointer]);
             ++pointer;
+        }
+    }
+    if(sizeinbits % wordinbits != 0){
+        RunningLengthWord<uword> rlw(buffer[lastrlw]);
+        assert(rlw.getNumberOfLiteralWords() + rlw.getRunningLength() > 0);
+        const uword maskbogus = (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
+        if(rlw.getNumberOfLiteralWords()>0) {// easy case
+            buffer[lastrlw + 1 + rlw.getNumberOfLiteralWords() - 1 ] &= maskbogus;
+        } else if(rlw.getRunningBit()) {
+            assert(rlw.getNumberOfLiteralWords() > 0);
+            rlw.setNumberOfLiteralWords(rlw.getNumberOfLiteralWords() - 1);
+            addLiteralWord(maskbogus);
         }
     }
 }
@@ -859,14 +873,42 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray & x) const {
     x.reset();
     x.buffer.reserve(buffer.size());
     EWAHBoolArrayRawIterator<uword> i = this->raw_iterator();
-    while (i.hasNext()) {
+    if(!i.hasNext()) return;// nothing to do
+    while (true) {
         BufferedRunningLengthWord<uword> & rlw = i.next();
-        x.addStreamOfEmptyWords(!rlw.getRunningBit(), rlw.getRunningLength());
-        if (rlw.getNumberOfLiteralWords() > 0) {
-            const uword * dw = i.dirtyWords();
-            for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-                x.addLiteralWord(~dw[k]);
+        if (i.hasNext()) {
+            x.addStreamOfEmptyWords(!rlw.getRunningBit(),
+                    rlw.getRunningLength());
+            if (rlw.getNumberOfLiteralWords() > 0) {
+                const uword * dw = i.dirtyWords();
+                for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
+                    x.addLiteralWord(~dw[k]);
+                }
             }
+        } else {
+            assert(rlw.getNumberOfLiteralWords() + rlw.getRunningLength() > 0);
+            if(rlw.getNumberOfLiteralWords() == 0) {
+                if((this->sizeinbits % wordinbits != 0) && !rlw.getRunningBit()) {
+                    x.addStreamOfEmptyWords(!rlw.getRunningBit(),
+                            rlw.getRunningLength() - 1);
+                    const uword maskbogus = (static_cast<uword>(1) << (this->sizeinbits % wordinbits)) - 1;
+                    x.addLiteralWord(maskbogus);
+                    break;
+                } else {
+                    x.addStreamOfEmptyWords(!rlw.getRunningBit(),
+                            rlw.getRunningLength());
+                    break;
+                }
+            }
+            x.addStreamOfEmptyWords(!rlw.getRunningBit(),
+                                rlw.getRunningLength());
+            const uword * dw = i.dirtyWords();
+            for (size_t k = 0; k < rlw.getNumberOfLiteralWords()  - 1; ++k) {
+                                x.addLiteralWord(~dw[k]);
+            }
+            const uword maskbogus = (this->sizeinbits % wordinbits != 0) ? (static_cast<uword>(1) << (this->sizeinbits % wordinbits)) - 1 : ~static_cast<uword>(0);
+            x.addLiteralWord((~dw[rlw.getNumberOfLiteralWords()  - 1]) & maskbogus);
+            break;
         }
     }
     x.sizeinbits = this->sizeinbits;

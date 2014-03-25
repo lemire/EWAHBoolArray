@@ -146,7 +146,9 @@ public:
         data &= static_cast<uword> (l << (runninglengthbits + 1))
                 | runninglengthplusrunningbit;
     }
-    static const uint32_t runninglengthbits = sizeof(uword) * 4;//16;
+
+
+    static const uint32_t runninglengthbits = sizeof(uword) * 4;
     static const uint32_t literalbits = sizeof(uword) * 8 - 1 - runninglengthbits;
     static const uword largestliteralcount = (static_cast<uword> (1)
             << literalbits) - 1;

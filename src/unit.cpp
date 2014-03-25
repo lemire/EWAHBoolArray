@@ -22,6 +22,44 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
 
 template<class uword>
+bool testCardinalityBoolArray() {
+    cout << "[testing CardinalityBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+    BoolArray<uword> b1 = BoolArray<uword>::bitmapOf(1,1);
+    if (b1.numberOfOnes() != 1) {
+        return false;
+    }
+    b1.inplace_logicalnot();
+    if (b1.numberOfOnes() != 1) {
+        return false;
+    }
+
+    BoolArray<uword> b = BoolArray<uword>::bitmapOf(2,1,100);
+    if(b.numberOfOnes() != 2) {
+        return false;
+    }
+    b.inplace_logicalnot();
+    if(b.numberOfOnes() != 99) {
+            return false;
+    }
+    return true;
+}
+
+template<class uword>
+bool testAndNotBoolArray() {
+    cout << "[testing AndNotBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+    BoolArray<uword> b1 = BoolArray<uword>::bitmapOf(1,1);
+    BoolArray<uword> b = BoolArray<uword>::bitmapOf(2,1,100);
+    BoolArray<uword> bout;
+    b.logicalandnot(b1,bout);
+    cout<<bout<<endl;
+    if (bout.numberOfOnes() != 1) {
+        return false;
+    }
+    return true;
+}
+
+
+template<class uword>
 bool testGet() {
     cout << "[testing Get] sizeof(uword)=" << sizeof(uword) << endl;
     bool isOk = true;
@@ -751,6 +789,18 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+    if (!testCardinalityBoolArray<uint16_t>())
+        ++failures;
+    if (!testCardinalityBoolArray<uint32_t>())
+        ++failures;
+    if (!testCardinalityBoolArray<uint64_t>())
+        ++failures;
+    if (!testAndNotBoolArray<uint16_t>())
+        ++failures;
+    if (!testAndNotBoolArray<uint32_t>())
+        ++failures;
+    if (!testAndNotBoolArray<uint64_t>())
+        ++failures;
     if (!testSerialization<uint16_t> ())
             ++failures;
     if (!testSerialization<uint32_t> ())

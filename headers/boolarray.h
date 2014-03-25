@@ -187,6 +187,10 @@ public:
     ~BoolArray() {
     }
 
+    /**
+     * Computes the logical and and writes to the provided BoolArray (out).
+     * The current bitmaps is unchanged.
+     */
     void logicaland(const BoolArray & ba, BoolArray & out) {
         if(ba.buffer.size() < buffer.size())
             out.setToSize(ba);
@@ -203,23 +207,31 @@ public:
             buffer[i] = buffer[i] & ba.buffer[i];
     }
 
+    /**
+     * Computes the logical andnot and writes to the provided BoolArray (out).
+     * The current bitmaps is unchanged.
+     */
     void logicalandnot(const BoolArray & ba, BoolArray & out) {
-        if(ba.buffer.size() < buffer.size())
-            out.setToSize(ba);
-        else
-            out.setToSize(buffer);
-        for (size_t i = 0; i < out.buffer.size(); ++i)
+        out.setToSize(*this);
+        size_t upto = out.buffer.size() < ba.buffer.size() ? out.buffer.size() :  ba.buffer.size();
+        for (size_t i = 0; i < upto; ++i)
             out.buffer[i] = buffer[i] & (~ba.buffer[i]);
+        for (size_t i = upto; i < out.buffer.size(); ++i)
+            out.buffer[i] = buffer[i];
+        out.clearBogusBits();
     }
 
     void inplace_logicalandnot(const BoolArray & ba) {
-        if(ba.buffer.size() < buffer.size())
-            setToSize(ba);
-        for (size_t i = 0; i < buffer.size(); ++i)
+        size_t upto = buffer.size() < ba.buffer.size() ? buffer.size() :  ba.buffer.size();
+        for (size_t i = 0; i < upto; ++i)
             buffer[i] = buffer[i] & (~ba.buffer[i]);
+        clearBogusBits();
     }
 
-
+    /**
+     * Computes the logical or and writes to the provided BoolArray (out).
+     * The current bitmaps is unchanged.
+     */
     void logicalor(const BoolArray & ba, BoolArray & out) {
         const BoolArray * smallest;
         const BoolArray * largest;
@@ -243,6 +255,10 @@ public:
         logicalor(ba,*this);
     }
 
+    /**
+     * Computes the logical xor and writes to the provided BoolArray (out).
+     * The current bitmaps is unchanged.
+     */
     void logicalxor(const BoolArray & ba, BoolArray & out) {
         const BoolArray * smallest;
         const BoolArray * largest;
@@ -265,14 +281,38 @@ public:
         logicalxor(ba,*this);
     }
 
+    /**
+     * Computes the logical not and writes to the provided BoolArray (out).
+     * The current bitmaps is unchanged.
+     */
     void logicalnot(BoolArray & out) {
-        outsetToSize(*this);
+        out.setToSize(*this);
         for (size_t i = 0; i < buffer.size(); ++i)
             out.buffer[i] = ~buffer[i];
+        out.clearBogusBits();
     }
+
+
     void inplace_logicalnot() {
         for (size_t i = 0; i < buffer.size(); ++i)
             buffer[i] = ~buffer[i];
+        clearBogusBits();
+    }
+
+
+    /**
+     * Returns the number of bits set to the value 1.
+     * The running time complexity is proportional to the
+     *  size of the bitmap.
+     *
+     * This is sometimes called the cardinality.
+     */
+    size_t numberOfOnes() const  {
+        size_t count = 0;
+        for (size_t i = 0; i < buffer.size(); ++i) {
+            count += countOnes(buffer[i]);
+        }
+        return count;
     }
 
     inline void printout(ostream &o = cout) {
@@ -304,8 +344,8 @@ public:
      * returns the number of words added (storage cost increase)
      */
     size_t padWithZeroes(const size_t totalbits) {
-        size_t currentwordsize = (sizeinbits + sizeof(uword) - 1) / sizeof(uword);
-        size_t neededwordsize = (totalbits + sizeof(uword) - 1) / sizeof(uword);
+        size_t currentwordsize = (sizeinbits + wordinbits - 1) / wordinbits;
+        size_t neededwordsize = (totalbits + wordinbits - 1) / wordinbits;
         assert(neededwordsize >= currentwordsize);
         buffer.resize(neededwordsize);
         sizeinbits = totalbits;
@@ -358,9 +398,16 @@ public:
         return (out << static_cast<string>(a));
     }
 private:
+
+    void clearBogusBits() {
+          if((sizeinbits % wordinbits) != 0) {
+                const uword maskbogus = (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
+                buffer[buffer.size() - 1] &= maskbogus;
+            }
+    }
+
     vector<uword> buffer;
     size_t sizeinbits;
-
 };
 
 template<class uword>

@@ -11,8 +11,8 @@ It also provides a basic BoolArray class which can serve as a traditional
 bitmap.
 
 This library is used by database and information retrieval engines
-such as Hustle -- A column oriented, embarrassingly distributed relational event 
-database (see https://github.com/chango/hustle).
+such as Hustle -- A column oriented, embarrassingly distributed relational 
+event database (see https://github.com/chango/hustle).
 
 == Licensing ==
 

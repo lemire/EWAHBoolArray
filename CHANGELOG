@@ -4,6 +4,9 @@ upcoming (TODO)
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
+0.4.4 (November 11th, 2014)
+  Fixed build error for MSVC
+
 0.4.3 (March 25th, 2014)
   Added numberOfOnes to BoolArray
   Fixed behavior of andNot and Not in BoolArray, with unit tests

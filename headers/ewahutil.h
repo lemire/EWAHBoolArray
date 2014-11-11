@@ -193,7 +193,7 @@ inline uint32_t countOnes(uint64_t x) {
     return static_cast<uint32_t>(__builtin_popcountl(x));
 }
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
-inline uint32_t countOnes(uint32_t x) {
+inline uint32_t countOnes(uint64_t x) {
 	return static_cast<uint32_t>(__popcnt64(static_cast<__int64>(x)));
 }
 #else

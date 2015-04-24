@@ -1,8 +1,7 @@
-language:cpp
+language: cpp
 
 compiler:
   - gcc
   - clang
 
-
-script: make && ./unit 
+script: make && ./unit

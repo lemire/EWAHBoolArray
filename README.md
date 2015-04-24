@@ -1,7 +1,6 @@
 #Compressed bitset in C++
 [![Build Status](https://travis-ci.org/lemire/EWAHBoolArray.png)](https://travis-ci.org/lemire/EWAHBoolArray)
 
-Daniel Lemire
 
 
 

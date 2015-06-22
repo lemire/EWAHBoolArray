@@ -63,6 +63,26 @@ bool testAndNotBoolArray() {
 }
 
 template<class uword>
+bool testIntersects() {
+    cout << "[testing intersects] sizeof(uword)=" << sizeof(uword) << endl;
+    cout<<"constructing b1..."<<endl;
+
+    EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(2,2,1000);
+    cout<<"constructing b2..."<<endl;
+
+    EWAHBoolArray<uword> b2 = EWAHBoolArray<uword>::bitmapOf(2,1000,1100);
+    cout<<"constructing b3..."<<endl;
+
+    EWAHBoolArray<uword> b3 = EWAHBoolArray<uword>::bitmapOf(2,1100,2000);
+    cout<<"About to intersect..."<<endl;
+    cout<<"all of them: "<<b1.intersects(b2)<<" "<<b2.intersects(b3)<<" "<<b1.intersects(b3)<<"done"<<endl;
+    if(! b1.intersects(b2)) return false;
+    if(! b2.intersects(b3)) return false;
+    if( b1.intersects(b3)) return false;
+    return true;
+}
+
+template<class uword>
 bool testCardinalityEWAHBoolArray() {
     cout << "[testing CardinalityEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
     EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
@@ -861,6 +881,12 @@ void tellmeaboutmachine() {
 
 int main(void) {
     int failures = 0;
+    if (!testIntersects<uint16_t>())
+        ++failures;
+    if (!testIntersects<uint32_t>())
+        ++failures;
+    if (!testIntersects<uint64_t>())
+        ++failures;
     if (!testNanJiang<uint16_t>())
         ++failures;
     if (!testNanJiang<uint32_t>())

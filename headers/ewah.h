@@ -171,6 +171,13 @@ public:
      * bitmap sizes.
      */
     void logicaland(EWAHBoolArray &a, EWAHBoolArray &container);
+    
+    /**
+     * tests whether the bitmaps "intersect" (have at least one 1-bit at the same
+     * position). This function does not modify the existing bitmaps. 
+     * It is faster than calling logicaland.
+     */
+    bool intersects(EWAHBoolArray &a);
 
     /**
      * computes the logical or with another compressed bitmap
@@ -1721,6 +1728,89 @@ void EWAHBoolArray<uword>::logicaland(EWAHBoolArray &a,
         }
     }
     container.setSizeInBits(sizeInBits());
+}
+
+
+template<class uword>
+bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
+    cout<<"intersects"<<endl;
+    EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
+    EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+    // at this point, this should be safe:
+    BufferedRunningLengthWord<uword> & rlwi = i.next();
+    BufferedRunningLengthWord<uword> & rlwj = j.next();
+    if (!(i.hasNext() and j.hasNext())) {// hopefully this never happens...
+        return false;
+    }
+    while (true) {
+        bool i_is_prey(rlwi.size() < rlwj.size());
+        BufferedRunningLengthWord<uword> & prey(i_is_prey ? rlwi : rlwj);
+        BufferedRunningLengthWord<uword> & predator(i_is_prey ? rlwj : rlwi);
+        if (prey.getRunningBit() == 0) {
+            const uword preyrl(prey.getRunningLength());
+            predator.discardFirstWords(preyrl);
+            prey.discardFirstWords(preyrl);
+        } else {
+            // we have a stream of 1x11
+            const uword predatorrl(predator.getRunningLength());
+            const uword preyrl(prey.getRunningLength());
+            const uword tobediscarded = (predatorrl >= preyrl) ? preyrl
+                    : predatorrl;
+            if(predator.getRunningBit()) return true;
+            if (preyrl - tobediscarded > 0) {
+                const uword * dw_predator(
+                        i_is_prey ? j.dirtyWords() : i.dirtyWords());
+                if(preyrl > tobediscarded) return true;
+            }
+            predator.discardFirstWords(preyrl);
+            prey.discardFirstWords(preyrl);
+        }
+        const uword predatorrl(predator.getRunningLength());
+        if (predatorrl > 0) {
+            if (predator.getRunningBit() == 0) {
+                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
+                const uword tobediscarded =
+                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+                                : predatorrl;
+                predator.discardFirstWords(tobediscarded);
+                prey.discardFirstWords(tobediscarded);
+            } else {
+                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
+                const uword tobediscarded =
+                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+                                : predatorrl;
+                if (tobediscarded > 0) {
+                    const uword * dw_prey(
+                            i_is_prey ? i.dirtyWords() : j.dirtyWords());
+                    return true;
+                }
+            }
+        }
+        assert(prey.getRunningLength() == 0);
+        // all that is left to do now is to AND the dirty words
+        uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
+        if (nbre_dirty_prey > 0) {
+            const uword * idirty = i.dirtyWords();
+            const uword * jdirty = j.dirtyWords();
+            for (uword k = 0; k < nbre_dirty_prey; ++k) {
+                if(static_cast<uword>(idirty[k] & jdirty[k]) != 0 ) return true;
+            }
+            predator.discardFirstWords(nbre_dirty_prey);
+        }
+        if(rlwi.size() == 0) {
+          if(i.hasNext())
+            rlwi = i.next();
+          else
+            return false;
+        }
+        if(rlwj.size() == 0) {
+          if(j.hasNext())
+            rlwj = j.next();
+          else
+            return false;
+        }
+    }
+    return false;
 }
 
 template<class uword>

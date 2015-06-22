@@ -1,8 +1,11 @@
-upcoming (TODO)
+TODO
   Iterators over set bits for BoolArray
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
+
+upcoming 
+  Implemented "intersects".
 
 0.4.4 (November 11th, 2014)
   Fixed build error for MSVC

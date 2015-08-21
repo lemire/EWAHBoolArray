@@ -58,6 +58,7 @@ int main() {
 
 	unordered_map<string, EWAHBoolArray<uint32_t> > index1 = indexColumn(col1);
 	unordered_map<string, EWAHBoolArray<uint32_t> > index2 = indexColumn(col2);
+	size_t testcount = 0;
 
 	for (unordered_map<string, EWAHBoolArray<uint32_t> >::iterator i = index1.begin(); i!= index1.end(); ++i) {
 		EWAHBoolArray<uint32_t> & bitmap1 = i->second;
@@ -65,6 +66,7 @@ int main() {
 			EWAHBoolArray<uint32_t> & bitmap2 = j->second;
 			bool intersect = bitmap1.intersects(bitmap2);
 			EWAHBoolArray<uint32_t> result;
+			testcount ++;
 			bitmap1.logicaland(bitmap2, result);
 			if (intersect)
 			{
@@ -77,6 +79,7 @@ int main() {
 		}
 
 	}
+	cout<< "Ran " << testcount << " tests. Your code is probably ok. "<<endl;
 
 
 	return 0;

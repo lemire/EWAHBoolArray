@@ -1789,7 +1789,7 @@ bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-              if((idirty[k] & jdirty[k])!=0) return true;
+              if(static_cast<uword>(idirty[k] & jdirty[k])!=0) return true;
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }

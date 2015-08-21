@@ -20,6 +20,10 @@ example: $(HEADERS) example.cpp
 example2: $(HEADERS) example2.cpp
 	$(CXX) $(CXXFLAGS) -o example2 example2.cpp
 
+example3: $(HEADERS) example3.cpp
+	$(CXX) $(CXXFLAGS) -o example3 example3.cpp
+
+
 cppcheck: 
 	cppcheck --enable=all headers/*.h src/*.cpp *.cpp
 

@@ -171,10 +171,10 @@ public:
      * bitmap sizes.
      */
     void logicaland(EWAHBoolArray &a, EWAHBoolArray &container);
-    
+
     /**
      * tests whether the bitmaps "intersect" (have at least one 1-bit at the same
-     * position). This function does not modify the existing bitmaps. 
+     * position). This function does not modify the existing bitmaps.
      * It is faster than calling logicaland.
      */
     bool intersects(EWAHBoolArray &a);
@@ -1733,7 +1733,6 @@ void EWAHBoolArray<uword>::logicaland(EWAHBoolArray &a,
 
 template<class uword>
 bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
-    cout<<"intersects"<<endl;
     EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
     EWAHBoolArrayRawIterator<uword> j = raw_iterator();
     // at this point, this should be safe:
@@ -1756,11 +1755,9 @@ bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
             const uword preyrl(prey.getRunningLength());
             const uword tobediscarded = (predatorrl >= preyrl) ? preyrl
                     : predatorrl;
-            if(predator.getRunningBit()) return true;
+            if((tobediscarded>0) && predator.getRunningBit()) return true;
             if (preyrl - tobediscarded > 0) {
-                const uword * dw_predator(
-                        i_is_prey ? j.dirtyWords() : i.dirtyWords());
-                if(preyrl > tobediscarded) return true;
+              return true;
             }
             predator.discardFirstWords(preyrl);
             prey.discardFirstWords(preyrl);
@@ -1780,9 +1777,7 @@ bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
                         (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
                                 : predatorrl;
                 if (tobediscarded > 0) {
-                    const uword * dw_prey(
-                            i_is_prey ? i.dirtyWords() : j.dirtyWords());
-                    return true;
+                  return true;
                 }
             }
         }
@@ -1790,24 +1785,22 @@ bool EWAHBoolArray<uword>::intersects(EWAHBoolArray &a) {
         // all that is left to do now is to AND the dirty words
         uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
         if (nbre_dirty_prey > 0) {
+            assert(predator.getRunningLength() == 0);
             const uword * idirty = i.dirtyWords();
             const uword * jdirty = j.dirtyWords();
             for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                if(static_cast<uword>(idirty[k] & jdirty[k]) != 0 ) return true;
+              if((idirty[k] & jdirty[k])!=0) return true;
             }
             predator.discardFirstWords(nbre_dirty_prey);
         }
-        if(rlwi.size() == 0) {
-          if(i.hasNext())
+        if (i_is_prey) {
+            if (!i.hasNext())
+                break;
             rlwi = i.next();
-          else
-            return false;
-        }
-        if(rlwj.size() == 0) {
-          if(j.hasNext())
+        } else {
+            if (!j.hasNext())
+                break;
             rlwj = j.next();
-          else
-            return false;
         }
     }
     return false;

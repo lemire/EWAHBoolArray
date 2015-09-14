@@ -4,7 +4,7 @@ TODO
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
-upcoming 
+0.4.5 (August 21st, 2015) 
   Implemented "intersects".
 
 0.4.4 (November 11th, 2014)

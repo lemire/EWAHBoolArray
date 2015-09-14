@@ -65,13 +65,13 @@ void smallIntersectBenchmark() {
 	bitmap b2;
 	// we fill both of them with lots of values, but we
 	// do not let them intersect, to make it difficult!
-	int N = 1000000;
+	int N = 10000000;
 	for(int i = 0; i < N; ++i) {
 	  b1.set(2*i);
 		b2.set(2*i+1);
 	}
 	size_t offset = 2*N+2;
-	for(int i = 0; i<100; ++i) {
+	for(int i = 0; i< 10000 ; ++i) {
 		for(int j = 0; j < 1024; ++j )
 		  b1.set(offset + j);
 		offset += 1024;

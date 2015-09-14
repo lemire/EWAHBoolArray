@@ -99,6 +99,7 @@ int main(void) {
 	cout<<endl;
 	demo<EWAHBoolArray<uint32_t> >();
 	demoSerialization<EWAHBoolArray<uint32_t> >();
+	cout <<"==== benchmark intersecs === "<<endl;
 	smallIntersectBenchmark<EWAHBoolArray<uint32_t> >();
 	smallIntersectBenchmark<EWAHBoolArray<uint64_t> >();
 	return EXIT_SUCCESS;

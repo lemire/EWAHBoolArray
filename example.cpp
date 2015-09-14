@@ -65,25 +65,28 @@ void smallIntersectBenchmark() {
 	bitmap b2;
 	// we fill both of them with lots of values, but we
 	// do not let them intersect, to make it difficult!
-	int N = 10000000;
-	for(int i = 0; i < N; ++i) {
+	size_t N = 100000000;
+	for(size_t i = 0; i < N; ++i) {
 	  b1.set(2*i);
 		b2.set(2*i+1);
 	}
 	size_t offset = 2*N+2;
-	for(int i = 0; i< 10000 ; ++i) {
-		for(int j = 0; j < 1024; ++j )
+	for(size_t i = 0; i< 100000 ; ++i) {
+		for(size_t j = 0; j < 1024; ++j )
 		  b1.set(offset + j);
 		offset += 1024;
-		for(int j = 0; j < 1024; ++j )
+		for(size_t j = 0; j < 1024; ++j )
 		  b2.set(offset + j);
 		offset += 1024;
 	}
 	cout <<" First bitmap has " << b1.numberOfOnes() << " set bits" << endl;
 	cout <<" Second bitmap has " << b2.numberOfOnes() << " set bits" << endl;
+        double inputsize = b1.numberOfOnes() + b2.numberOfOnes();
 	const clock_t START = clock();
 	if(b1.intersects(b2)) cout << "BUG!" << endl;
-	cout << "Time to compute evil intersect query : "<< (double)(clock() - START) / CLOCKS_PER_SEC << " s"<<endl;
+       	const clock_t END = clock();
+	 double timee = (double)(END - START) / CLOCKS_PER_SEC;
+        cout << "Billions of values intersected per second : " << ( inputsize / 1000000000.0 ) / timee << endl;
 }
 
 

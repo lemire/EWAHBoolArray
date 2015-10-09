@@ -111,7 +111,9 @@ public:
      * running length of which type of bits
      */
     void discardFirstWords(uword x) {
+#ifdef EWAHASSERT
         assert(x <= size());
+#endif
         const uword rl(getRunningLength());
         if (rl >= x) {
             setRunningLength(rl - x);
@@ -262,7 +264,9 @@ public:
     }
 
     void discardFirstWords(uword x) {
+#ifdef EWAHASSERT
         assert(x <= size());
+#endif
         if (RunningLength >= x) {
             RunningLength = static_cast<uword> (RunningLength - x);
             return;

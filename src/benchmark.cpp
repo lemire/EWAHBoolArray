@@ -194,6 +194,7 @@ public:
     }
 
     vector<uint32_t> generateClustered(uint32_t N, uint32_t Max) {
+    	if(N>Max) throw runtime_error("can't generate so many values");
         vector<uint32_t> ans(N);
         fillClustered(ans.begin(), ans.end(), 0, Max);
         return ans;
@@ -233,6 +234,8 @@ void test(vector<vector<uint32_t> > & data, int repeat) {
     // building
     timer.reset();
     vector<EWAHBoolArray<uword> > ewah(data.size());
+    cout << "# displaying size, creation time, convert to array time, OR time, AND time, and a bogus value " << endl;
+
     size_t size = 0;
     for (int r = 0; r < repeat; ++r) {
         size = 0;
@@ -284,21 +287,35 @@ void test(vector<vector<uint32_t> > & data, int repeat) {
     cout << timer.split() << "\t" << bogus << endl;
 
 }
+
+void checkSorted(vector<uint32_t>  & data) {
+	for(size_t i = 1; i < data.size() ; i++) {
+		assert(data[i-1]< data[i]);
+	}
+}
+
 void test(size_t N, int nbr, int repeat) {
     for (int sparsity = 1; sparsity < 31 - nbr; sparsity += 1) {
         ClusteredDataGenerator cdg;
+        int sparsity2 = 31 - nbr - sparsity;
+
         cout << "# sparsity=" << sparsity << "\t";
-        vector < vector<uint32_t> > data(N);
+        vector < vector<uint32_t> > data(2*N);
         uint32_t Max = (1 << (nbr + sparsity));
+        uint32_t Max2 = (1 << (nbr + sparsity2));
         cout << "# generating data..." << endl;
         for (size_t k = 0; k < N; ++k) {
-            data[k] = cdg.generateClustered(1 << nbr, Max);
+            data[2*k] = cdg.generateClustered(1 << nbr, Max);
+            data[2*k+1] = cdg.generateClustered(1 << nbr, Max2);
+            checkSorted(data[2*k+1]);
+            checkSorted(data[2*k]);
         }
         cout << "# generating data...ok" << endl;
-        cout << "#64 bits" << endl;
+        cout << "# 64 bits" << endl;
         test<uint64_t> (data, repeat);
-        cout << "#32 bits" << endl;
+        cout << "# 32 bits" << endl;
         test<uint32_t> (data, repeat);
+        cout<<endl;
     }
 }
 

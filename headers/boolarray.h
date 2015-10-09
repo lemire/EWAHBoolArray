@@ -17,6 +17,10 @@
 
 using namespace std;
 
+
+// uncomment this for debugging
+//#define EWAHASSERT
+
 /**
  * A dynamic bitset implementation. (without compression).
  */
@@ -90,7 +94,9 @@ public:
         const size_t size = numberofbits / wordinbits + (numberofbits
                 % wordinbits == 0 ? 0 : 1);
         if(size == 0) return;
+#ifdef EWAHASSERT
         assert(buffer.size() >= size);
+#endif
         out.write(reinterpret_cast<const char *> (&buffer[0]),
                 size * sizeof(uword));
     }
@@ -121,7 +127,9 @@ public:
     }
 
     void setWord(const size_t pos, const uword val) {
+#ifdef EWAHASSERT
         assert(pos < buffer.size());
+#endif
         buffer[pos] = val;
     }
 
@@ -133,7 +141,9 @@ public:
     }
 
     uword getWord(const size_t pos) const {
+#ifdef EWAHASSERT
         assert(pos < buffer.size());
+#endif
         return buffer[pos];
     }
 
@@ -165,7 +175,9 @@ public:
      * true of false? (set or unset)
      */
     bool get(const size_t pos) const {
+#ifdef EWAHASSERT
         assert(pos / wordinbits < buffer.size());
+#endif
         return (buffer[pos / wordinbits] & (static_cast<uword> (1) << (pos
                 % wordinbits))) != 0;
     }
@@ -346,7 +358,9 @@ public:
     size_t padWithZeroes(const size_t totalbits) {
         size_t currentwordsize = (sizeinbits + wordinbits - 1) / wordinbits;
         size_t neededwordsize = (totalbits + wordinbits - 1) / wordinbits;
+#ifdef EWAHASSERT
         assert(neededwordsize >= currentwordsize);
+#endif
         buffer.resize(neededwordsize);
         sizeinbits = totalbits;
         return static_cast<size_t>(neededwordsize - currentwordsize);

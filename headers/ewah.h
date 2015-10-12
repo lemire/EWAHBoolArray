@@ -453,15 +453,17 @@ public:
      **/
     void inplace_logicalnot();
 
-private:
     /**
      * set size in bits. This does not affect the compressed size. It
-     * runs in constant time.
+     * runs in constant time. This should not normally be used, except 
+     * as part of a deserialization process.
      */
     inline void setSizeInBits(const size_t size) {
         sizeinbits = size;
     }
 
+
+private:
     // addStreamOfEmptyWords but does not return the cost increase,
     // does not update sizeinbits and does not check that number>0
     void fastaddStreamOfEmptyWords(const bool v, size_t number);

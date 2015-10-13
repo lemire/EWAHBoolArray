@@ -956,7 +956,7 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray & x) const {
             if(rlw.getRunningLength()>0) x.fastaddStreamOfEmptyWords(!rlw.getRunningBit(),
                                 rlw.getRunningLength());
             const uword * dw = i.dirtyWords();
-            for (size_t k = 0; k < rlw.getNumberOfLiteralWords()  - 1; ++k) {
+            for (size_t k = 0; k + 1 < rlw.getNumberOfLiteralWords() ; ++k) {
                                 x.addLiteralWord(~dw[k]);
             }
             const uword maskbogus = (this->sizeinbits % wordinbits != 0) ? (static_cast<uword>(1) << (this->sizeinbits % wordinbits)) - 1 : ~static_cast<uword>(0);

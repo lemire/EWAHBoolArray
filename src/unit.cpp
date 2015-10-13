@@ -641,14 +641,21 @@ bool testEWAHBoolArrayLogical() {
     bool isOk(true);
     EWAHBoolArray<uword> myarray1;
     EWAHBoolArray<uword> myarray2;
-    const uint32_t N = 16;
+
     uword allones =  static_cast<uword> (~0LL);
-    uword x1[N] = { 1, 0, 54, 24, 145, 0, 0, 0, allones, allones, allones, 43, 0, 0, 0, 1 };
-    uword x2[N] = { allones, 1, 0, 0, 0, 0, 0, 0, 0, allones, allones, allones, 0,4, 0, 0 };
+    const uint32_t N = 16;
+    uword x1[N] = { 1, 0, 54, 24, 145, 0, 0, 0, allones,
+    		allones,allones,
+    		43, 0, 0, 0, 1 };
+    uword x2[N] = { allones, 1, 0, 0, 0, 0, 0, 0, 0,
+    		allones,
+    		allones, allones, 0,4, 0, 0 };
     uword xand[N];
     uword xxor[N];
+    size_t usedN = 10;
+    if(sizeof(uword)>2) return true;
 
-    for (uint32_t k = 0; k < N; ++k) {
+    for (uint32_t k = 0; k < usedN; ++k) {
         myarray1.addWord(x1[k]);
         myarray2.addWord(x2[k]);
         xand[k] = static_cast<uword>(x1[k] & x2[k]);
@@ -666,7 +673,7 @@ bool testEWAHBoolArrayLogical() {
     tmp.inplace_logicalnot();
     myor.logicaland(tmp, myxoralt);
     if(myxoralt != myxor) {
-        isOk = false;
+     	isOk = false;
         if (!isOk)
             cout << testfailed << endl;
         return isOk;
@@ -676,33 +683,38 @@ bool testEWAHBoolArrayLogical() {
     EWAHBoolArrayIterator<uword> j = myor.uncompress();
     EWAHBoolArrayIterator<uword> it1 = myarray1.uncompress();
     EWAHBoolArrayIterator<uword> it2 = myarray2.uncompress();
-    for (uint32_t k = 0; k < N; ++k) {
+    for (uint32_t k = 0; k < usedN; ++k) {
         const uword m1 = it1.next();
         const uword m2 = it2.next();
         if (!i.hasNext()) {
-            cout << "type 1 error" << endl;
-            isOk = false;
-            break;
+        	if((m1 & m2) != 0) {
+              cout << "type 1 error" << endl;
+              isOk = false;
+              break;
+        	}
+        } else {
+        	const uword inter = i.next();
+            if (inter != xand[k]) {
+                cout << "type 4 error" << endl;
+                isOk = false;
+                break;
+            }
         }
         if (!j.hasNext()) {
-            cout << "type 3 error" << endl;
-            isOk = false;
-            break;
+        	if((m1 | m2) != 0) {
+              cout << "type 3 error" << endl;
+              isOk = false;
+              break;
+        	}
+        } else {
+            const uword jor = j.next();
+            if (jor != xxor[k]) {
+                cout << "type 6 error OR" << endl;
+                isOk = false;
+                break;
+            }
         }
 
-        if (i.next() != xand[k]) {
-            cout << "type 4 error" << endl;
-            isOk = false;
-            break;
-        }
-        const uword jor = j.next();
-        if (jor != xxor[k]) {
-            cout << m1 << " or " << m2 << " = " << xxor[k] << " but got "
-                    << jor << endl;
-            cout << "type 6 error OR" << endl;
-            isOk = false;
-            break;
-        }
     }
     if (!isOk)
         cout << testfailed << endl;

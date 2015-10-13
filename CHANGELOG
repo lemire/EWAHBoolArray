@@ -4,6 +4,9 @@ TODO
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
+0.4.7 (October 12th, 2012)
+  Performance tuning for logicalands.
+
 0.4.6 (October 9th, 2015)
   Performance optimization (mostly for logicalands): we do not extend bitmaps perior to aggregating them. This is a slight change of semantics.
 

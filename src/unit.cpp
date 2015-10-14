@@ -912,7 +912,7 @@ public:
 		EWAHBoolArray<uint64_t>** ewahs = new EWAHBoolArray <uint64_t>*[2];
 
 		ifstream inputStream;
-		inputStream.open(filename, ios::binary);
+		inputStream.open(filename.c_str(), ios::binary);
 
 		ewahs[0] = readOneBitmap(&inputStream);
 		ewahs[1] = readOneBitmap(&inputStream);

@@ -9,11 +9,16 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include "ewah.h"
 #include "boolarray.h"
+
+
+#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 using namespace std;
 
@@ -991,7 +996,7 @@ bool testRealData() {
 		vor.clear();
 		vxor.clear();
 		container.reset();
-		string filename = path + to_string(k * 1000);
+		string filename = path + SSTR(k * 1000);
 		EWAHBoolArray<uint64_t>** ewahs = JavaEWAHReader::readFile(filename);
 		ewahs[0]->appendSetBits(v1);
 		ewahs[1]->appendSetBits(v2);

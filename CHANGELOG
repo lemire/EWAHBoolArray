@@ -4,7 +4,10 @@ TODO
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
-0.4.7 (October 12th, 2012)
+0.4.8 (October 14th, 205)
+  Better unit testing
+
+0.4.7 (October 12th, 2015)
   Performance tuning for logicalands.
 
 0.4.6 (October 9th, 2015)

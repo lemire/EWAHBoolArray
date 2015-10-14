@@ -8,6 +8,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 #include "ewah.h"
 #include "boolarray.h"
 
@@ -891,8 +895,183 @@ void tellmeaboutmachine() {
 
 }
 
+
+// class by  Jacques NABHAN
+class JavaEWAHReader {
+public:
+	JavaEWAHReader() {
+
+	}
+
+	static EWAHBoolArray<uint64_t>** readFile(string filename) {
+		EWAHBoolArray<uint64_t>** ewahs = new EWAHBoolArray <uint64_t>*[2];
+
+		ifstream inputStream;
+		inputStream.open(filename, ios::binary);
+
+		ewahs[0] = readOneBitmap(&inputStream);
+		ewahs[1] = readOneBitmap(&inputStream);
+
+		inputStream.close();
+
+		return ewahs;
+	}
+
+	virtual ~JavaEWAHReader() {
+
+	}
+
+	static EWAHBoolArray<uint64_t>* readOneBitmap(ifstream* inputStream) {
+		EWAHBoolArray<uint64_t>* ewah = new EWAHBoolArray<uint64_t>;
+
+		uint32_t sizeInBits = 0;
+		inputStream->read((char *)&sizeInBits, 4);
+		sizeInBits = swapBytesIfNecessary(sizeInBits);
+
+		uint32_t numberOfOnes = 0;
+		inputStream->read((char *)&numberOfOnes, 4);
+		numberOfOnes = swapBytesIfNecessary(numberOfOnes);
+
+		uint32_t tmp = 0;
+		for (unsigned long i = 0; i<numberOfOnes; ++i) {
+			inputStream->read((char *)&tmp, 4);
+			tmp = swapBytesIfNecessary(tmp);
+			ewah->set(tmp);
+		}
+
+		ewah->setSizeInBits(sizeInBits);
+		return ewah;
+	}
+private:
+	static uint32_t swapBytesIfNecessary(uint32_t num) {
+		int i = 1;
+		if (*(char *)&i == 1) {
+			// little endian machine
+			return ((num>>24)&0xff) | // move byte 3 to byte 0
+		            ((num<<8)&0xff0000) | // move byte 1 to byte 2
+		            ((num>>8)&0xff00) | // move byte 2 to byte 1
+		            ((num<<24)&0xff000000); // byte 0 to byte 3
+		} else {
+			// big endian machine
+			return num;
+		}
+	}
+};
+int dirExists(const char *path) {
+    struct stat info;
+
+    if(stat( path, &info ) != 0)
+        return 0;
+    else if(info.st_mode & S_IFDIR)
+        return 1;
+    else
+        return 0;
+}
+
+bool testRealData() {
+    cout << "[testRealData] from JavaEWAH bitmaps (Jacques NABHAN)" << endl;
+
+	string path = "data/bitmap_dumps/";
+	if(!dirExists(path.c_str())) {
+		cout << "I cannot find bitmap dump directory : "<<path<<endl;
+		cout << "Please run unit tests from a proper location. "<<endl;
+		cout << "For now, real-data tests are disabled. "<<endl;
+
+		return true;
+	}
+	const size_t N = 207;
+	vector<size_t> v1,v2, va, vor, vxor;
+	EWAHBoolArray<uint64_t> container;
+
+	for(size_t k = 0; k < 207; ++k) {
+		cout<<"."; cout.flush();
+		v1.clear();
+		v2.clear();
+		va.clear();
+		vor.clear();
+		vxor.clear();
+		container.reset();
+		string filename = path + to_string(k * 1000);
+		EWAHBoolArray<uint64_t>** ewahs = JavaEWAHReader::readFile(filename);
+		ewahs[0]->appendSetBits(v1);
+		ewahs[1]->appendSetBits(v2);
+		if(ewahs[0]->numberOfOnes() != v1.size()) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"bad size at vec 1"<<endl;
+			return false;
+		}
+		if(ewahs[1]->numberOfOnes() != v2.size()) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"bad size at vec 2"<<endl;
+			return false;
+		}
+		ewahs[0]->logicaland(*ewahs[1], container);
+		container.appendSetBits(va);
+		if(container.numberOfOnes() != va.size()) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"bad size from intersection"<<endl;
+			return false;
+		}
+
+		vector<size_t> longintersection(v1.size() + v2.size());
+		longintersection.resize(std::set_intersection (v1.begin(), v1.end(), v2.begin(), v2.end(), longintersection.begin())-longintersection.begin());
+		if(longintersection != va) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"intersections do not match!"<<endl;
+			return false;
+		}
+
+		container.reset();
+
+		ewahs[0]->logicalor(*ewahs[1], container);
+		container.appendSetBits(vor);
+		if(container.numberOfOnes() != vor.size()) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"bad size from union"<<endl;
+			return false;
+		}
+
+		vector<size_t> longunion(v1.size() + v2.size());
+		longunion.resize(std::set_union (v1.begin(), v1.end(), v2.begin(), v2.end(), longunion.begin())-longunion.begin());
+		if(longunion != vor) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"unions do not match!"<<endl;
+			return false;
+		}
+
+		container.reset();
+
+
+		ewahs[0]->logicalxor(*ewahs[1], container);
+		container.appendSetBits(vxor);
+		if(container.numberOfOnes() != vxor.size()) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"bad size from xor"<<endl;
+			return false;
+		}
+
+		vector<size_t> longxor(v1.size() + v2.size());
+		longxor.resize(std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), longxor.begin())-longxor.begin());
+		if(longxor != vxor) {
+			cout<<"Loading bitmaps from file "<<filename<<endl;
+			cerr<<"xor do not match!"<<endl;
+			return false;
+		}
+		delete ewahs[0];
+		delete ewahs[1];
+		delete[] ewahs;
+	}
+	cout<<endl;
+	cout <<"Tested "<<N<<" bitmap pairs with success!" <<endl;
+	return true;
+}
+
+
+
 int main(void) {
     int failures = 0;
+    if(!testRealData())
+    	++failures;
     if (!testIntersects<uint16_t>())
         ++failures;
     if (!testIntersects<uint32_t>())

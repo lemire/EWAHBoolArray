@@ -4,6 +4,9 @@ TODO
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
+0.4.10 (October 19th, 2015)
+ Improving portability
+
 0.4.9 (October 19th, 2015)
   Fixed regression with "intersects" 
 

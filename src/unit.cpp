@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <iostream>
 #include <sstream>
 #include <sys/types.h>
@@ -1084,7 +1084,7 @@ bool dataindexingtest() {
     vector <string> col1, col2;
     string datasource = "data/data.csv";
 
-    ifstream infile(datasource);
+    ifstream infile(datasource.c_str(), ios::binary);
     if(!infile) {
         cout<<"WARNING: For this test to run, I need to find data/data.csv in current directory. "<<endl;
         return true;
@@ -1116,8 +1116,8 @@ bool dataindexingtest() {
     }
 
 
-    unordered_map<string, EWAHBoolArray<uword> > index1 ;
-    unordered_map<string, EWAHBoolArray<uword> > index2 ;
+    map<string, EWAHBoolArray<uword> > index1 ;
+    map<string, EWAHBoolArray<uword> > index2 ;
 
     for (size_t i = 0; i < col1.size(); i++) {
         index1[col1[i]].set(i);
@@ -1129,9 +1129,9 @@ bool dataindexingtest() {
 
     size_t testcount = 0;
 
-    for (typename unordered_map<string, EWAHBoolArray<uword> >::iterator i = index1.begin(); i!= index1.end(); ++i) {
+    for (typename map<string, EWAHBoolArray<uword> >::iterator i = index1.begin(); i!= index1.end(); ++i) {
         EWAHBoolArray<uword> & bitmap1 = i->second;
-        for (typename unordered_map<string, EWAHBoolArray<uword> >::iterator j = index2.begin(); j != index2.end(); ++j) {
+        for (typename map<string, EWAHBoolArray<uword> >::iterator j = index2.begin(); j != index2.end(); ++j) {
             EWAHBoolArray<uword> & bitmap2 = j->second;
             bool intersect = bitmap1.intersects(bitmap2);
             EWAHBoolArray<uword> result;

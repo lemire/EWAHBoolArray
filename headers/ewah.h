@@ -483,7 +483,7 @@ public:
 
     /**
      * set size in bits. This does not affect the compressed size. It
-     * runs in constant time. This should not normally be used, except 
+     * runs in constant time. This should not normally be used, except
      * as part of a deserialization process.
      */
     inline void setSizeInBits(const size_t size) {
@@ -1823,170 +1823,46 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
             rlwj.discardFirstWordsWithReload(nbre_literal);
         }
     }
-    //RunningLength;
-/*    while (true) {
-        bool i_is_prey(rlwi.size() < rlwj.size());
-        BufferedRunningLengthWord<uword> & prey(i_is_prey ? rlwi : rlwj);
-        BufferedRunningLengthWord<uword> & predator(i_is_prey ? rlwj : rlwi);
-
-
-
-
-        if (prey.getRunningBit() == 0) {
-            const uword preyrl(prey.getRunningLength());
-            predator.discardFirstWords(preyrl);
-            prey.discardFirstWords(preyrl);
-            if(preyrl>0) container.fastaddStreamOfEmptyWords(0, static_cast<size_t> (preyrl));
-        } else {
-            // we have a stream of 1x11
-            const uword predatorrl(predator.getRunningLength());
-            const uword preyrl(prey.getRunningLength());
-            const uword tobediscarded = (predatorrl >= preyrl) ? preyrl
-                    : predatorrl;
-            if(tobediscarded>0) container.fastaddStreamOfEmptyWords(predator.getRunningBit(),
-                    static_cast<size_t> (tobediscarded));
-            if (preyrl - tobediscarded > 0) {
-                const uword * dw_predator(
-                        i_is_prey ? j.dirtyWords() : i.dirtyWords());
-                container.addStreamOfDirtyWords(dw_predator,
-                        static_cast<size_t> (preyrl - tobediscarded));
-            }
-            predator.discardFirstWords(preyrl);
-            prey.discardFirstWords(preyrl);
-        }
-        const uword predatorrl(predator.getRunningLength());
-        if (predatorrl > 0) {
-            if (predator.getRunningBit() == 0) {
-                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword tobediscarded =
-                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-                                : predatorrl;
-                predator.discardFirstWords(tobediscarded);
-                prey.discardFirstWords(tobediscarded);
-                if(tobediscarded>0) container.fastaddStreamOfEmptyWords(0,
-                        static_cast<size_t> (tobediscarded));
-            } else {
-                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword tobediscarded =
-                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-                                : predatorrl;
-                if (tobediscarded > 0) {
-                    const uword * dw_prey(
-                            i_is_prey ? i.dirtyWords() : j.dirtyWords());
-                    container.addStreamOfDirtyWords(dw_prey,
-                            static_cast<size_t> (tobediscarded));
-                    predator.discardFirstWords(tobediscarded);
-                    prey.discardFirstWords(tobediscarded);
-                }
-            }
-        }
-#ifdef EWAHASSERT
-        assert(prey.getRunningLength() == 0);
-#endif
-        // all that is left to do now is to AND the dirty words
-        uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-        if (nbre_dirty_prey > 0) {
-#ifdef EWAHASSERT
-            assert(predator.getRunningLength() == 0);
-#endif
-            const uword * idirty = i.dirtyWords();
-            const uword * jdirty = j.dirtyWords();
-            for (uword k = 0; k < nbre_dirty_prey; ++k) {
-                container.addWord(static_cast<uword>(idirty[k] & jdirty[k]));
-            }
-            predator.discardFirstWords(nbre_dirty_prey);
-        }
-        if (i_is_prey) {
-            if (!i.hasNext())
-                break;
-            rlwi = i.next();
-        } else {
-            if (!j.hasNext())
-                break;
-            rlwj = j.next();
-        }
-    }*/
     container.setSizeInBits(sizeInBits());
 }
 
 
 template<class uword>
 bool EWAHBoolArray<uword>::intersects(const EWAHBoolArray &a) const {
-    EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
-    EWAHBoolArrayRawIterator<uword> j = raw_iterator();
-    // at this point, this should be safe:
-    BufferedRunningLengthWord<uword> & rlwi = i.next();
-    BufferedRunningLengthWord<uword> & rlwj = j.next();
-    if (!(i.hasNext() and j.hasNext())) {// hopefully this never happens...
-        return false;
-    }
-    while (true) {
-        bool i_is_prey(rlwi.size() < rlwj.size());
+EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
+EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+if (!(i.hasNext() and j.hasNext())) {// hopefully this never happens...
+    return false;
+}
+// at this point, this should be safe:
+BufferedRunningLengthWord<uword> & rlwi = i.next();
+BufferedRunningLengthWord<uword> & rlwj = j.next();
+
+while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
+    while ((rlwi.getRunningLength() > 0)
+            || (rlwj.getRunningLength() > 0)) {
+      const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
         BufferedRunningLengthWord<uword> & prey(i_is_prey ? rlwi : rlwj);
         BufferedRunningLengthWord<uword> & predator(i_is_prey ? rlwj : rlwi);
-        if (prey.getRunningBit() == 0) {
-            const uword preyrl(prey.getRunningLength());
-            predator.discardFirstWordsWithReload(preyrl);
-            prey.discardFirstWordsWithReload(preyrl);
+        if (!predator.getRunningBit()) {
+            prey.discardFirstWordsWithReload(predator.getRunningLength());
         } else {
-            // we have a stream of 1x11
-            const uword predatorrl(predator.getRunningLength());
-            const uword preyrl(prey.getRunningLength());
-            const uword tobediscarded = (predatorrl >= preyrl) ? preyrl
-                    : predatorrl;
-            if((tobediscarded>0) && predator.getRunningBit()) return true;
-            if (preyrl - tobediscarded > 0) {
-              return true;
-            }
-            predator.discardFirstWordsWithReload(preyrl);
-            prey.discardFirstWordsWithReload(preyrl);
+          size_t index = 0;
+          bool isnonzero = prey.nonzero_discharge(predator.getRunningLength(),index);
+          if(isnonzero) return true;
         }
-        const uword predatorrl(predator.getRunningLength());
-        if (predatorrl > 0) {
-            if (predator.getRunningBit() == 0) {
-                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword tobediscarded =
-                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-                                : predatorrl;
-                predator.discardFirstWordsWithReload(tobediscarded);
-                prey.discardFirstWordsWithReload(tobediscarded);
-            } else {
-                const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-                const uword tobediscarded =
-                        (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-                                : predatorrl;
-                if (tobediscarded > 0) {
-                  return true;
-                }
-            }
-        }
-#ifdef EWAHASSERT
-        assert(prey.getRunningLength() == 0);
-#endif
-        // all that is left to do now is to AND the dirty words
-        uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-        if (nbre_dirty_prey > 0) {
-#ifdef EWAHASSERT
-            assert(predator.getRunningLength() == 0);
-#endif
-            const uword * idirty = i.dirtyWords();
-            const uword * jdirty = j.dirtyWords();
-            for (uword k = 0; k < nbre_dirty_prey; ++k) {
-              if(static_cast<uword>(idirty[k] & jdirty[k])!=0) return true;
-            }
-            predator.discardFirstWordsWithReload(nbre_dirty_prey);
-        }
-        if (i_is_prey) {
-            if (!i.hasNext())
-                break;
-            rlwi = i.next();
-        } else {
-            if (!j.hasNext())
-                break;
-            rlwj = j.next();
-        }
+        predator.discardRunningWordsWithReload();
     }
-    return false;
+    const size_t nbre_literal = min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
+    if (nbre_literal > 0) {
+        for (size_t k = 0; k < nbre_literal; ++k) {
+            if((rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k))!=0) return true;
+        }
+        rlwi.discardFirstWordsWithReload(nbre_literal);
+        rlwj.discardFirstWordsWithReload(nbre_literal);
+    }
+}
+return false;
 }
 
 template<class uword>

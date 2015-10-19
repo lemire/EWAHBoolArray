@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <sstream>
 #include <sys/types.h>
@@ -49,11 +50,11 @@ bool testCardinalityBoolArray() {
     BoolArray<uword> bout;
     b.logicalnot(bout);
     if(bout.numberOfOnes() != 99) {
-                return false;
+        return false;
     }
     b.inplace_logicalnot();
     if(b.numberOfOnes() != 99) {
-            return false;
+        return false;
     }
     return true;
 }
@@ -173,15 +174,15 @@ bool testGet() {
             if (x.get(k)) {
                 if (k % gap != 0) {
                     cout << "spotted an extra set bit at " << k << " gap = "
-                            << gap << endl;
+                         << gap << endl;
                     return false;
+                }
+            } else if (k % gap == 0) {
+                cout<<
+                    "missed a set bit " << k
+                    << " gap = " << gap<<endl;
+                return false;
             }
-        } else if (k % gap == 0) {
-            cout<<
-            "missed a set bit " << k
-            << " gap = " << gap<<endl;
-            return false;
-        }
     }
     return isOk;
 }
@@ -210,7 +211,7 @@ bool testSetGet() {
     EWAHBoolArray<uword> ewcb;
     uint32_t val[] = { 5, 4400, 44600, 55400, 1000000 };
     for (int k = 0; k < 5; ++k) {
-      ewcb.set(val[k]);
+        ewcb.set(val[k]);
     }
     size_t counter = 0;
     bool isOk = true;
@@ -238,38 +239,38 @@ bool testRunningLengthWord() {
     for (uword myrl = 0; myrl
             <= RunningLengthWord<uword>::largestrunninglengthcount; myrl
             = static_cast<uword> (myrl
-                    + RunningLengthWord<uword>::largestrunninglengthcount / 10)) {
+                                  + RunningLengthWord<uword>::largestrunninglengthcount / 10)) {
         rlw.setRunningLength(myrl);
         if (rlw.getRunningBit() != true) {
             cout << "failed to set the running bit (2) " << sizeof(uword)
-                    << endl;
+                 << endl;
             isOk = false;
         }
         if (rlw.getRunningLength() != myrl) {
             cout << "failed to set the running length " << sizeof(uword)
-                    << endl;
+                 << endl;
             isOk = false;
         }
     }
     rlw.setRunningLength(12);
     for (uword mylw = 0; mylw <= RunningLengthWord<uword>::largestliteralcount; mylw
             = static_cast<uword> (mylw
-                    + RunningLengthWord<uword>::largestliteralcount / 10)) {
+                                  + RunningLengthWord<uword>::largestliteralcount / 10)) {
         rlw.setNumberOfLiteralWords(mylw);
         if (rlw.getRunningBit() != true) {
             cout << "failed to set the running bit (3) " << sizeof(uword)
-                    << endl;
+                 << endl;
             isOk = false;
         }
         if (rlw.getRunningLength() != 12) {
             cout << "failed to set the running length (2) " << sizeof(uword)
-                    << endl;
+                 << endl;
             isOk = false;
         }
         if (rlw.getNumberOfLiteralWords() != mylw) {
             cout << "failed to set the LiteralWords " << mylw << " "
-                    << sizeof(uword) << " " << rlw.getNumberOfLiteralWords()
-                    << endl;
+                 << sizeof(uword) << " " << rlw.getNumberOfLiteralWords()
+                 << endl;
             isOk = false;
         }
     }
@@ -281,7 +282,7 @@ bool testRunningLengthWord() {
     }
     if (rlw.getRunningLength() != 12) {
         cout << "failed to set the running length (3) " << sizeof(uword)
-                << endl;
+             << endl;
         isOk = false;
     }
     if (rlw.getNumberOfLiteralWords() != 43) {
@@ -299,7 +300,7 @@ bool testEWAHBoolArrayAppend() {
     bool isOk(true);
     uword zero = 0;
     uword specialval = 1UL + (1UL << 4) + (static_cast<uword> (1)
-            << (sizeof(uword) * 8 - 1));
+                                           << (sizeof(uword) * 8 - 1));
     uword notzero = static_cast<uword> (~zero);
     EWAHBoolArray<uword> myarray1;
     BoolArray<uword> ba1;
@@ -398,7 +399,7 @@ bool testJoergBukowski() {
         }
         vals.clear();
         for (typename EWAHBoolArray<uword>::const_iterator j =
-                recovered.begin(); j != recovered.end(); ++j)
+                    recovered.begin(); j != recovered.end(); ++j)
             vals.push_back(static_cast<uint32_t> (*j));
         if (vals.size() != static_cast<size_t> (i - positions.begin() + 1)) {
             cout << "failed to recover right number -- iterator" << endl;
@@ -500,7 +501,7 @@ bool testPhongTran2() {
     if (!(myarray == lmyarray)) {
         cout << "bad news, they are not equal" << endl;
         cout << "size in bits: " << myarray.sizeInBits() << " vs. "
-                << lmyarray.sizeInBits() << endl;
+             << lmyarray.sizeInBits() << endl;
         isOk = false;
     }
     EWAHBoolArrayIterator<uword> i = myarray.uncompress();
@@ -540,7 +541,7 @@ bool testEWAHBoolArray() {
     myarray.addWord(zero);
     ba.setWord(2, zero);
     uword specialval = 1UL + (1UL << 4) + (static_cast<uword> (1)
-            << (sizeof(uword) * 8 - 1));
+                                           << (sizeof(uword) * 8 - 1));
     myarray.addWord(specialval);
     ba.setWord(3, specialval);
     myarray.addWord(notzero);
@@ -557,7 +558,7 @@ bool testEWAHBoolArray() {
     ba.setWord(9, zero);
     if (myarray.sizeInBits() != 10 * sizeof(uword) * 8) {
         cout << "expected " << 10 * sizeof(uword) * 8 << " bits but found "
-                << myarray.sizeInBits() << endl;
+             << myarray.sizeInBits() << endl;
         isOk = false;
     }
     string indexfile("testingewahboolarray.bin");
@@ -572,7 +573,7 @@ bool testEWAHBoolArray() {
     if (!(myarray == lmyarray)) {
         cout << "bad news, they are not equal" << endl;
         cout << "size in bits: " << myarray.sizeInBits() << " vs. "
-                << lmyarray.sizeInBits() << endl;
+             << lmyarray.sizeInBits() << endl;
         isOk = false;
     }
     EWAHBoolArrayIterator<uword> i = myarray.uncompress();
@@ -589,12 +590,12 @@ bool testEWAHBoolArray() {
         uword valref = ba.getWord(k++);
         if (val != valref) {
             cout << "the two arrays differ from uncompressed array at " << k
-                    << " " << val << " " << val2 << " " << valref << endl;
+                 << " " << val << " " << val2 << " " << valref << endl;
             isOk = false;
         }
         if (val != val2) {
             cout << "the two arrays differ at " << k << " " << val << " "
-                    << val2 << " " << valref << endl;
+                 << val2 << " " << valref << endl;
             isOk = false;
         }
     }
@@ -654,11 +655,13 @@ bool testEWAHBoolArrayLogical() {
     uword allones =  static_cast<uword> (~0LL);
     const uint32_t N = 16;
     uword x1[N] = { 1, 0, 54, 24, 145, 0, 0, 0, allones,
-    		allones,allones,
-    		43, 0, 0, 0, 1 };
+                    allones,allones,
+                    43, 0, 0, 0, 1
+                  };
     uword x2[N] = { allones, 1, 0, 0, 0, 0, 0, 0, 0,
-    		allones,
-    		allones, allones, 0,4, 0, 0 };
+                    allones,
+                    allones, allones, 0,4, 0, 0
+                  };
     uword xand[N];
     uword xxor[N];
     size_t usedN = 10;
@@ -682,7 +685,7 @@ bool testEWAHBoolArrayLogical() {
     tmp.inplace_logicalnot();
     myor.logicaland(tmp, myxoralt);
     if(myxoralt != myxor) {
-     	isOk = false;
+        isOk = false;
         if (!isOk)
             cout << testfailed << endl;
         return isOk;
@@ -696,13 +699,13 @@ bool testEWAHBoolArrayLogical() {
         const uword m1 = it1.next();
         const uword m2 = it2.next();
         if (!i.hasNext()) {
-        	if((m1 & m2) != 0) {
-              cout << "type 1 error" << endl;
-              isOk = false;
-              break;
-        	}
+            if((m1 & m2) != 0) {
+                cout << "type 1 error" << endl;
+                isOk = false;
+                break;
+            }
         } else {
-        	const uword inter = i.next();
+            const uword inter = i.next();
             if (inter != xand[k]) {
                 cout << "type 4 error" << endl;
                 isOk = false;
@@ -710,11 +713,11 @@ bool testEWAHBoolArrayLogical() {
             }
         }
         if (!j.hasNext()) {
-        	if((m1 | m2) != 0) {
-              cout << "type 3 error" << endl;
-              isOk = false;
-              break;
-        	}
+            if((m1 | m2) != 0) {
+                cout << "type 3 error" << endl;
+                isOk = false;
+                break;
+            }
         } else {
             const uword jor = j.next();
             if (jor != xxor[k]) {
@@ -763,8 +766,8 @@ std::ostream& operator << ( std::ostream& os, const EWAHBoolArray<uword>& ba )
         size_t runBits = static_cast<size_t>( brlw.getRunningLength() * wordInBits );
         size_t litBits = static_cast<size_t>( brlw.getNumberOfLiteralWords() * wordInBits );
         os << jx << ", " << ixBit << ": "
-            << tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
-            << brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
+           << tf << " for " << brlw.getRunningLength() << " words(" << runBits << " bits), "
+           << brlw.getNumberOfLiteralWords() << " literals (" << litBits << " bits)" << endl;
         ixBit += (runBits + litBits);
     }
     string eq = ( ixBit == ba.sizeInBits() ? "==" : "!=" );
@@ -866,10 +869,10 @@ bool testEWAHBoolArrayLogical2()
         ok = false;
     }
     if ( baXOR != testXOR ) {
-            cout << " XOR failed (2): " << endl;
-            cout << "Expected: " << baXOR << endl;
-            cout << "Encountered: " << testXOR << endl;
-            ok = false;
+        cout << " XOR failed (2): " << endl;
+        cout << "Expected: " << baXOR << endl;
+        cout << "Encountered: " << testXOR << endl;
+        ok = false;
     }
     if ( !ok )
         cout << testfailed << endl;
@@ -878,7 +881,7 @@ bool testEWAHBoolArrayLogical2()
 
 void tellmeaboutmachine() {
     cout << "number of bytes in ostream::pos_type = "
-            << sizeof(ostream::pos_type) << endl;
+         << sizeof(ostream::pos_type) << endl;
     cout << "number of bytes in size_t = " << sizeof(size_t) << endl;
     cout << "number of bytes in int = " << sizeof(int) << endl;
     cout << "number of bytes in long = " << sizeof(long) << endl;
@@ -890,7 +893,7 @@ void tellmeaboutmachine() {
 #endif
 #if __CHAR_BIT__
     if (__CHAR_BIT__ != 8)
-    cout << "on your machine, chars don't have 8bits???" << endl;
+        cout << "on your machine, chars don't have 8bits???" << endl;
 #endif
 #if __GNUG__
     cout << "GNU GCC compiler detected." << endl;
@@ -904,63 +907,63 @@ void tellmeaboutmachine() {
 // class by  Jacques NABHAN
 class JavaEWAHReader {
 public:
-	JavaEWAHReader() {
+    JavaEWAHReader() {
 
-	}
+    }
 
-	static EWAHBoolArray<uint64_t>** readFile(string filename) {
-		EWAHBoolArray<uint64_t>** ewahs = new EWAHBoolArray <uint64_t>*[2];
+    static EWAHBoolArray<uint64_t>** readFile(string filename) {
+        EWAHBoolArray<uint64_t>** ewahs = new EWAHBoolArray <uint64_t>*[2];
 
-		ifstream inputStream;
-		inputStream.open(filename.c_str(), ios::binary);
+        ifstream inputStream;
+        inputStream.open(filename.c_str(), ios::binary);
 
-		ewahs[0] = readOneBitmap(&inputStream);
-		ewahs[1] = readOneBitmap(&inputStream);
+        ewahs[0] = readOneBitmap(&inputStream);
+        ewahs[1] = readOneBitmap(&inputStream);
 
-		inputStream.close();
+        inputStream.close();
 
-		return ewahs;
-	}
+        return ewahs;
+    }
 
-	virtual ~JavaEWAHReader() {
+    virtual ~JavaEWAHReader() {
 
-	}
+    }
 
-	static EWAHBoolArray<uint64_t>* readOneBitmap(ifstream* inputStream) {
-		EWAHBoolArray<uint64_t>* ewah = new EWAHBoolArray<uint64_t>;
+    static EWAHBoolArray<uint64_t>* readOneBitmap(ifstream* inputStream) {
+        EWAHBoolArray<uint64_t>* ewah = new EWAHBoolArray<uint64_t>;
 
-		uint32_t sizeInBits = 0;
-		inputStream->read((char *)&sizeInBits, 4);
-		sizeInBits = swapBytesIfNecessary(sizeInBits);
+        uint32_t sizeInBits = 0;
+        inputStream->read((char *)&sizeInBits, 4);
+        sizeInBits = swapBytesIfNecessary(sizeInBits);
 
-		uint32_t numberOfOnes = 0;
-		inputStream->read((char *)&numberOfOnes, 4);
-		numberOfOnes = swapBytesIfNecessary(numberOfOnes);
+        uint32_t numberOfOnes = 0;
+        inputStream->read((char *)&numberOfOnes, 4);
+        numberOfOnes = swapBytesIfNecessary(numberOfOnes);
 
-		uint32_t tmp = 0;
-		for (unsigned long i = 0; i<numberOfOnes; ++i) {
-			inputStream->read((char *)&tmp, 4);
-			tmp = swapBytesIfNecessary(tmp);
-			ewah->set(tmp);
-		}
+        uint32_t tmp = 0;
+        for (unsigned long i = 0; i<numberOfOnes; ++i) {
+            inputStream->read((char *)&tmp, 4);
+            tmp = swapBytesIfNecessary(tmp);
+            ewah->set(tmp);
+        }
 
-		ewah->setSizeInBits(sizeInBits);
-		return ewah;
-	}
+        ewah->setSizeInBits(sizeInBits);
+        return ewah;
+    }
 private:
-	static uint32_t swapBytesIfNecessary(uint32_t num) {
-		int i = 1;
-		if (*(char *)&i == 1) {
-			// little endian machine
-			return ((num>>24)&0xff) | // move byte 3 to byte 0
-		            ((num<<8)&0xff0000) | // move byte 1 to byte 2
-		            ((num>>8)&0xff00) | // move byte 2 to byte 1
-		            ((num<<24)&0xff000000); // byte 0 to byte 3
-		} else {
-			// big endian machine
-			return num;
-		}
-	}
+    static uint32_t swapBytesIfNecessary(uint32_t num) {
+        int i = 1;
+        if (*(char *)&i == 1) {
+            // little endian machine
+            return ((num>>24)&0xff) | // move byte 3 to byte 0
+                   ((num<<8)&0xff0000) | // move byte 1 to byte 2
+                   ((num>>8)&0xff00) | // move byte 2 to byte 1
+                   ((num<<24)&0xff000000); // byte 0 to byte 3
+        } else {
+            // big endian machine
+            return num;
+        }
+    }
 };
 int dirExists(const char *path) {
     struct stat info;
@@ -976,107 +979,200 @@ int dirExists(const char *path) {
 bool testRealData() {
     cout << "[testRealData] from JavaEWAH bitmaps (Jacques NABHAN)" << endl;
 
-	string path = "data/bitmap_dumps/";
-	if(!dirExists(path.c_str())) {
-		cout << "I cannot find bitmap dump directory : "<<path<<endl;
-		cout << "Please run unit tests from a proper location. "<<endl;
-		cout << "For now, real-data tests are disabled. "<<endl;
+    string path = "data/bitmap_dumps/";
+    if(!dirExists(path.c_str())) {
+        cout << "I cannot find bitmap dump directory : "<<path<<endl;
+        cout << "Please run unit tests from a proper location. "<<endl;
+        cout << "For now, real-data tests are disabled. "<<endl;
 
-		return true;
-	}
-	const size_t N = 207;
-	vector<size_t> v1,v2, va, vor, vxor;
-	EWAHBoolArray<uint64_t> container;
+        return true;
+    }
+    const size_t N = 207;
+    vector<size_t> v1,v2, va, vor, vxor;
+    EWAHBoolArray<uint64_t> container;
 
-	for(size_t k = 0; k < 207; ++k) {
-		cout<<"."; cout.flush();
-		v1.clear();
-		v2.clear();
-		va.clear();
-		vor.clear();
-		vxor.clear();
-		container.reset();
-		string filename = path + SSTR(k * 1000);
-		EWAHBoolArray<uint64_t>** ewahs = JavaEWAHReader::readFile(filename);
-		ewahs[0]->appendSetBits(v1);
-		ewahs[1]->appendSetBits(v2);
-		if(ewahs[0]->numberOfOnes() != v1.size()) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"bad size at vec 1"<<endl;
-			return false;
-		}
-		if(ewahs[1]->numberOfOnes() != v2.size()) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"bad size at vec 2"<<endl;
-			return false;
-		}
-		ewahs[0]->logicaland(*ewahs[1], container);
-		container.appendSetBits(va);
-		if(container.numberOfOnes() != va.size()) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"bad size from intersection"<<endl;
-			return false;
-		}
+    for(size_t k = 0; k < 207; ++k) {
+        cout<<".";
+        cout.flush();
+        v1.clear();
+        v2.clear();
+        va.clear();
+        vor.clear();
+        vxor.clear();
+        container.reset();
+        string filename = path + SSTR(k * 1000);
+        EWAHBoolArray<uint64_t>** ewahs = JavaEWAHReader::readFile(filename);
+        ewahs[0]->appendSetBits(v1);
+        ewahs[1]->appendSetBits(v2);
+        if(ewahs[0]->numberOfOnes() != v1.size()) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"bad size at vec 1"<<endl;
+            return false;
+        }
+        if(ewahs[1]->numberOfOnes() != v2.size()) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"bad size at vec 2"<<endl;
+            return false;
+        }
+        ewahs[0]->logicaland(*ewahs[1], container);
+        container.appendSetBits(va);
+        if(container.numberOfOnes() != va.size()) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"bad size from intersection"<<endl;
+            return false;
+        }
 
-		vector<size_t> longintersection(v1.size() + v2.size());
-		longintersection.resize(std::set_intersection (v1.begin(), v1.end(), v2.begin(), v2.end(), longintersection.begin())-longintersection.begin());
-		if(longintersection != va) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"intersections do not match!"<<endl;
-			return false;
-		}
+        vector<size_t> longintersection(v1.size() + v2.size());
+        longintersection.resize(std::set_intersection (v1.begin(), v1.end(), v2.begin(), v2.end(), longintersection.begin())-longintersection.begin());
+        if(longintersection != va) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"intersections do not match!"<<endl;
+            return false;
+        }
 
-		container.reset();
+        container.reset();
 
-		ewahs[0]->logicalor(*ewahs[1], container);
-		container.appendSetBits(vor);
-		if(container.numberOfOnes() != vor.size()) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"bad size from union"<<endl;
-			return false;
-		}
+        ewahs[0]->logicalor(*ewahs[1], container);
+        container.appendSetBits(vor);
+        if(container.numberOfOnes() != vor.size()) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"bad size from union"<<endl;
+            return false;
+        }
 
-		vector<size_t> longunion(v1.size() + v2.size());
-		longunion.resize(std::set_union (v1.begin(), v1.end(), v2.begin(), v2.end(), longunion.begin())-longunion.begin());
-		if(longunion != vor) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"unions do not match!"<<endl;
-			return false;
-		}
+        vector<size_t> longunion(v1.size() + v2.size());
+        longunion.resize(std::set_union (v1.begin(), v1.end(), v2.begin(), v2.end(), longunion.begin())-longunion.begin());
+        if(longunion != vor) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"unions do not match!"<<endl;
+            return false;
+        }
 
-		container.reset();
+        container.reset();
 
 
-		ewahs[0]->logicalxor(*ewahs[1], container);
-		container.appendSetBits(vxor);
-		if(container.numberOfOnes() != vxor.size()) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"bad size from xor"<<endl;
-			return false;
-		}
+        ewahs[0]->logicalxor(*ewahs[1], container);
+        container.appendSetBits(vxor);
+        if(container.numberOfOnes() != vxor.size()) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"bad size from xor"<<endl;
+            return false;
+        }
 
-		vector<size_t> longxor(v1.size() + v2.size());
-		longxor.resize(std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), longxor.begin())-longxor.begin());
-		if(longxor != vxor) {
-			cout<<"Loading bitmaps from file "<<filename<<endl;
-			cerr<<"xor do not match!"<<endl;
-			return false;
-		}
-		delete ewahs[0];
-		delete ewahs[1];
-		delete[] ewahs;
-	}
-	cout<<endl;
-	cout <<"Tested "<<N<<" bitmap pairs with success!" <<endl;
-	return true;
+        vector<size_t> longxor(v1.size() + v2.size());
+        longxor.resize(std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), longxor.begin())-longxor.begin());
+        if(longxor != vxor) {
+            cout<<"Loading bitmaps from file "<<filename<<endl;
+            cerr<<"xor do not match!"<<endl;
+            return false;
+        }
+        delete ewahs[0];
+        delete ewahs[1];
+        delete[] ewahs;
+    }
+    cout<<endl;
+    cout <<"Tested "<<N<<" bitmap pairs with success!" <<endl;
+    return true;
+}
+
+
+template <class uword>
+bool dataindexingtest() {
+    cout<<"[dataindexingtest] checking intersects...sizeof(uword)=" << sizeof(uword)<<endl;
+
+    // read the data from the CSV file
+    vector <string> col1, col2;
+    string datasource = "data/data.csv";
+
+    ifstream infile(datasource);
+    if(!infile) {
+        cout<<"WARNING: For this test to run, I need to find data/data.csv in current directory. "<<endl;
+        return true;
+    }
+
+    while (infile)
+    {
+        string s;
+        if (!getline(infile, s)) break;
+
+        istringstream ss(s);
+        vector <string> record;
+
+        int numCommas = 0;
+        while (ss)
+        {
+            if (!getline(ss, s, ',')) break;
+            if (numCommas == 0)
+            {
+                col1.push_back(s);
+                numCommas++;
+            }
+            else
+            {
+                col2.push_back(s);
+                numCommas = 0;
+            }
+        }
+    }
+
+
+    unordered_map<string, EWAHBoolArray<uword> > index1 ;
+    unordered_map<string, EWAHBoolArray<uword> > index2 ;
+
+    for (size_t i = 0; i < col1.size(); i++) {
+        index1[col1[i]].set(i);
+    }
+    for (size_t i = 0; i < col2.size(); i++) {
+        index2[col2[i]].set(i);
+    }
+
+
+    size_t testcount = 0;
+
+    for (typename unordered_map<string, EWAHBoolArray<uword> >::iterator i = index1.begin(); i!= index1.end(); ++i) {
+        EWAHBoolArray<uword> & bitmap1 = i->second;
+        for (typename unordered_map<string, EWAHBoolArray<uword> >::iterator j = index2.begin(); j != index2.end(); ++j) {
+            EWAHBoolArray<uword> & bitmap2 = j->second;
+            bool intersect = bitmap1.intersects(bitmap2);
+            EWAHBoolArray<uword> result;
+            testcount ++;
+            bitmap1.logicaland(bitmap2, result);
+            if (intersect)
+            {
+                if(result.numberOfOnes() == 0)
+                    return false;
+            }
+            else
+            {
+                if(result.numberOfOnes() > 0)
+                    return false;
+
+            }
+        }
+
+    }
+    cout<< "Ran " << testcount << " tests. Your code is probably ok. "<<endl;
+
+
+    return true;
 }
 
 
 
 int main(void) {
     int failures = 0;
+    if (!dataindexingtest<uint16_t>())
+        ++failures;
+
+    if (!dataindexingtest<uint32_t>())
+        ++failures;
+    if (!dataindexingtest<uint64_t>())
+        ++failures;
+
     if(!testRealData())
-    	++failures;
+        ++failures;
+
+
     if (!testIntersects<uint16_t>())
         ++failures;
     if (!testIntersects<uint32_t>())
@@ -1114,11 +1210,11 @@ int main(void) {
     if (!testAndNotBoolArray<uint64_t>())
         ++failures;
     if (!testSerialization<uint16_t> ())
-            ++failures;
+        ++failures;
     if (!testSerialization<uint32_t> ())
-            ++failures;
+        ++failures;
     if (!testSerialization<uint64_t> ())
-            ++failures;
+        ++failures;
 
     if (!testGet<uint16_t> ())
         ++failures;

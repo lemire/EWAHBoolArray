@@ -15,11 +15,17 @@ at the expense of some performance.
 The library also provides a basic BoolArray class which can serve as a traditional
 bitmap.
 
+
+## Real-world usage
+
+EWAH is used to accelerate the distributed version control system Git (http://githubengineering.com/counting-objects/). You can find the C port of EWAH written by the Git team at https://github.com/git/git/tree/master/ewah
+
+The Java counterpart of this library (JavaEWAH) is part of Apache Hive and its derivatives (e.g.,  Apache Spark) and Eclipse JGit. It has been used in production systems for many years. It is part of major Linux distributions.
+
+
 This library is used by database and information retrieval engines
 such as Hustle -- A column oriented, embarrassingly distributed relational
 event database (see https://github.com/chango/hustle).
-
-
 
 
 

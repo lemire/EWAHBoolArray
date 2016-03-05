@@ -4,6 +4,9 @@ TODO
   Iterators over unset bits for EWAHBoolArray
   logicalandnot for EWAHBoolArray
 
+0.4.11 (March 5th, 2016)
+ Fixed a performance issue with iterators when using the comparison operator (Zarian Waheed)
+
 0.4.10 (October 19th, 2015)
  Improving portability
 

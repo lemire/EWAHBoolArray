@@ -618,7 +618,7 @@ public:
     }
 
     bool operator<(const type_of_iterator& o) {
-        if (buffer != o.buffer)
+        if (&buffer != &o.buffer)
             return false;
         if (mpointer == buffer.size())
             return false;

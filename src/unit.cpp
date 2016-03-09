@@ -1157,36 +1157,70 @@ bool dataindexingtest() {
     return true;
 }
 
+typedef struct {
+    EWAHBoolArray<uint32_t> gpr[32][4];
+} vcpu_ctx;
+
+typedef struct {
+    vcpu_ctx vcpu;
+    void *uval;
+} thread_ctx_t;
+
+
+bool funnytest() {
+    cout<<"[funnytest] checking funnytest"<<endl;
+    thread_ctx_t* tctx = new thread_ctx_t();
+    for(int k = 0; k < 10 ; ++k)
+        if(tctx->vcpu.gpr[k][0].get(1)) {
+            return false;// bug
+        }
+
+    for(int k = 0; k < 10 ; ++k)
+        tctx->vcpu.gpr[k][0].set(1);
+    for(int k = 0; k < 10 ; ++k)
+        if(!tctx->vcpu.gpr[k][0].get(1)) {
+            return false;// bug
+        }
+
+    cout << tctx->vcpu.gpr[0][0] << endl;
+    delete tctx;
+    cout<< "Your code is probably ok. "<<endl;
+    return true;
+}
+
 
 template <class uword>
 bool arrayinit() {
-  cout<<"[arrayinit] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
-  EWAHBoolArray<uint32_t> gpr[10];
-  for(int k = 0; k < 10 ; ++k)
-    gpr[k].set(k);
-  for(int k = 0; k < 10 ; ++k)
-      cout << gpr[k] << endl;
-  cout<< "Your code is probably ok. "<<endl;
-  return true;
+    cout<<"[arrayinit] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
+    EWAHBoolArray<uint32_t> gpr[10];
+    for(int k = 0; k < 10 ; ++k)
+        gpr[k].set(k);
+    for(int k = 0; k < 10 ; ++k)
+        cout << gpr[k] << endl;
+    cout<< "Your code is probably ok. "<<endl;
+    return true;
 }
 
 template <class uword>
 bool arrayinit2d() {
-  cout<<"[arrayinit2d] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
-  EWAHBoolArray<uint32_t> gpr[10][4];
-  for(int k = 0; k < 10 ; ++k)
-    for(int l = 0; l < 4 ; ++l)
-      gpr[k][l].set(k);
-  for(int k = 0; k < 10 ; ++k)
-    for(int l = 0; l < 4 ; ++l)
-      cout << gpr[k][l] << endl;
-  cout<< "Your code is probably ok. "<<endl;
-  return true;
+    cout<<"[arrayinit2d] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
+    EWAHBoolArray<uint32_t> gpr[10][4];
+    for(int k = 0; k < 10 ; ++k)
+        for(int l = 0; l < 4 ; ++l)
+            gpr[k][l].set(k);
+    for(int k = 0; k < 10 ; ++k)
+        for(int l = 0; l < 4 ; ++l)
+            cout << gpr[k][l] << endl;
+    cout<< "Your code is probably ok. "<<endl;
+    return true;
 }
 
 
 int main(void) {
     int failures = 0;
+    if(!funnytest()) {
+        ++failures;
+    }
     if (!arrayinit<uint16_t>())
         ++failures;
     if (!arrayinit<uint32_t>())

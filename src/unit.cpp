@@ -1158,12 +1158,29 @@ bool dataindexingtest() {
 }
 
 
+template <class uword>
+bool arrayinit() {
+  cout<<"[arrayinit] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
+  EWAHBoolArray<uint32_t> gpr[10];
+  for(int k = 0; k < 10 ; ++k)
+    gpr[k].set(k);
+  for(int k = 0; k < 10 ; ++k)
+      cout << gpr[k] << endl;
+  cout<< "Your code is probably ok. "<<endl;
+  return true;
+}
 
 int main(void) {
     int failures = 0;
-    if (!dataindexingtest<uint16_t>())
+    if (!arrayinit<uint16_t>())
+        ++failures;
+    if (!arrayinit<uint32_t>())
+        ++failures;
+    if (!arrayinit<uint64_t>())
         ++failures;
 
+    if (!dataindexingtest<uint16_t>())
+        ++failures;
     if (!dataindexingtest<uint32_t>())
         ++failures;
     if (!dataindexingtest<uint64_t>())

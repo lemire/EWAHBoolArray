@@ -1170,6 +1170,21 @@ bool arrayinit() {
   return true;
 }
 
+template <class uword>
+bool arrayinit2d() {
+  cout<<"[arrayinit2d] checking arrayinit...sizeof(uword)=" << sizeof(uword)<<endl;
+  EWAHBoolArray<uint32_t> gpr[10][4];
+  for(int k = 0; k < 10 ; ++k)
+    for(int l = 0; l < 4 ; ++l)
+      gpr[k][l].set(k);
+  for(int k = 0; k < 10 ; ++k)
+    for(int l = 0; l < 4 ; ++l)
+      cout << gpr[k][l] << endl;
+  cout<< "Your code is probably ok. "<<endl;
+  return true;
+}
+
+
 int main(void) {
     int failures = 0;
     if (!arrayinit<uint16_t>())
@@ -1177,6 +1192,12 @@ int main(void) {
     if (!arrayinit<uint32_t>())
         ++failures;
     if (!arrayinit<uint64_t>())
+        ++failures;
+    if (!arrayinit2d<uint16_t>())
+        ++failures;
+    if (!arrayinit2d<uint32_t>())
+        ++failures;
+    if (!arrayinit2d<uint64_t>())
         ++failures;
 
     if (!dataindexingtest<uint16_t>())

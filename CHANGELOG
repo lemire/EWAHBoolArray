@@ -2,7 +2,10 @@ TODO
   Iterators over set bits for BoolArray
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
-  logicalandnot for EWAHBoolArray
+
+0.5.0 (March 16th, 2016)
+ Implemented fast_logicalor for the aggregation of many bitmaps
+ logicalandnot for EWAHBoolArray (suboptimal implementation)
 
 0.4.11 (March 5th, 2016)
  Fixed a performance issue with iterators when using the comparison operator (Zarian Waheed)

@@ -203,13 +203,24 @@ public:
      * Computes the logical and and writes to the provided BoolArray (out).
      * The current bitmaps is unchanged.
      */
-    void logicaland(const BoolArray & ba, BoolArray & out) {
+    void logicaland(const BoolArray & ba, BoolArray & out)  const {
         if(ba.buffer.size() < buffer.size())
             out.setToSize(ba);
         else
             out.setToSize(*this);
         for (size_t i = 0; i < out.buffer.size(); ++i)
             out.buffer[i] = buffer[i] & ba.buffer[i];
+    }
+
+
+    /**
+    * Computes the logical and and return the result.
+    * The current bitmaps is unchanged.
+    */
+    BoolArray logicaland(const BoolArray &a) const {
+        BoolArray answer;
+        logicaland(a,answer);
+        return answer;
     }
 
     void inplace_logicaland(const BoolArray & ba) {
@@ -223,7 +234,7 @@ public:
      * Computes the logical andnot and writes to the provided BoolArray (out).
      * The current bitmaps is unchanged.
      */
-    void logicalandnot(const BoolArray & ba, BoolArray & out) {
+    void logicalandnot(const BoolArray & ba, BoolArray & out)  const {
         out.setToSize(*this);
         size_t upto = out.buffer.size() < ba.buffer.size() ? out.buffer.size() :  ba.buffer.size();
         for (size_t i = 0; i < upto; ++i)
@@ -233,6 +244,17 @@ public:
         out.clearBogusBits();
     }
 
+    /**
+    * Computes the logical andnot and return the result.
+    * The current bitmaps is unchanged.
+    */
+    BoolArray logicalandnot(const BoolArray &a) const {
+        BoolArray answer;
+        logicalandnot(a,answer);
+        return answer;
+    }
+
+
     void inplace_logicalandnot(const BoolArray & ba) {
         size_t upto = buffer.size() < ba.buffer.size() ? buffer.size() :  ba.buffer.size();
         for (size_t i = 0; i < upto; ++i)
@@ -240,11 +262,13 @@ public:
         clearBogusBits();
     }
 
+
+
     /**
      * Computes the logical or and writes to the provided BoolArray (out).
      * The current bitmaps is unchanged.
      */
-    void logicalor(const BoolArray & ba, BoolArray & out) {
+    void logicalor(const BoolArray & ba, BoolArray & out) const {
         const BoolArray * smallest;
         const BoolArray * largest;
         if(ba.buffer.size() > buffer.size()) {
@@ -262,6 +286,15 @@ public:
             out.buffer[i] = largest->buffer[i];
     }
 
+    /**
+    * Computes the logical or and return the result.
+    * The current bitmaps is unchanged.
+    */
+    BoolArray logicalor(const BoolArray &a) const {
+        BoolArray answer;
+        logicalor(a,answer);
+        return answer;
+    }
 
     void inplace_logicalor(const BoolArray & ba) {
         logicalor(ba,*this);
@@ -271,7 +304,7 @@ public:
      * Computes the logical xor and writes to the provided BoolArray (out).
      * The current bitmaps is unchanged.
      */
-    void logicalxor(const BoolArray & ba, BoolArray & out) {
+    void logicalxor(const BoolArray & ba, BoolArray & out)  const {
         const BoolArray * smallest;
         const BoolArray * largest;
         if(ba.buffer.size() > buffer.size()) {
@@ -289,6 +322,16 @@ public:
             out.buffer[i] = largest->buffer[i];
     }
 
+    /**
+    * Computes the logical xor and return the result.
+    * The current bitmaps is unchanged.
+    */
+    BoolArray logicalxor(const BoolArray &a) const {
+        BoolArray answer;
+        logicalxor(a,answer);
+        return answer;
+    }
+
     void inplace_logicalxor(const BoolArray & ba) {
         logicalxor(ba,*this);
     }
@@ -297,13 +340,23 @@ public:
      * Computes the logical not and writes to the provided BoolArray (out).
      * The current bitmaps is unchanged.
      */
-    void logicalnot(BoolArray & out) {
+    void logicalnot(BoolArray & out)  const {
         out.setToSize(*this);
         for (size_t i = 0; i < buffer.size(); ++i)
             out.buffer[i] = ~buffer[i];
         out.clearBogusBits();
     }
 
+
+    /**
+    * Computes the logical not and return the result.
+    * The current bitmaps is unchanged.
+    */
+    BoolArray logicalandnot() const {
+        BoolArray answer;
+        logicalnot(answer);
+        return answer;
+    }
 
     void inplace_logicalnot() {
         for (size_t i = 0; i < buffer.size(); ++i)
@@ -423,6 +476,35 @@ private:
     vector<uword> buffer;
     size_t sizeinbits;
 };
+
+/**
+ * computes the logical or (union) between "n" bitmaps (referenced by a pointer).
+ * The answer gets written out in container. This might be faster than calling
+ * logicalor n-1 times.
+ */
+template <class uword>
+void fast_logicalor_tocontainer(size_t n, const BoolArray<uword> ** inputs, BoolArray<uword> &container) {
+  if(n == 0) {
+    container.reset();
+    return;
+  }
+  container = *inputs[0];
+  for(size_t i = 0 ; i < n ; i++) {
+    container.inplace_logicalor(*inputs[i]);
+  }
+}
+
+/**
+ * computes the logical or (union) between "n" bitmaps (referenced by a pointer).
+ * Returns the answer. This might be faster than calling
+ * logicalor n-1 times.
+ */
+template <class uword>
+BoolArray<uword> fast_logicalor(size_t n, const BoolArray<uword> ** inputs) {
+  BoolArray<uword> answer;
+  fast_logicalor_tocontainer(n,inputs,answer);
+  return answer;
+}
 
 template<class uword>
 void BoolArray<uword>::append(const BoolArray & a) {

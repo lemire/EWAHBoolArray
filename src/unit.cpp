@@ -879,6 +879,48 @@ bool testEWAHBoolArrayLogical2()
     return ok;
 }
 
+
+template<class uword>
+bool testFastOrAggregate()
+{
+    bool ok = true;
+    cout << "[testing FastOrAggregate] word size = " << sizeof(uword)<< endl;
+
+    EWAHBoolArray<uword> ba1, ba2, ba3, baOR;
+
+    size_t x1[] = { 1, 3, 24, 54, 145, 3001, 3002, 3004, 10003 };
+    size_t x2[] = { 2, 3, 22, 57, 199, 3000, 3002, 10003, 999999 };
+    size_t x3[] = { 3, 22, 57, 199, 3000, 3002, 10003, 10004, 999999 };
+
+    size_t OR[] = { 1, 2, 3, 22, 24, 54, 57, 145, 199, 3000, 3001, 3002, 3004, 10003,10004, 999999 };
+
+    init( ba1, N_ENTRIES(x1), x1 );
+    init( ba2, N_ENTRIES(x2), x2 );
+    init( ba3, N_ENTRIES(x3), x3 );
+    init( baOR, N_ENTRIES(OR), OR );
+
+    EWAHBoolArray<uword> longway = ba1.logicalor(ba2).logicalor(ba3);
+    const EWAHBoolArray<uword>* mybitmaps[] = {&ba3,&ba2,&ba1};
+    EWAHBoolArray<uword> fastway = fast_logicalor(N_ENTRIES(mybitmaps),mybitmaps);
+
+    if ( longway != baOR ) {
+        cout << " OR failed:" << endl;
+        cout << "Expected: " << baOR << endl;
+        cout << "Encountered: " << longway << endl;
+        ok = false;
+    }
+    if ( fastway != baOR ) {
+        cout << "fast OR failed:" << endl;
+        cout << "Expected: " << baOR << endl;
+        cout << "Encountered: " << fastway << endl;
+        ok = false;
+    }
+    if ( !ok )
+        cout << testfailed << endl;
+    return ok;
+}
+
+
 void tellmeaboutmachine() {
     cout << "number of bytes in ostream::pos_type = "
          << sizeof(ostream::pos_type) << endl;
@@ -1221,6 +1263,15 @@ int main(void) {
     if(!funnytest()) {
         ++failures;
     }
+
+    if (!testFastOrAggregate<uint16_t>())
+        ++failures;
+    if (!testFastOrAggregate<uint32_t>())
+        ++failures;
+    if (!testFastOrAggregate<uint64_t>())
+        ++failures;
+
+
     if (!arrayinit<uint16_t>())
         ++failures;
     if (!arrayinit<uint32_t>())

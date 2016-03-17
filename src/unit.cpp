@@ -18,8 +18,7 @@
 #include "boolarray.h"
 
 
-#define SSTR( x ) ( \
-        ( std::ostringstream() << std::dec << x ) ).str()
+#define SSTR( x ) ( to_string(x) )
 
 using namespace std;
 

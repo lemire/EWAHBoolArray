@@ -7,7 +7,6 @@
 #ifndef RUNNINGLENGTHWORD_H_
 #define RUNNINGLENGTHWORD_H_
 #include <iostream>
-using namespace std;
 /**
  * For expert users.
  * This class is used to represent a special type of word storing
@@ -126,20 +125,20 @@ public:
     void setRunningLength(uword l) {
         mydata |= shiftedlargestrunninglengthcount;
         mydata &= static_cast<uword> ((l << 1)
-                | notshiftedlargestrunninglengthcount);
+                                      | notshiftedlargestrunninglengthcount);
     }
 
     // static call for people who hate objects
     static inline void setRunningLength(uword & data, uword l) {
         data |= shiftedlargestrunninglengthcount;
         data &= static_cast<uword> ((l << 1)
-                | notshiftedlargestrunninglengthcount);
+                                    | notshiftedlargestrunninglengthcount);
     }
 
     void setNumberOfLiteralWords(uword l) {
         mydata |= notrunninglengthplusrunningbit;
         mydata &= static_cast<uword> ((l << (runninglengthbits + 1))
-                | runninglengthplusrunningbit);
+                                      | runninglengthplusrunningbit);
     }
     // static call for people who hate objects
     static inline void setNumberOfLiteralWords(uword & data, uword l) {
@@ -156,15 +155,15 @@ public:
     static const uword largestrunninglengthcount = (static_cast<uword> (1)
             << runninglengthbits) - 1;
     static const uword shiftedlargestrunninglengthcount =
-            largestrunninglengthcount << 1;
+        largestrunninglengthcount << 1;
     static const uword notshiftedlargestrunninglengthcount =
-            static_cast<uword> (~shiftedlargestrunninglengthcount);
+        static_cast<uword> (~shiftedlargestrunninglengthcount);
     static const uword runninglengthplusrunningbit = (static_cast<uword> (1)
             << (runninglengthbits + 1)) - 1;
     static const uword notrunninglengthplusrunningbit =
-            static_cast<uword> (~runninglengthplusrunningbit);
+        static_cast<uword> (~runninglengthplusrunningbit);
     static const uword notlargestrunninglengthcount =
-            static_cast<uword> (~largestrunninglengthcount);
+        static_cast<uword> (~largestrunninglengthcount);
 
     uword & mydata;
 };
@@ -200,7 +199,7 @@ public:
      */
     uword getRunningLength() const {
         return static_cast<uword>((mydata >> 1)
-                & RunningLengthWord<uword>::largestrunninglengthcount);
+                                  & RunningLengthWord<uword>::largestrunninglengthcount);
     }
 
     /**
@@ -208,7 +207,7 @@ public:
      */
     uword getNumberOfLiteralWords() const {
         return static_cast<uword> (mydata >> (1
-                + RunningLengthWord<uword>::runninglengthbits));
+                                              + RunningLengthWord<uword>::runninglengthbits));
     }
 
     /**
@@ -235,135 +234,135 @@ template<class uword = uint32_t>
 class BufferedRunningLengthWord {
 public:
     BufferedRunningLengthWord(const uword & data, EWAHBoolArrayRawIterator<uword> * p) :
-                RunningBit(data & static_cast<uword> (1)),
-                RunningLength(
-                        static_cast<uword>((data >> 1)
-                                & RunningLengthWord<uword>::largestrunninglengthcount)),
-                NumberOfLiteralWords(
-                        static_cast<uword> (data >> (1 + RunningLengthWord<
-                                uword>::runninglengthbits))), parent(p) {
+        RunningBit(data & static_cast<uword> (1)),
+        RunningLength(
+            static_cast<uword>((data >> 1)
+                               & RunningLengthWord<uword>::largestrunninglengthcount)),
+        NumberOfLiteralWords(
+            static_cast<uword> (data >> (1 + RunningLengthWord<
+                                         uword>::runninglengthbits))), parent(p) {
     }
     BufferedRunningLengthWord(const RunningLengthWord<uword> & p) :
-                RunningBit(p.mydata & static_cast<uword> (1)),
-                RunningLength(
-                        (p.mydata >> 1)
-                                & RunningLengthWord<uword>::largestrunninglengthcount),
-                NumberOfLiteralWords(
-                        p.mydata >> (1
-                                + RunningLengthWord<uword>::runninglengthbits)),
-                                parent(p.parent) {
+        RunningBit(p.mydata & static_cast<uword> (1)),
+        RunningLength(
+            (p.mydata >> 1)
+            & RunningLengthWord<uword>::largestrunninglengthcount),
+        NumberOfLiteralWords(
+            p.mydata >> (1
+                         + RunningLengthWord<uword>::runninglengthbits)),
+        parent(p.parent) {
     }
 
 
     void discharge(EWAHBoolArray<uword> &container) {
-    	while (size() > 0) {
-    		// first run
+        while (size() > 0) {
+            // first run
 
-    		size_t pl = getRunningLength();
-    		container.addStreamOfEmptyWords(getRunningBit(), pl);
-    		size_t pd = getNumberOfLiteralWords();
-    		writeLiteralWords(pd, container);
-    		discardFirstWordsWithReload(pl + pd);
-    	}
+            size_t pl = getRunningLength();
+            container.addStreamOfEmptyWords(getRunningBit(), pl);
+            size_t pd = getNumberOfLiteralWords();
+            writeLiteralWords(pd, container);
+            discardFirstWordsWithReload(pl + pd);
+        }
     }
 
     bool nonzero_discharge() {
-    	while (size() > 0) {
-    		// first run
-    		size_t pl = getRunningLength();
-    		if((pl>0) && (getRunningBit())) return true;
-    		size_t pd = getNumberOfLiteralWords();
-    		if(pd>0) return true;
-    		discardFirstWordsWithReload(pl + pd);
-    	}
-    	return false;
+        while (size() > 0) {
+            // first run
+            size_t pl = getRunningLength();
+            if((pl>0) && (getRunningBit())) return true;
+            size_t pd = getNumberOfLiteralWords();
+            if(pd>0) return true;
+            discardFirstWordsWithReload(pl + pd);
+        }
+        return false;
     }
 
     // Write out up to max words, returns how many were written
     size_t discharge(EWAHBoolArray<uword> &container, size_t max) {
-    	size_t index = 0;
-    	while ((index < max) && (size() > 0)) {
-    		// first run
-    		size_t pl = getRunningLength();
-    		if (index + pl > max) {
-    			pl = max - index;
-    		}
-    		container.addStreamOfEmptyWords(getRunningBit(), pl);
-    		index += pl;
-    		size_t pd = getNumberOfLiteralWords();
-    		if (pd + index > max) {
-    			pd = max - index;
-    		}
-    		writeLiteralWords(pd, container);
-    		index += pd;
-    		discardFirstWordsWithReload(pl + pd);
-    	}
-    	return index;
+        size_t index = 0;
+        while ((index < max) && (size() > 0)) {
+            // first run
+            size_t pl = getRunningLength();
+            if (index + pl > max) {
+                pl = max - index;
+            }
+            container.addStreamOfEmptyWords(getRunningBit(), pl);
+            index += pl;
+            size_t pd = getNumberOfLiteralWords();
+            if (pd + index > max) {
+                pd = max - index;
+            }
+            writeLiteralWords(pd, container);
+            index += pd;
+            discardFirstWordsWithReload(pl + pd);
+        }
+        return index;
     }
 
     bool nonzero_discharge(size_t max, size_t & index) {
-    	index = 0;
-    	while ((index < max) && (size() > 0)) {
-    		// first run
-    		size_t pl = getRunningLength();
-    		if (index + pl > max) {
-    			pl = max - index;
-    		}
-    		if((getRunningBit()) && (pl>0)) return true;
-    		index += pl;
-    		size_t pd = getNumberOfLiteralWords();
-    		if (pd + index > max) {
-    			pd = max - index;
-    		}
-    		if(pd>0) return true;
-    		discardFirstWordsWithReload(pl + pd);
-    	}
-    	return false;
+        index = 0;
+        while ((index < max) && (size() > 0)) {
+            // first run
+            size_t pl = getRunningLength();
+            if (index + pl > max) {
+                pl = max - index;
+            }
+            if((getRunningBit()) && (pl>0)) return true;
+            index += pl;
+            size_t pd = getNumberOfLiteralWords();
+            if (pd + index > max) {
+                pd = max - index;
+            }
+            if(pd>0) return true;
+            discardFirstWordsWithReload(pl + pd);
+        }
+        return false;
     }
 
     // Write out up to max words, returns how many were written
     size_t dischargeNegated(EWAHBoolArray<uword> &container, size_t max) {
-    	size_t index = 0;
-    	while ((index < max) && (size() > 0)) {
-    		// first run
-    		size_t pl = getRunningLength();
-    		if (index + pl > max) {
-    			pl = max - index;
-    		}
-    		container.addStreamOfEmptyWords(!getRunningBit(), pl);
-    		index += pl;
-    		size_t pd = getNumberOfLiteralWords();
-    		if (pd + index > max) {
-    			pd = max - index;
-    		}
-    		writeNegatedLiteralWords(pd, container);
-    		discardFirstWordsWithReload(pl + pd);
-    		index += pd;
-    	}
-    	return index;
+        size_t index = 0;
+        while ((index < max) && (size() > 0)) {
+            // first run
+            size_t pl = getRunningLength();
+            if (index + pl > max) {
+                pl = max - index;
+            }
+            container.addStreamOfEmptyWords(!getRunningBit(), pl);
+            index += pl;
+            size_t pd = getNumberOfLiteralWords();
+            if (pd + index > max) {
+                pd = max - index;
+            }
+            writeNegatedLiteralWords(pd, container);
+            discardFirstWordsWithReload(pl + pd);
+            index += pd;
+        }
+        return index;
     }
     bool nonzero_dischargeNegated(size_t max, size_t & index) {
-    	while ((index < max) && (size() > 0)) {
-    		// first run
-    		size_t pl = getRunningLength();
-    		if (index + pl > max) {
-    			pl = max - index;
-    		}
-    		if((!getRunningBit()) && (pl>0)) return true;
-    		index += pl;
-    		size_t pd = getNumberOfLiteralWords();
-    		if (pd + index > max) {
-    			pd = max - index;
-    		}
-    		if(pd>0) return true;
-    		discardFirstWordsWithReload(pl + pd);
-    		index += pd;
-    	}
-    	return false;
+        while ((index < max) && (size() > 0)) {
+            // first run
+            size_t pl = getRunningLength();
+            if (index + pl > max) {
+                pl = max - index;
+            }
+            if((!getRunningBit()) && (pl>0)) return true;
+            index += pl;
+            size_t pd = getNumberOfLiteralWords();
+            if (pd + index > max) {
+                pd = max - index;
+            }
+            if(pd>0) return true;
+            discardFirstWordsWithReload(pl + pd);
+            index += pd;
+        }
+        return false;
     }
 
     uword getLiteralWordAt(size_t index) {
-    	return parent->dirtyWords()[index];
+        return parent->dirtyWords()[index];
     }
 
 
@@ -379,13 +378,13 @@ public:
     void discardRunningWordsWithReload() {
         RunningLength = 0;
         if(NumberOfLiteralWords == 0)
-        	next();
+            next();
     }
 
     bool next() {
         if (!parent->hasNext()) {
-        	NumberOfLiteralWords = 0;
-        	RunningLength = 0;
+            NumberOfLiteralWords = 0;
+            RunningLength = 0;
             return false;
         }
         parent->next();
@@ -395,9 +394,9 @@ public:
     void read(const uword & data) {
         RunningBit = data & static_cast<uword> (1);
         RunningLength = static_cast<uword>((data >> 1)
-                & RunningLengthWord<uword>::largestrunninglengthcount);
+                                           & RunningLengthWord<uword>::largestrunninglengthcount);
         NumberOfLiteralWords = static_cast<uword> (data >> (1
-                + RunningLengthWord<uword>::runninglengthbits));
+                               + RunningLengthWord<uword>::runninglengthbits));
     }
 
     /**
@@ -438,32 +437,32 @@ public:
         return static_cast<uword> (RunningLength + NumberOfLiteralWords);
     }
 
-    friend ostream& operator<< (ostream &out, const BufferedRunningLengthWord &a) {
-    	out<<"{RunningBit:"<<a.RunningBit<<",RunningLength:"<<a.RunningLength<<",NumberOfLiteralWords:"<<a.NumberOfLiteralWords<<"}";
-    	return out;
+    friend std::ostream& operator<< (std::ostream &out, const BufferedRunningLengthWord &a) {
+        out<<"{RunningBit:"<<a.RunningBit<<",RunningLength:"<<a.RunningLength<<",NumberOfLiteralWords:"<<a.NumberOfLiteralWords<<"}";
+        return out;
     }
 
 
 
-	void discardFirstWordsWithReload(uword x) {
-		while (x > 0) {
-			if (RunningLength > x) {
-				RunningLength = static_cast<uword>(RunningLength - x);
-				return;
-			}
-			x = static_cast<uword>(x - RunningLength);
-			RunningLength = 0;
-			size_t toDiscard =
-					x > NumberOfLiteralWords ? NumberOfLiteralWords : x;
-			NumberOfLiteralWords = static_cast<uword>(NumberOfLiteralWords
-					- toDiscard);
-			x -= toDiscard;
-			if ((x > 0) || (size() == 0)) {
-				if (!next())
-					break;
-			}
-		}
-	}
+    void discardFirstWordsWithReload(uword x) {
+        while (x > 0) {
+            if (RunningLength > x) {
+                RunningLength = static_cast<uword>(RunningLength - x);
+                return;
+            }
+            x = static_cast<uword>(x - RunningLength);
+            RunningLength = 0;
+            size_t toDiscard =
+                x > NumberOfLiteralWords ? NumberOfLiteralWords : x;
+            NumberOfLiteralWords = static_cast<uword>(NumberOfLiteralWords
+                                   - toDiscard);
+            x -= toDiscard;
+            if ((x > 0) || (size() == 0)) {
+                if (!next())
+                    break;
+            }
+        }
+    }
 
 
 private:

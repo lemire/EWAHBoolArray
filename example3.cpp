@@ -36,7 +36,6 @@ int main() {
 		if (!getline(infile, s)) break;
 
 		istringstream ss(s);
-		vector <string> record;
 
 		int numCommas = 0;
 		while (ss)

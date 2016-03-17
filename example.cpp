@@ -11,11 +11,11 @@ template<class bitmap>
 void demo() {
     bitmap bitset1 = bitmap::bitmapOf(9   , 1, 2, 1000, 1001, 1002, 1003, 1007, 1009,
                                       100000);
-    cout << "first bitset : " << bitset1 << endl;
+    std::cout << "first bitset : " << bitset1 << std::endl;
     bitmap bitset2 = bitmap::bitmapOf(5   , 1, 3, 1000, 1007, 100000);
-    cout << "second bitset : " << bitset2 << endl;
+    std::cout << "second bitset : " << bitset2 << std::endl;
     bitmap bitset3 = bitmap::bitmapOf(3   , 10, 11, 12);
-    cout << "third  bitset : " << bitset3 << endl;
+    std::cout << "third  bitset : " << bitset3 << std::endl;
     bitmap orbitset;
     bitmap andbitset;
     bitmap xorbitset;
@@ -23,46 +23,46 @@ void demo() {
     bitset1.logicaland(bitset2, andbitset);
     bitset1.logicalxor(bitset2, xorbitset);
     // we will display the or
-    cout << "logical and: " << andbitset << endl;
-    cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
-         << " bytes" << endl;
+    std::cout << "logical and: " << andbitset << std::endl;
+    std::cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
+         << " bytes" << std::endl;
     // we will display the and
-    cout << "logical or: " << orbitset << endl;
-    cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
-         << " bytes" << endl;
+    std::cout << "logical or: " << orbitset << std::endl;
+    std::cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
+         << " bytes" << std::endl;
     // we will display the xor
-    cout << "logical xor: " << xorbitset << endl;
-    cout << "memory usage of compressed bitset = " << xorbitset.sizeInBytes()
-         << " bytes" << endl;
-    cout << "union of all three bitsets = " << bitset1.logicalor(bitset2) << endl;
+    std::cout << "logical xor: " << xorbitset << std::endl;
+    std::cout << "memory usage of compressed bitset = " << xorbitset.sizeInBytes()
+         << " bytes" << std::endl;
+    std::cout << "union of all three bitsets = " << bitset1.logicalor(bitset2) << std::endl;
     const  bitmap* mybitmaps[] = {&bitset1,&bitset2,&bitset3};
-    cout << "fast union of all three bitsets = " << fast_logicalor(3,mybitmaps) << endl;
+    std::cout << "fast union of all three bitsets = " << fast_logicalor(3,mybitmaps) << std::endl;
 
 
-    cout << endl;
+    std::cout << std::endl;
 }
 
 
 template<class bitmap>
 void demoSerialization() {
-    stringstream ss;
+	std::stringstream ss;
     bitmap myarray;
     myarray.addWord(234321);// this is not the same as "set(234321)"!!!
     myarray.addWord(0);
     myarray.addWord(0);
     myarray.addWord(999999);
     //
-    cout<<"Writing: "<<myarray<<endl;
+    std::cout<<"Writing: "<<myarray<<std::endl;
     myarray.write(ss);
     //
     bitmap lmyarray;
     lmyarray.read(ss);
-    cout<<"Read back: "<<lmyarray<<endl;
+    std::cout<<"Read back: "<<lmyarray<<std::endl;
     //
     if (lmyarray == myarray)
-        cout << "serialization works" << endl;
+        std::cout << "serialization works" << std::endl;
     else
-        cout << "serialization does not works" << endl;
+        std::cout << "serialization does not works" << std::endl;
 }
 
 template<class bitmap>
@@ -86,30 +86,30 @@ void smallIntersectBenchmark() {
             b2.set(offset + j);
         offset += 1024;
     }
-    cout <<" First bitmap has " << b1.numberOfOnes() << " set bits" << endl;
-    cout <<" Second bitmap has " << b2.numberOfOnes() << " set bits" << endl;
+    std::cout <<" First bitmap has " << b1.numberOfOnes() << " set bits" << std::endl;
+    std::cout <<" Second bitmap has " << b2.numberOfOnes() << " set bits" << std::endl;
     double inputsize = b1.numberOfOnes() + b2.numberOfOnes();
     const clock_t START = clock();
-    if(b1.intersects(b2)) cout << "BUG!" << endl;
+    if(b1.intersects(b2)) std::cout << "BUG!" << std::endl;
     const clock_t END = clock();
     double timee = (double)(END - START) / CLOCKS_PER_SEC;
-    cout << "Billions of values intersected per second : " << ( inputsize / 1000000000.0 ) / timee << endl;
+    std::cout << "Billions of values intersected per second : " << ( inputsize / 1000000000.0 ) / timee << std::endl;
 }
 
 
 int main(void) {
-    cout<<endl;
-    cout<<"====uncompressed example===="<<endl;
-    cout<<endl;
+    std::cout<<std::endl;
+    std::cout<<"====uncompressed example===="<<std::endl;
+    std::cout<<std::endl;
     demo<BoolArray<uint32_t> >();
     demoSerialization<BoolArray<uint32_t> >();
 
-    cout<<endl;
-    cout<<"====compressed example===="<<endl;
-    cout<<endl;
+    std::cout<<std::endl;
+    std::cout<<"====compressed example===="<<std::endl;
+    std::cout<<std::endl;
     demo<EWAHBoolArray<uint32_t> >();
     demoSerialization<EWAHBoolArray<uint32_t> >();
-    cout <<"==== benchmark intersecs === "<<endl;
+    std::cout <<"==== benchmark intersecs === "<<std::endl;
     smallIntersectBenchmark<EWAHBoolArray<uint64_t> >();
     return EXIT_SUCCESS;
 

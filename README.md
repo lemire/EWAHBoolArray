@@ -111,6 +111,8 @@ None. (Will work under MacOS, Windows or Linux.)
 
 Compilers tested: clang++, g++, Intel compiler, Microsoft Visual Studio
 
+Versions 0.5 and above assume that the compiler supports the C++11 standard.
+
 # Usage
 
     make
@@ -123,6 +125,17 @@ Compilers tested: clang++, g++, Intel compiler, Microsoft Visual Studio
 Please see example.cpp.
 For an example with tabular data, please see example2.cpp.
 
+# Further documentation
+
+If you have ``doxygen`` installed, you can type ``make doxygen`` and create a documentation folder that might prove useful.
+
+# Further reading
+
+Please see
+
+* Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. http://arxiv.org/abs/0901.3751
+* Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience 46 (2), 2016. http://arxiv.org/abs/1402.4466
+
 # Ruby wrapper
 
 Josh Ferguson wrote a wrapper for Ruby.
@@ -132,14 +145,6 @@ You can install it by typing:
 
         gem install ewah-bitset
 
-# Further reading
-
-Please see
-
-* Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves
-word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1),
-pages 3-28, 2010.
-http://arxiv.org/abs/0901.3751
 
 
 ## Persistent storage

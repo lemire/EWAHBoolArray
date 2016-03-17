@@ -43,38 +43,38 @@
 
 static inline uint32_t ctz64(uint64_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
-	return static_cast<uint32_t>(__builtin_ctzl(n));
+    return static_cast<uint32_t>(__builtin_ctzl(n));
 #elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400
-	uint32_t i;
-	_BitScanForward64((unsigned long *) &i, n);
-	return i;
+    uint32_t i;
+    _BitScanForward64((unsigned long *) &i, n);
+    return i;
 #else
-	uint32_t i = 1;
-	if ((n & static_cast<uint64_t>(4294967295)) == 0) {
-		n >>= 32;
-		i += 32;
-	}
-	if ((n & static_cast<uint64_t>(0x0000FFFFUL)) == 0) {
-		n >>= 16;
-		i += 16;
-	}
+    uint32_t i = 1;
+    if ((n & static_cast<uint64_t>(4294967295)) == 0) {
+        n >>= 32;
+        i += 32;
+    }
+    if ((n & static_cast<uint64_t>(0x0000FFFFUL)) == 0) {
+        n >>= 16;
+        i += 16;
+    }
 
-	if ((n & static_cast<uint64_t>(0x000000FFUL)) == 0) {
-		n >>= 8;
-		i += 8;
-	}
+    if ((n & static_cast<uint64_t>(0x000000FFUL)) == 0) {
+        n >>= 8;
+        i += 8;
+    }
 
-	if ((n & static_cast<uint64_t>(0x0000000FUL)) == 0) {
-		n >>= 4;
-		i += 4;
-	}
+    if ((n & static_cast<uint64_t>(0x0000000FUL)) == 0) {
+        n >>= 4;
+        i += 4;
+    }
 
-	if ((n & static_cast<uint64_t>(0x00000003UL)) == 0) {
-		n >>= 2;
-		i += 2;
-	}
+    if ((n & static_cast<uint64_t>(0x00000003UL)) == 0) {
+        n >>= 2;
+        i += 2;
+    }
     i -= (n & 0x1);
-	return i;
+    return i;
 #endif
 }
 
@@ -83,82 +83,82 @@ static inline uint32_t ctz64(uint64_t n) {
 
 static inline uint32_t ctz32(uint32_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
-	return static_cast<uint32_t>(__builtin_ctz(n));
+    return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-	uint32_t i;
-	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
-	return i;
+    uint32_t i;
+    __asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
+    return i;
 
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
-	uint32_t i;
-	_BitScanForward((unsigned long *) &i, n);
-	return i;
+    uint32_t i;
+    _BitScanForward((unsigned long *) &i, n);
+    return i;
 
 #else
-	uint32_t i = 1;
+    uint32_t i = 1;
 
-	if ((n & static_cast<uint32_t>(0x0000FFFF)) == 0) {
-		n >>= 16;
-		i += 16;
-	}
+    if ((n & static_cast<uint32_t>(0x0000FFFF)) == 0) {
+        n >>= 16;
+        i += 16;
+    }
 
-	if ((n & static_cast<uint32_t>(0x000000FF)) == 0) {
-		n >>= 8;
-		i += 8;
-	}
+    if ((n & static_cast<uint32_t>(0x000000FF)) == 0) {
+        n >>= 8;
+        i += 8;
+    }
 
-	if ((n & static_cast<uint32_t>(0x0000000F)) == 0) {
-		n >>= 4;
-		i += 4;
-	}
+    if ((n & static_cast<uint32_t>(0x0000000F)) == 0) {
+        n >>= 4;
+        i += 4;
+    }
 
-	if ((n & static_cast<uint32_t>(0x00000003)) == 0) {
-		n >>= 2;
-		i += 2;
-	}
+    if ((n & static_cast<uint32_t>(0x00000003)) == 0) {
+        n >>= 2;
+        i += 2;
+    }
 
     i -= (n & 1);
 
-	return i;
+    return i;
 #endif
 }
 
 
 static inline uint32_t ctz16(uint16_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX
-	return static_cast<uint32_t>(__builtin_ctz(n));
+    return static_cast<uint32_t>(__builtin_ctz(n));
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-	uint32_t i;
-	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
-	return i;
+    uint32_t i;
+    __asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
+    return i;
 
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
-	uint32_t i;
-	_BitScanForward((unsigned long *) &i, n);
-	return i;
+    uint32_t i;
+    _BitScanForward((unsigned long *) &i, n);
+    return i;
 
 #else
-	uint32_t i = 1;
+    uint32_t i = 1;
 
-	if ((n & static_cast<uint16_t>(0x000000FF)) == 0) {
-		n >>= 8;
-		i += 8;
-	}
+    if ((n & static_cast<uint16_t>(0x000000FF)) == 0) {
+        n >>= 8;
+        i += 8;
+    }
 
-	if ((n & static_cast<uint16_t>(0x0000000F)) == 0) {
-		n >>= 4;
-		i += 4;
-	}
+    if ((n & static_cast<uint16_t>(0x0000000F)) == 0) {
+        n >>= 4;
+        i += 4;
+    }
 
-	if ((n & static_cast<uint16_t>(0x00000003)) == 0) {
-		n >>= 2;
-		i += 2;
-	}
+    if ((n & static_cast<uint16_t>(0x00000003)) == 0) {
+        n >>= 2;
+        i += 2;
+    }
     i -= (n & 1);
 
-	return i;
+    return i;
 #endif
 }
 
@@ -174,7 +174,7 @@ inline uint32_t countOnes(uint32_t x) {
 }
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
 inline uint32_t countOnes(uint32_t x) {
-	return __popcnt(x);
+    return __popcnt(x);
 }
 #else
 inline uint32_t countOnes(uint32_t v) {
@@ -194,7 +194,7 @@ inline uint32_t countOnes(uint64_t x) {
 }
 #elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400
 inline uint32_t countOnes(uint64_t x) {
-	return static_cast<uint32_t>(__popcnt64(static_cast<__int64>(x)));
+    return static_cast<uint32_t>(__popcnt64(static_cast<__int64>(x)));
 }
 #else
 inline uint32_t countOnes(uint64_t v) {

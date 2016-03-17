@@ -86,9 +86,9 @@ unsigned int ZRandom::getValue() {
     if (0 == nValues) {
         MT[N] = MT[0];
         for (int i = 0; i < N; ++i) {
-            register unsigned y = (0x80000000 & MT[i]) | (0x7FFFFFFF
+            unsigned y = (0x80000000 & MT[i]) | (0x7FFFFFFF
                     & MT[i + 1]);
-            register unsigned v = *(map[i]) ^ (y >> 1);
+            unsigned v = *(map[i]) ^ (y >> 1);
             if (1 & y)
                 v ^= 2567483615U;
             MT[i] = v;
@@ -322,4 +322,3 @@ void test(size_t N, int nbr, int repeat) {
 int main(void) {
     test(10, 18, 1);
 }
-

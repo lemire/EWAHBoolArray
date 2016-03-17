@@ -15,7 +15,6 @@
 #include <stdexcept>
 #include <sstream>
 
-using namespace std;
 
 
 // uncomment this for debugging
@@ -29,7 +28,7 @@ class BoolArray {
 public:
     BoolArray(const size_t n, const uword initval = 0) :
         buffer(n / wordinbits + (n % wordinbits == 0 ? 0 : 1), initval),
-                sizeinbits(n) {
+        sizeinbits(n) {
     }
 
     BoolArray() :
@@ -53,18 +52,18 @@ public:
         return buffer.size() * sizeof(uword);
     }
 
-    void read(istream & in) {
+    void read(std::istream & in) {
         sizeinbits = 0;
         in.read(reinterpret_cast<char *> (&sizeinbits), sizeof(sizeinbits));
         buffer.resize(
-                sizeinbits / wordinbits
-                        + (sizeinbits % wordinbits == 0 ? 0 : 1));
+            sizeinbits / wordinbits
+            + (sizeinbits % wordinbits == 0 ? 0 : 1));
         if(buffer.size() == 0) return;
         in.read(reinterpret_cast<char *> (&buffer[0]),
-                static_cast<streamsize>(buffer.size() * sizeof(uword)));
+                static_cast<std::streamsize>(buffer.size() * sizeof(uword)));
     }
 
-    void readBuffer(istream & in, const size_t size) {
+    void readBuffer(std::istream & in, const size_t size) {
         buffer.resize(size);
         sizeinbits = size * sizeof(uword) * 8;
         if(buffer.empty()) return;
@@ -76,34 +75,34 @@ public:
         sizeinbits = sizeib;
     }
 
-    void write(ostream & out) {
+    void write(std::ostream & out) {
         write(out, sizeinbits);
     }
 
-    void write(ostream & out, const size_t numberofbits) const {
+    void write(std::ostream & out, const size_t numberofbits) const {
         const size_t size = numberofbits / wordinbits + (numberofbits
-                % wordinbits == 0 ? 0 : 1);
+                            % wordinbits == 0 ? 0 : 1);
         out.write(reinterpret_cast<const char *> (&numberofbits),
-                sizeof(numberofbits));
+                  sizeof(numberofbits));
         if(numberofbits == 0) return;
         out.write(reinterpret_cast<const char *> (&buffer[0]),
-                static_cast<streamsize>(size * sizeof(uword)));
+                  static_cast<std::streamsize>(size * sizeof(uword)));
     }
 
-    void writeBuffer(ostream & out, const size_t numberofbits) const {
+    void writeBuffer(std::ostream & out, const size_t numberofbits) const {
         const size_t size = numberofbits / wordinbits + (numberofbits
-                % wordinbits == 0 ? 0 : 1);
+                            % wordinbits == 0 ? 0 : 1);
         if(size == 0) return;
 #ifdef EWAHASSERT
         assert(buffer.size() >= size);
 #endif
         out.write(reinterpret_cast<const char *> (&buffer[0]),
-                size * sizeof(uword));
+                  size * sizeof(uword));
     }
 
     size_t sizeOnDisk() const {
         size_t size = sizeinbits / wordinbits
-                + (sizeinbits % wordinbits == 0 ? 0 : 1);
+                      + (sizeinbits % wordinbits == 0 ? 0 : 1);
         return sizeof(sizeinbits) + size * sizeof(uword);
     }
 
@@ -135,7 +134,7 @@ public:
 
     void addWord(const uword val) {
         if (sizeinbits % wordinbits != 0)
-            throw invalid_argument("you probably didn't want to do this");
+            throw std::invalid_argument("you probably didn't want to do this");
         sizeinbits += wordinbits;
         buffer.push_back(val);
     }
@@ -156,7 +155,7 @@ public:
     void set(const size_t pos) {
         if(pos >= sizeinbits) padWithZeroes(pos+1);
         buffer[pos / wordinbits] |= (static_cast<uword> (1) << (pos
-                % wordinbits));
+                                     % wordinbits));
     }
 
     /**
@@ -168,7 +167,7 @@ public:
     void unset(const size_t pos) {
         if(pos < sizeinbits)
             buffer[pos / wordinbits] |= ~(static_cast<uword> (1) << (pos
-                % wordinbits));
+                                          % wordinbits));
     }
 
     /**
@@ -179,7 +178,7 @@ public:
         assert(pos / wordinbits < buffer.size());
 #endif
         return (buffer[pos / wordinbits] & (static_cast<uword> (1) << (pos
-                % wordinbits))) != 0;
+                                            % wordinbits))) != 0;
     }
 
 
@@ -380,10 +379,10 @@ public:
         return count;
     }
 
-    inline void printout(ostream &o = cout) {
+    inline void printout(std::ostream &o = std::cout) {
         for (size_t k = 0; k < sizeinbits; ++k)
             o << get(k) << " ";
-        o << endl;
+        o << std::endl;
     }
 
     /**
@@ -397,12 +396,12 @@ public:
             padWithZeroes(a.sizeinbits);
     }
     /**
-   * Make sure the current bitmap has the size of the provided bitmap.
-   */
-   void setToSize(const BoolArray & a) {
-      sizeinbits = a.sizeinbits;
-      buffer.resize(a.buffer.size());
-   }
+    * Make sure the current bitmap has the size of the provided bitmap.
+    */
+    void setToSize(const BoolArray & a) {
+        sizeinbits = a.sizeinbits;
+        buffer.resize(a.buffer.size());
+    }
 
     /**
      * make sure the size of the array is totalbits bits by padding with zeroes.
@@ -426,14 +425,14 @@ public:
         wordinbits = sizeof(uword) * 8
     };
 
-    vector<size_t> toArray() const {
-        vector<size_t> ans;
+    std::vector<size_t> toArray() const {
+        std::vector<size_t> ans;
         for (size_t k = 0; k < buffer.size(); ++k) {
             uword myword = buffer[k];
             while (myword != 0) {
-              uint32_t ntz =  numberOfTrailingZeros (myword);
-              ans.push_back(sizeof(uword) * 8 * k + ntz);
-              myword ^= (static_cast<uword>(1) << ntz);
+                uint32_t ntz =  numberOfTrailingZeros (myword);
+                ans.push_back(sizeof(uword) * 8 * k + ntz);
+                myword ^= (static_cast<uword>(1) << ntz);
             }
         }
         return ans;
@@ -443,17 +442,17 @@ public:
      * Transform into a string that presents a list of set bits.
      * The running time is linear in the size of the bitmap.
      */
-    operator string() const {
-        stringstream ss;
+    operator std::string() const {
+        std::stringstream ss;
         ss << *this;
         return ss.str();
 
     }
 
-    friend ostream& operator<< (ostream &out, const BoolArray &a) {
-        vector<size_t> v = a.toArray();
+    friend std::ostream& operator<< (std::ostream &out, const BoolArray &a) {
+        std::vector<size_t> v = a.toArray();
         out <<"{";
-        for (vector<size_t>::const_iterator i = v.begin(); i != v.end(); ) {
+        for (std::vector<size_t>::const_iterator i = v.begin(); i != v.end(); ) {
             out << *i;
             ++i;
             if( i != v.end())
@@ -462,18 +461,18 @@ public:
         out <<"}";
         return out;
 
-        return (out << static_cast<string>(a));
+        return (out << static_cast<std::string>(a));
     }
 private:
 
     void clearBogusBits() {
-          if((sizeinbits % wordinbits) != 0) {
-                const uword maskbogus = (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
-                buffer[buffer.size() - 1] &= maskbogus;
-            }
+        if((sizeinbits % wordinbits) != 0) {
+            const uword maskbogus = (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
+            buffer[buffer.size() - 1] &= maskbogus;
+        }
     }
 
-    vector<uword> buffer;
+    std::vector<uword> buffer;
     size_t sizeinbits;
 };
 
@@ -484,14 +483,14 @@ private:
  */
 template <class uword>
 void fast_logicalor_tocontainer(size_t n, const BoolArray<uword> ** inputs, BoolArray<uword> &container) {
-  if(n == 0) {
-    container.reset();
-    return;
-  }
-  container = *inputs[0];
-  for(size_t i = 0 ; i < n ; i++) {
-    container.inplace_logicalor(*inputs[i]);
-  }
+    if(n == 0) {
+        container.reset();
+        return;
+    }
+    container = *inputs[0];
+    for(size_t i = 0 ; i < n ; i++) {
+        container.inplace_logicalor(*inputs[i]);
+    }
 }
 
 /**
@@ -501,9 +500,9 @@ void fast_logicalor_tocontainer(size_t n, const BoolArray<uword> ** inputs, Bool
  */
 template <class uword>
 BoolArray<uword> fast_logicalor(size_t n, const BoolArray<uword> ** inputs) {
-  BoolArray<uword> answer;
-  fast_logicalor_tocontainer(n,inputs,answer);
-  return answer;
+    BoolArray<uword> answer;
+    fast_logicalor_tocontainer(n,inputs,answer);
+    return answer;
 }
 
 template<class uword>
@@ -511,7 +510,7 @@ void BoolArray<uword>::append(const BoolArray & a) {
     if (sizeinbits % wordinbits == 0) {
         buffer.insert(buffer.end(), a.buffer.begin(), a.buffer.end());
     } else {
-        throw invalid_argument("Cannot append if parent does not meet boundary");
+        throw std::invalid_argument("Cannot append if parent does not meet boundary");
     }
     sizeinbits += a.sizeinbits;
 }

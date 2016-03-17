@@ -18,7 +18,6 @@
 
 #include "runninglengthword.h"
 
-using namespace std;
 
 template<class uword>
 class EWAHBoolArrayIterator;
@@ -106,12 +105,12 @@ public:
      * Transform into a string that presents a list of set bits.
      * The running time is linear in the compressed size of the bitmap.
      */
-    operator string() const {
-        stringstream ss;
+    operator std::string() const {
+        std::stringstream ss;
         ss << *this;
         return ss.str();
     }
-    friend ostream& operator<< (ostream &out, const EWAHBoolArray &a) {
+    friend std::ostream& operator<< (std::ostream &out, const EWAHBoolArray &a) {
 
         out<<"{";
         for (EWAHBoolArray::const_iterator i = a.begin(); i != a.end(); ) {
@@ -171,7 +170,7 @@ public:
      * Retrieve the set bits. Can be much faster than iterating through
      * the set bits with an iterator.
      */
-    vector<size_t> toArray() const;
+    std::vector<size_t> toArray() const;
 
     /**
      * computes the logical and with another compressed bitmap
@@ -205,7 +204,7 @@ public:
     void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const {
         EWAHBoolArray aneg = a.logicalnot();// could be more efficient
         logicaland(aneg,container);
-    };
+    }
 
 
     /**
@@ -291,7 +290,7 @@ public:
     inline size_t addWord(const uword newdata,
                           const uint32_t bitsthatmatter = 8 * sizeof(uword));
 
-    inline void printout(ostream &o = cout) {
+    inline void printout(std::ostream &o = std::cout) {
         toBoolArray().printout(o);
     }
 
@@ -367,13 +366,13 @@ public:
      * that the word size is not saved. For robust persistent
      * storage, you need to save this extra information elsewhere.
      */
-    void write(ostream & out, const bool savesizeinbits = true) const;
+    void write(std::ostream & out, const bool savesizeinbits = true) const;
 
     /**
      * This only writes the content of the buffer (see write()) method.
      * It is for advanced users.
      */
-    void writeBuffer(ostream & out) const;
+    void writeBuffer(std::ostream & out) const;
 
     /**
      * size (in words) of the underlying STL vector.
@@ -387,13 +386,13 @@ public:
      * if you set savesizeinbits=false, then you are responsible
      * for setting the value fo the attribute sizeinbits (see method setSizeInBits).
      */
-    void read(istream & in, const bool savesizeinbits = true);
+    void read(std::istream & in, const bool savesizeinbits = true);
 
     /**
      * read the buffer from a stream, see method writeBuffer.
      * this is for advanced users.
      */
-    void readBuffer(istream & in, const size_t buffersize);
+    void readBuffer(std::istream & in, const size_t buffersize);
 
 
     /**
@@ -471,8 +470,8 @@ public:
      * Returns a vector containing the position of the set
      * bits in increasing order.
      */
-    vector<size_t> toVector() {
-        vector<size_t> answer;
+    std::vector<size_t> toVector() {
+        std::vector<size_t> answer;
         appendSetBits(answer);
         return answer;
     }
@@ -492,10 +491,10 @@ public:
      */
     void swap(EWAHBoolArray & x);
 
-    const vector<uword> & getBuffer() const {
+    const std::vector<uword> & getBuffer() const {
         return buffer;
     }
-    ;
+
     enum {
         wordinbits = sizeof(uword) * 8
     };
@@ -589,7 +588,7 @@ private:
     // private because does not increment the size in bits
     //inline void addEmptyWordStaticCalls(bool v);
 
-    vector<uword> buffer;
+    std::vector<uword> buffer;
     size_t sizeinbits;
     size_t lastRLW;
 };
@@ -668,11 +667,11 @@ public:
     static const uword zero = 0;
     static const uword notzero = static_cast<uword> (~zero);
 private:
-    EWAHBoolArrayIterator(const vector<uword> & parent);
+    EWAHBoolArrayIterator(const std::vector<uword> & parent);
     void readNewRunningLengthWord();
     friend class EWAHBoolArray<uword> ;
     size_t pointer;
-    const vector<uword> & myparent;
+    const std::vector<uword> & myparent;
     uword compressedwords;
     uword literalwords;
     uword rl, lw;
@@ -688,7 +687,7 @@ public:
     enum {
         wordinbits = sizeof(uword) * 8
     };
-    typedef forward_iterator_tag iterator_category;
+    typedef std::forward_iterator_tag iterator_category;
     typedef size_t * pointer;
     typedef size_t & reference_type;
     typedef size_t value_type;
@@ -855,7 +854,7 @@ private:
         return true;
     }
 
-    EWAHBoolArraySetBitForwardIterator(const vector<uword> & parent,
+    EWAHBoolArraySetBitForwardIterator(const std::vector<uword> & parent,
                                        size_t startpointer = 0) :
         buffer(parent), mpointer(startpointer), offsetofpreviousrun(0),
         currentrunoffset(0), rlw(0) {
@@ -865,7 +864,7 @@ private:
         }
     }
 
-    const vector<uword> & buffer;
+    const std::vector<uword> & buffer;
     size_t mpointer;
     size_t offsetofpreviousrun;
     size_t currentrunoffset;
@@ -1000,8 +999,8 @@ size_t EWAHBoolArray<uword>::numberOfOnes() const {
 }
 
 template<class uword>
-vector<size_t> EWAHBoolArray<uword>::toArray() const {
-    vector < size_t > ans;
+std::vector<size_t> EWAHBoolArray<uword>::toArray() const {
+    std::vector < size_t > ans;
     size_t pos(0);
     size_t pointer(0);
     while (pointer < buffer.size()) {
@@ -1098,14 +1097,14 @@ size_t EWAHBoolArray<uword>::addWord(const uword newdata,
 }
 
 template<class uword>
-inline void EWAHBoolArray<uword>::writeBuffer(ostream & out) const {
+inline void EWAHBoolArray<uword>::writeBuffer(std::ostream & out) const {
     if (!buffer.empty())
         out.write(reinterpret_cast<const char *> (&buffer[0]),
                   sizeof(uword) * buffer.size());
 }
 
 template<class uword>
-inline void EWAHBoolArray<uword>::readBuffer(istream & in,
+inline void EWAHBoolArray<uword>::readBuffer(std::istream & in,
         const size_t buffersize) {
     buffer.resize(buffersize);
     if (buffersize > 0)
@@ -1114,7 +1113,7 @@ inline void EWAHBoolArray<uword>::readBuffer(istream & in,
 }
 
 template<class uword>
-void EWAHBoolArray<uword>::write(ostream & out, const bool savesizeinbits) const {
+void EWAHBoolArray<uword>::write(std::ostream & out, const bool savesizeinbits) const {
     if (savesizeinbits)
         out.write(reinterpret_cast<const char *> (&sizeinbits),
                   sizeof(sizeinbits));
@@ -1122,11 +1121,11 @@ void EWAHBoolArray<uword>::write(ostream & out, const bool savesizeinbits) const
     out.write(reinterpret_cast<const char *> (&buffersize), sizeof(buffersize));
     if (buffersize > 0)
         out.write(reinterpret_cast<const char *> (&buffer[0]),
-                  static_cast<streamsize> (sizeof(uword) * buffersize));
+                  static_cast<std::streamsize> (sizeof(uword) * buffersize));
 }
 
 template<class uword>
-void EWAHBoolArray<uword>::read(istream & in, const bool savesizeinbits) {
+void EWAHBoolArray<uword>::read(std::istream & in, const bool savesizeinbits) {
     if (savesizeinbits)
         in.read(reinterpret_cast<char *> (&sizeinbits), sizeof(sizeinbits));
     else
@@ -1136,7 +1135,7 @@ void EWAHBoolArray<uword>::read(istream & in, const bool savesizeinbits) {
     buffer.resize(buffersize);
     if (buffersize > 0)
         in.read(reinterpret_cast<char *> (&buffer[0]),
-                static_cast<streamsize> (sizeof(uword) * buffersize));
+                static_cast<std::streamsize> (sizeof(uword) * buffersize));
 }
 
 template<class uword>
@@ -1251,7 +1250,7 @@ public:
     }
 
     size_t pointer;
-    const vector<uword> * myparent;
+    const std::vector<uword> * myparent;
     BufferedRunningLengthWord<uword> rlw;
 
     EWAHBoolArrayRawIterator();
@@ -1421,21 +1420,21 @@ void EWAHBoolArray<uword>::append(const EWAHBoolArray & x) {
             buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
         }
     } else {
-        stringstream ss;
+        std::stringstream ss;
         ss
                 << "This should really not happen! You are trying to append to a bitmap having a fractional number of words, that is,  "
                 << static_cast<int> (sizeinbits)
                 << " bits with a word size in bits of "
                 << static_cast<int> (wordinbits) << ". ";
         ss << "Size of the bitmap being appended: " << x.sizeinbits << " bits."
-           << endl;
-        throw invalid_argument(ss.str());
+           << std::endl;
+        throw std::invalid_argument(ss.str());
     }
 }
 
 template<class uword>
 EWAHBoolArrayIterator<uword>::EWAHBoolArrayIterator(
-    const vector<uword> & parent) :
+    const std::vector<uword> & parent) :
     pointer(0), myparent(parent), compressedwords(0), literalwords(0), rl(0),
     lw(0), b(0) {
     if (pointer < myparent.size())
@@ -1782,28 +1781,25 @@ size_t EWAHBoolArray<uword>::addEmptyWord(const bool v) {
     }
 }
 
-/**
-* Utility class used by fast_logicalor
-*/
-template<class uword>
-class EWAHBoolArrayPtr {
-
-public:
-    EWAHBoolArrayPtr(const EWAHBoolArray<uword> * p, bool o): ptr(p), own(o) {
-    }
-    const EWAHBoolArray<uword> * ptr;
-    bool own;// whether to clean
-
-    bool operator<(const EWAHBoolArrayPtr<uword>& o) const {
-        return o.ptr->sizeInBytes() - ptr->sizeInBytes();// backward on purpose
-    }
-
-};
 
 template<class uword>
 void fast_logicalor_tocontainer(size_t n, const EWAHBoolArray<uword> ** inputs, EWAHBoolArray<uword> &container) {
+    class EWAHBoolArrayPtr {
+
+    public:
+        EWAHBoolArrayPtr(const EWAHBoolArray<uword> * p, bool o): ptr(p), own(o) {
+        }
+        const EWAHBoolArray<uword> * ptr;
+        bool own;// whether to clean
+
+        bool operator<(const EWAHBoolArrayPtr& o) const {
+            return o.ptr->sizeInBytes() - ptr->sizeInBytes();// backward on purpose
+        }
+
+    };
+
     if(n == 0) {
-    	container.reset();
+        container.reset();
         return;
     }
     if(n == 1) {
@@ -1811,17 +1807,17 @@ void fast_logicalor_tocontainer(size_t n, const EWAHBoolArray<uword> ** inputs, 
         return;
     }
 
-    priority_queue<EWAHBoolArrayPtr<uword> > pq;
+    std::priority_queue<EWAHBoolArrayPtr > pq;
     for(size_t i = 0 ; i < n; i++) {
         // could use emplace
-        pq.push(EWAHBoolArrayPtr<uword>(inputs[i], false));
+        pq.push(EWAHBoolArrayPtr(inputs[i], false));
     }
     while (pq.size() > 2) {
 
-    	EWAHBoolArrayPtr<uword> x1 = pq.top();
+        EWAHBoolArrayPtr x1 = pq.top();
         pq.pop();
 
-        EWAHBoolArrayPtr<uword> x2 = pq.top();
+        EWAHBoolArrayPtr x2 = pq.top();
         pq.pop();
 
         EWAHBoolArray<uword> * buffer = new EWAHBoolArray<uword>();
@@ -1833,13 +1829,13 @@ void fast_logicalor_tocontainer(size_t n, const EWAHBoolArray<uword> ** inputs, 
         if(x2.own) {
             delete x2.ptr;
         }
-        pq.push(EWAHBoolArrayPtr<uword>(buffer, true));
+        pq.push(EWAHBoolArrayPtr(buffer, true));
 
     }
-	EWAHBoolArrayPtr<uword> x1 = pq.top();
+    EWAHBoolArrayPtr x1 = pq.top();
     pq.pop();
 
-    EWAHBoolArrayPtr<uword> x2 = pq.top();
+    EWAHBoolArrayPtr x2 = pq.top();
     pq.pop();
 
 
@@ -1893,7 +1889,7 @@ void EWAHBoolArray<uword>::logicalor(const EWAHBoolArray &a, EWAHBoolArray &cont
             }
             predator.discardRunningWordsWithReload();
         }
-        const size_t nbre_literal = min(
+        const size_t nbre_literal = std::min(
                                         rlwi.getNumberOfLiteralWords(),
                                         rlwj.getNumberOfLiteralWords());
         if (nbre_literal > 0) {
@@ -1939,7 +1935,7 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a, EWAHBoolArray &con
             container.addStreamOfEmptyWords(predator.getRunningBit(), predator.getRunningLength() - index);
             predator.discardRunningWordsWithReload();
         }
-        const size_t nbre_literal = min(rlwi.getNumberOfLiteralWords(),rlwj.getNumberOfLiteralWords());
+        const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),rlwj.getNumberOfLiteralWords());
         if (nbre_literal > 0) {
             for (size_t k = 0; k < nbre_literal; ++k)
                 container.addWord(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
@@ -1986,7 +1982,7 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
             }
             predator.discardRunningWordsWithReload();
         }
-        const size_t nbre_literal = min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
+        const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
         if (nbre_literal > 0) {
             for (size_t k = 0; k < nbre_literal; ++k) {
                 container.addWord(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
@@ -2025,7 +2021,7 @@ bool EWAHBoolArray<uword>::intersects(const EWAHBoolArray &a) const {
             }
             predator.discardRunningWordsWithReload();
         }
-        const size_t nbre_literal = min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
+        const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
         if (nbre_literal > 0) {
             for (size_t k = 0; k < nbre_literal; ++k) {
                 if((rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k))!=0) return true;
@@ -2056,23 +2052,23 @@ BitmapStatistics EWAHBoolArray<uword>::computeStatistics() const {
 
 template<class uword>
 void EWAHBoolArray<uword>::debugprintout() const {
-    cout << "==printing out EWAHBoolArray==" << endl;
-    cout << "Number of compressed words: " << buffer.size() << endl;
+    std::cout << "==printing out EWAHBoolArray==" << std::endl;
+    std::cout << "Number of compressed words: " << buffer.size() << std::endl;
     size_t pointer = 0;
     while (pointer < buffer.size()) {
         ConstRunningLengthWord<uword> rlw(buffer[pointer]);
         bool b = rlw.getRunningBit();
         const uword rl = rlw.getRunningLength();
         const uword lw = rlw.getNumberOfLiteralWords();
-        cout << "pointer = " << pointer << " running bit=" << b
-             << " running length=" << rl << " lit. words=" << lw << endl;
+        std::cout << "pointer = " << pointer << " running bit=" << b
+                  << " running length=" << rl << " lit. words=" << lw << std::endl;
         for (uword j = 0; j < lw; ++j) {
             const uword & w = buffer[pointer + j + 1];
-            cout << toBinaryString(w) << endl;
+            std::cout << toBinaryString(w) << std::endl;
         }
         pointer += lw + 1;
     }
-    cout << "==END==" << endl;
+    std::cout << "==END==" <<std:: endl;
 }
 
 template<class uword>

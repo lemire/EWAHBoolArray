@@ -18,7 +18,7 @@
 #include "boolarray.h"
 
 
-#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+#define SSTR( x ) ( \
         ( std::ostringstream() << std::dec << x ) ).str()
 
 using namespace std;

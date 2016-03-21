@@ -111,6 +111,8 @@ None. (Will work under MacOS, Windows or Linux.)
 
 Compilers tested: clang++, g++, Intel compiler, Microsoft Visual Studio
 
+It assumes an x64 processor. 
+
 Versions 0.5 and above assume that the compiler supports the C++11 standard.
 
 # Usage

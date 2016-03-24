@@ -3,8 +3,9 @@ TODO
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
 
-Upcoming
+0.5.1 (March 24th, 2016) 
  Switch to C++11
+ Will now pass all unit tests on a 32-bit ARM processor
 
 0.5.0 (March 16th, 2016)
  Implemented fast_logicalor for the aggregation of many bitmaps

@@ -3,6 +3,10 @@ TODO
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
 
+0.5.2 (April 29th, 2016)
+ Fixed logicalandnot 
+ PR fix underflow bug during logical negation  by Matthew Vilim
+
 0.5.1 (March 24th, 2016) 
  Will now pass all unit tests on a 32-bit ARM processor
 

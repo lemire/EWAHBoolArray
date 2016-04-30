@@ -908,11 +908,8 @@ template <class uword> void EWAHBoolArray<uword>::inplace_logicalnot() {
         (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
     if (rlw.getNumberOfLiteralWords() > 0) { // easy case
       buffer[lastrlw + 1 + rlw.getNumberOfLiteralWords() - 1] &= maskbogus;
-    } else if (rlw.getRunningBit()) {
-#ifdef EWAHASSERT
-      assert(rlw.getNumberOfLiteralWords() > 0);
-#endif
-      rlw.setNumberOfLiteralWords(rlw.getNumberOfLiteralWords() - 1);
+    } else {
+      rlw.setRunningLength(rlw.getRunningLength() - 1);
       addLiteralWord(maskbogus);
     }
   }

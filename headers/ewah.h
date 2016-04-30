@@ -188,8 +188,11 @@ public:
    * answer goes into container
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * Both bitmaps are modified to so that they have the same size in bits.
    */
-  void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const {
+  void logicalandnot(EWAHBoolArray &a, EWAHBoolArray &container)  {
+    makeSameSize(a);
     EWAHBoolArray aneg = a.logicalnot(); // could be more efficient
     logicaland(aneg, container);
   }

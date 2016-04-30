@@ -124,17 +124,15 @@ template <class uword> bool testCardinalityEWAHBoolArray() {
 }
 
 template <class uword> bool testAndNotEWAHBoolArray() {
-  // as of March 25th, logicalandnot is not implemented
-  // cout << "[testing AndNotEWAHBoolArray] sizeof(uword)=" << sizeof(uword) <<
-  // endl;
-  /* EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
+  cout << "[testing AndNotEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+  EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
   EWAHBoolArray<uword> b = EWAHBoolArray<uword>::bitmapOf(2,1,100);
   EWAHBoolArray<uword> bout;
   b.logicalandnot(b1,bout);
   cout<<bout<<endl;
   if (bout.numberOfOnes() != 1) {
       return false;
-  }*/
+  }
   return true;
 }
 

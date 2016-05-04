@@ -547,10 +547,12 @@ public:
    */
   inline void setSizeInBits(const size_t size) { sizeinbits = size; }
 
-private:
+  // Like addStreamOfEmptyWords but
   // addStreamOfEmptyWords but does not return the cost increase,
   // does not update sizeinbits and does not check that number>0
   void fastaddStreamOfEmptyWords(const bool v, size_t number);
+
+private:
 
   // private because does not increment the size in bits
   // returns the number of words added (storage cost increase)

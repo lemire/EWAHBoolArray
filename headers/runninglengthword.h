@@ -229,7 +229,7 @@ public:
       // first run
 
       size_t pl = getRunningLength();
-      container.addStreamOfEmptyWords(getRunningBit(), pl);
+      container.fastaddStreamOfEmptyWords(getRunningBit(), pl);
       size_t pd = getNumberOfLiteralWords();
       writeLiteralWords(pd, container);
       discardFirstWordsWithReload(pl + pd);
@@ -259,7 +259,7 @@ public:
       if (index + pl > max) {
         pl = max - index;
       }
-      container.addStreamOfEmptyWords(getRunningBit(), pl);
+      container.fastaddStreamOfEmptyWords(getRunningBit(), pl);
       index += pl;
       size_t pd = getNumberOfLiteralWords();
       if (pd + index > max) {
@@ -303,7 +303,7 @@ public:
       if (index + pl > max) {
         pl = max - index;
       }
-      container.addStreamOfEmptyWords(!getRunningBit(), pl);
+      container.fastaddStreamOfEmptyWords(!getRunningBit(), pl);
       index += pl;
       size_t pd = getNumberOfLiteralWords();
       if (pd + index > max) {

@@ -227,12 +227,12 @@ public:
   void discharge(EWAHBoolArray<uword> &container) {
     while (size() > 0) {
       // first run
-
       size_t pl = getRunningLength();
       container.fastaddStreamOfEmptyWords(getRunningBit(), pl);
       size_t pd = getNumberOfLiteralWords();
       writeLiteralWords(pd, container);
-      discardFirstWordsWithReload(pl + pd);
+      if (!next())
+      break;
     }
   }
 
@@ -253,21 +253,26 @@ public:
   // Write out up to max words, returns how many were written
   size_t discharge(EWAHBoolArray<uword> &container, size_t max) {
     size_t index = 0;
-    while ((index < max) && (size() > 0)) {
-      // first run
-      size_t pl = getRunningLength();
-      if (index + pl > max) {
-        pl = max - index;
+    while (true) {
+      if (index + RunningLength > max) {
+        const size_t offset = max - index;
+        container.fastaddStreamOfEmptyWords(getRunningBit(), offset);
+        RunningLength -= offset;
+        return max;
       }
-      container.fastaddStreamOfEmptyWords(getRunningBit(), pl);
-      index += pl;
-      size_t pd = getNumberOfLiteralWords();
-      if (pd + index > max) {
-        pd = max - index;
+      container.fastaddStreamOfEmptyWords(getRunningBit(), RunningLength);
+      index += RunningLength;
+      if (NumberOfLiteralWords + index > max) {
+        const size_t offset = max - index;
+        writeLiteralWords(offset, container);
+        RunningLength = 0;
+        NumberOfLiteralWords -= offset;
+        return max;
       }
-      writeLiteralWords(pd, container);
-      index += pd;
-      discardFirstWordsWithReload(pl + pd);
+      writeLiteralWords(NumberOfLiteralWords, container);
+      index += NumberOfLiteralWords;
+      if (!next())
+        break;
     }
     return index;
   }
@@ -296,7 +301,8 @@ public:
 
   // Write out up to max words, returns how many were written
   size_t dischargeNegated(EWAHBoolArray<uword> &container, size_t max) {
-    size_t index = 0;
+    // todo: could be optimized further
+  size_t index = 0;
     while ((index < max) && (size() > 0)) {
       // first run
       size_t pl = getRunningLength();
@@ -417,9 +423,9 @@ public:
     return out;
   }
   void discardLiteralWordsWithReload(uword x) {
-	 assert(NumberOfLiteralWords >= x);
-	 NumberOfLiteralWords -= x;
-	 if(NumberOfLiteralWords == 0) next();
+   assert(NumberOfLiteralWords >= x);
+   NumberOfLiteralWords -= x;
+   if(NumberOfLiteralWords == 0) next();
   }
 
 

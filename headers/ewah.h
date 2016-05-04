@@ -1796,12 +1796,12 @@ void EWAHBoolArray<uword>::logicalor(const EWAHBoolArray &a,
       BufferedRunningLengthWord<uword> &prey = i_is_prey ? rlwi : rlwj;
       BufferedRunningLengthWord<uword> &predator = i_is_prey ? rlwj : rlwi;
       if (predator.getRunningBit()) {
-        container.addStreamOfEmptyWords(true, predator.getRunningLength());
+        container.fastaddStreamOfEmptyWords(true, predator.getRunningLength());
         prey.discardFirstWordsWithReload(predator.getRunningLength());
       } else {
         const size_t index =
             prey.discharge(container, predator.getRunningLength());
-        container.addStreamOfEmptyWords(false,
+        container.fastaddStreamOfEmptyWords(false,
                                         predator.getRunningLength() - index);
       }
       predator.discardRunningWordsWithReload();
@@ -1847,7 +1847,7 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a,
           (!predator.getRunningBit())
               ? prey.discharge(container, predator.getRunningLength())
               : prey.dischargeNegated(container, predator.getRunningLength());
-      container.addStreamOfEmptyWords(predator.getRunningBit(),
+      container.fastaddStreamOfEmptyWords(predator.getRunningBit(),
                                       predator.getRunningLength() - index);
       predator.discardRunningWordsWithReload();
     }

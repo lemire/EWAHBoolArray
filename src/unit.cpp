@@ -1054,6 +1054,8 @@ bool testRealData() {
     if (longunion != vor) {
       cout << "Loading bitmaps from file " << filename << endl;
       cerr << "unions do not match!" << endl;
+      cerr << "They have lengths " <<longunion.size() << " and "<< vor.size() << endl;
+
       return false;
     }
 

@@ -348,6 +348,11 @@ public:
     container.addStreamOfNegatedDirtyWords(parent->dirtyWords(), numWords);
   }
 
+  void discardRunningWords() {
+    RunningLength = 0;
+  }
+
+
   void discardRunningWordsWithReload() {
     RunningLength = 0;
     if (NumberOfLiteralWords == 0)
@@ -411,6 +416,12 @@ public:
         << ",NumberOfLiteralWords:" << a.NumberOfLiteralWords << "}";
     return out;
   }
+  void discardLiteralWordsWithReload(uword x) {
+	 assert(NumberOfLiteralWords >= x);
+	 NumberOfLiteralWords -= x;
+	 if(NumberOfLiteralWords == 0) next();
+  }
+
 
   void discardFirstWordsWithReload(uword x) {
     while (x > 0) {

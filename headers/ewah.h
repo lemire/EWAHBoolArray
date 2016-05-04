@@ -1316,8 +1316,8 @@ bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray &x) const {
       for (size_t k = 0; k < nbre_literal; ++k)
         if ((rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k)) != 0)
           return false;
-      rlwi.discardFirstWordsWithReload(nbre_literal);
-      rlwj.discardFirstWordsWithReload(nbre_literal);
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
   const bool i_remains = rlwi.size() > 0;
@@ -1806,14 +1806,15 @@ void EWAHBoolArray<uword>::logicalor(const EWAHBoolArray &a,
       }
       predator.discardRunningWordsWithReload();
     }
+
     const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
         container.addWord(rlwi.getLiteralWordAt(k) | rlwj.getLiteralWordAt(k));
       }
-      rlwi.discardFirstWordsWithReload(nbre_literal);
-      rlwj.discardFirstWordsWithReload(nbre_literal);
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
   const bool i_remains = rlwi.size() > 0;
@@ -1855,8 +1856,8 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a,
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k)
         container.addWord(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
-      rlwi.discardFirstWordsWithReload(nbre_literal);
-      rlwj.discardFirstWordsWithReload(nbre_literal);
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
   const bool i_remains = rlwi.size() > 0;
@@ -1903,8 +1904,8 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
       for (size_t k = 0; k < nbre_literal; ++k) {
         container.addWord(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
       }
-      rlwi.discardFirstWordsWithReload(nbre_literal);
-      rlwj.discardFirstWordsWithReload(nbre_literal);
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
   container.setSizeInBits(sizeInBits());
@@ -1944,8 +1945,8 @@ bool EWAHBoolArray<uword>::intersects(const EWAHBoolArray &a) const {
         if ((rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k)) != 0)
           return true;
       }
-      rlwi.discardFirstWordsWithReload(nbre_literal);
-      rlwj.discardFirstWordsWithReload(nbre_literal);
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
   return false;

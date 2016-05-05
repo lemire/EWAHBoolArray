@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
-#include "simplevector.h"
+
 #include "ewahutil.h"
 #include "boolarray.h"
 
@@ -35,8 +35,6 @@ template <class uword> class EWAHBoolArrayRawIterator;
 template <class uword = uint32_t> class EWAHBoolArray {
 public:
   EWAHBoolArray() : buffer(1, 0), sizeinbits(0), lastRLW(0) {}
-
-  typedef simplevector<uword> backvector;
 
   static EWAHBoolArray bitmapOf(size_t n, ...) {
     EWAHBoolArray ans;
@@ -475,7 +473,7 @@ public:
    */
   void swap(EWAHBoolArray &x);
 
-  const backvector &getBuffer() const { return buffer; }
+  const std::vector<uword> &getBuffer() const { return buffer; }
 
   enum { wordinbits = sizeof(uword) * 8 };
 
@@ -575,7 +573,7 @@ private:
   // private because does not increment the size in bits
   // inline void addEmptyWordStaticCalls(bool v);
 
-  backvector buffer;
+  std::vector<uword> buffer;
   size_t sizeinbits;
   size_t lastRLW;
 };
@@ -648,11 +646,11 @@ public:
   static const uword notzero = static_cast<uword>(~zero);
 
 private:
-  EWAHBoolArrayIterator(const typename EWAHBoolArray<uword>::backvector &parent);
+  EWAHBoolArrayIterator(const std::vector<uword> &parent);
   void readNewRunningLengthWord();
   friend class EWAHBoolArray<uword>;
   size_t pointer;
-  const typename EWAHBoolArray<uword>::backvector &myparent;
+  const std::vector<uword> &myparent;
   uword compressedwords;
   uword literalwords;
   uword rl, lw;
@@ -817,7 +815,7 @@ private:
     return true;
   }
 
-  EWAHBoolArraySetBitForwardIterator(const typename EWAHBoolArray<uword>::backvector &parent,
+  EWAHBoolArraySetBitForwardIterator(const std::vector<uword> &parent,
                                      size_t startpointer = 0)
       : buffer(parent), mpointer(startpointer), offsetofpreviousrun(0),
         currentrunoffset(0), rlw(0) {
@@ -827,7 +825,7 @@ private:
     }
   }
 
-  const typename EWAHBoolArray<uword>::backvector &buffer;
+  const std::vector<uword> &buffer;
   size_t mpointer;
   size_t offsetofpreviousrun;
   size_t currentrunoffset;
@@ -1170,7 +1168,7 @@ public:
   }
 
   size_t pointer;
-  const typename EWAHBoolArray<uword>::backvector *myparent;
+  const std::vector<uword> *myparent;
   BufferedRunningLengthWord<uword> rlw;
 
   EWAHBoolArrayRawIterator();
@@ -1331,17 +1329,10 @@ void EWAHBoolArray<uword>::append(const EWAHBoolArray &x) {
 // we want to get rid of it!
       lastRLW = x.lastRLW + buffer.size() - 1;
       buffer.resize(buffer.size() - 1);
-      buffer.reserve(buffer.size() + x.buffer.size());
-      buffer.append(x.buffer.data(),x.buffer.size());
-      //for(size_t i = 0; i < x.buffer.size(); ++i) buffer.unsafe_push_back(x.buffer[i]);
-      //buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
+      buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
     } else {
       lastRLW = x.lastRLW + buffer.size();
-      buffer.reserve(buffer.size() + x.buffer.size());
-      //buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
-      buffer.append(x.buffer.data(),x.buffer.size());
-      //for(size_t i = 0; i < x.buffer.size(); ++i) buffer.unsafe_push_back(x.buffer[i]);
-
+      buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
     }
   } else {
     std::stringstream ss;
@@ -1357,7 +1348,7 @@ void EWAHBoolArray<uword>::append(const EWAHBoolArray &x) {
 
 template <class uword>
 EWAHBoolArrayIterator<uword>::EWAHBoolArrayIterator(
-    const typename EWAHBoolArray<uword>::backvector &parent)
+    const std::vector<uword> &parent)
     : pointer(0), myparent(parent), compressedwords(0), literalwords(0), rl(0),
       lw(0), b(0) {
   if (pointer < myparent.size())
@@ -1557,16 +1548,14 @@ size_t EWAHBoolArray<uword>::addStreamOfDirtyWords(const uword *v,
 	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
 	  buffer[lastRLW] = rlw;
 	  sizeinbits += number * wordinbits;
-	  buffer.append(v,number);
-	  //for(size_t i = 0; i < number; ++i) buffer.unsafe_push_back(v[i]);
+	  buffer.insert(buffer.end(), v, v+number);
 	  return number;
   }
   // we proceed the long way
   size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
   RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
   buffer[lastRLW] = rlw;
-  buffer.append(v,howmanywecanadd);
-  //for(size_t i = 0; i < howmanywecanadd; ++i) buffer.push_back(v[i]);
+  buffer.insert(buffer.end(), v, v+howmanywecanadd);
   size_t wordadded = howmanywecanadd;
   sizeinbits += howmanywecanadd * wordinbits;
   buffer.push_back(0);
@@ -1586,8 +1575,7 @@ void EWAHBoolArray<uword>::fastaddStreamOfDirtyWords(const uword *v,
   if(NumberOfLiteralWords + number <= RunningLengthWord<uword>::largestliteralcount) {
 	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
 	  buffer[lastRLW] = rlw;
-	  buffer.append(v,number);
-      //for(size_t i = 0; i < number; ++i) buffer.unsafe_push_back(v[i]);
+          for(size_t i = 0; i < number; ++i) buffer.push_back(v[i]);
 	  //buffer.insert(buffer.end(), v, v+number);
 	  return;
   }
@@ -1595,8 +1583,7 @@ void EWAHBoolArray<uword>::fastaddStreamOfDirtyWords(const uword *v,
   size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
   RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
   buffer[lastRLW] = rlw;
-  buffer.append(v,howmanywecanadd);
-  //for(size_t i = 0; i < howmanywecanadd; ++i) buffer.unsafe_push_back(v[i]);
+  for(size_t i = 0; i < howmanywecanadd; ++i) buffer.push_back(v[i]);
   //buffer.insert(buffer.end(), v, v+howmanywecanadd);
   buffer.push_back(0);
   lastRLW = buffer.size() - 1;
@@ -1615,7 +1602,6 @@ size_t EWAHBoolArray<uword>::addStreamOfNegatedDirtyWords(const uword *v,
 	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
 	  buffer[lastRLW] = rlw;
 	  sizeinbits += number * wordinbits;
-
 	  for(size_t k = 0; k < number; ++k)
 		  buffer.push_back(~v[k]);
 	  return number;

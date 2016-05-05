@@ -1613,14 +1613,16 @@ void EWAHBoolArray<uword>::fastaddStreamOfDirtyWords(const uword *v,
   if(NumberOfLiteralWords + number <= RunningLengthWord<uword>::largestliteralcount) {
 	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
 	  buffer[lastRLW] = rlw;
-	  buffer.insert(buffer.end(), v, v+number);
+          for(size_t i = 0; i < number; ++i) buffer.push_back(v[i]);
+	  //buffer.insert(buffer.end(), v, v+number);
 	  return;
   }
   // we proceed the long way
   size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
   RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
   buffer[lastRLW] = rlw;
-  buffer.insert(buffer.end(), v, v+howmanywecanadd);
+  for(size_t i = 0; i < howmanywecanadd; ++i) buffer.push_back(v[i]);
+  //buffer.insert(buffer.end(), v, v+howmanywecanadd);
   buffer.push_back(0);
   lastRLW = buffer.size() - 1;
   fastaddStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);

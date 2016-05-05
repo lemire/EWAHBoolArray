@@ -549,7 +549,7 @@ public:
 
   // Like addStreamOfEmptyWords but
   // addStreamOfEmptyWords but does not return the cost increase,
-  // does not update sizeinbits and does not check that number>0
+  // does not update sizeinbits 
   void fastaddStreamOfEmptyWords(const bool v, size_t number);
 
 private:
@@ -1522,6 +1522,8 @@ size_t EWAHBoolArray<uword>::addStreamOfEmptyWords(const bool v,
 template <class uword>
 void EWAHBoolArray<uword>::fastaddStreamOfEmptyWords(const bool v,
                                                      size_t number) {
+  if (number == 0)
+    return ;
   if ((RunningLengthWord<uword>::getRunningBit(buffer[lastRLW]) != v) &&
       (RunningLengthWord<uword>::size(buffer[lastRLW]) == 0)) {
     RunningLengthWord<uword>::setRunningBit(buffer[lastRLW], v);

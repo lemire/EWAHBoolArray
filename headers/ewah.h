@@ -1725,7 +1725,7 @@ void fast_logicalor_tocontainer(size_t n, const EWAHBoolArray<uword> **inputs,
     bool own; // whether to clean
 
     bool operator<(const EWAHBoolArrayPtr &o) const {
-      return o.ptr->sizeInBytes() - ptr->sizeInBytes(); // backward on purpose
+      return o.ptr->sizeInBytes() < ptr->sizeInBytes(); // backward on purpose
     }
   };
 
@@ -1737,7 +1737,6 @@ void fast_logicalor_tocontainer(size_t n, const EWAHBoolArray<uword> **inputs,
     container = *inputs[0];
     return;
   }
-
   std::priority_queue<EWAHBoolArrayPtr> pq;
   for (size_t i = 0; i < n; i++) {
     // could use emplace

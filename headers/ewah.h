@@ -1573,49 +1573,27 @@ size_t EWAHBoolArray<uword>::addStreamOfDirtyWords(const uword *v,
                                                    const size_t number) {
   if (number == 0)
     return 0;
-  RunningLengthWord<uword> lastRunningLengthWord(buffer[lastRLW]);
-  const uword NumberOfLiteralWords =
-      lastRunningLengthWord.getNumberOfLiteralWords();
-#ifdef EWAHASSERT
-  assert(RunningLengthWord<uword>::largestliteralcount >= NumberOfLiteralWords);
-#endif
-  const size_t whatwecanadd =
-      number <
-              static_cast<uword>(RunningLengthWord<uword>::largestliteralcount -
-                                 NumberOfLiteralWords)
-          ? number
-          : static_cast<size_t>(
-                RunningLengthWord<uword>::largestliteralcount -
-                NumberOfLiteralWords); // 0x7FFF-NumberOfLiteralWords);
-#ifdef EWAHASSERT
-  assert(NumberOfLiteralWords + whatwecanadd >= NumberOfLiteralWords);
-  assert(NumberOfLiteralWords + whatwecanadd <=
-         RunningLengthWord<uword>::largestliteralcount);
-#endif
-  lastRunningLengthWord.setNumberOfLiteralWords(
-      static_cast<uword>(NumberOfLiteralWords + whatwecanadd));
-#ifdef EWAHASSERT
-  assert(lastRunningLengthWord.getNumberOfLiteralWords() ==
-         NumberOfLiteralWords + whatwecanadd);
-#endif
-  const size_t leftovernumber = number - whatwecanadd;
-  // add the dirty words...
-  const size_t oldsize(buffer.size());
-  buffer.resize(oldsize + whatwecanadd);
-  memcpy(&buffer[oldsize], v, whatwecanadd * sizeof(uword));
-  sizeinbits += whatwecanadd * wordinbits;
-  size_t wordsadded(whatwecanadd);
-  if (leftovernumber > 0) {
-    // add
-    buffer.push_back(0);
-    lastRLW = buffer.size() - 1;
-    ++wordsadded;
-    wordsadded += addStreamOfDirtyWords(v + whatwecanadd, leftovernumber);
+  uword rlw = buffer[lastRLW];
+  size_t NumberOfLiteralWords = RunningLengthWord<uword>::getNumberOfLiteralWords(rlw);
+  if(NumberOfLiteralWords + number <= RunningLengthWord<uword>::largestliteralcount) {
+	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
+	  buffer[lastRLW] = rlw;
+	  sizeinbits += number * wordinbits;
+	  buffer.insert(buffer.end(), v, v+number);
+	  return number;
   }
-#ifdef EWAHASSERT
-  assert(wordsadded >= number);
-#endif
-  return wordsadded;
+  // we proceed the long way
+  size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
+  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
+  buffer[lastRLW] = rlw;
+  buffer.insert(buffer.end(), v, v+howmanywecanadd);
+  size_t wordadded = howmanywecanadd;
+  sizeinbits += howmanywecanadd * wordinbits;
+  buffer.push_back(0);
+  lastRLW = buffer.size() - 1;
+  ++wordadded;
+  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+  return wordadded;
 }
 
 template <class uword>
@@ -1623,52 +1601,29 @@ size_t EWAHBoolArray<uword>::addStreamOfNegatedDirtyWords(const uword *v,
                                                           const size_t number) {
   if (number == 0)
     return 0;
-  RunningLengthWord<uword> lastRunningLengthWord(buffer[lastRLW]);
-  const uword NumberOfLiteralWords =
-      lastRunningLengthWord.getNumberOfLiteralWords();
-#ifdef EWAHASSERT
-  assert(RunningLengthWord<uword>::largestliteralcount >= NumberOfLiteralWords);
-#endif
-  const size_t whatwecanadd =
-      number <
-              static_cast<uword>(RunningLengthWord<uword>::largestliteralcount -
-                                 NumberOfLiteralWords)
-          ? number
-          : static_cast<size_t>(
-                RunningLengthWord<uword>::largestliteralcount -
-                NumberOfLiteralWords); // 0x7FFF-NumberOfLiteralWords);
-#ifdef EWAHASSERT
-  assert(NumberOfLiteralWords + whatwecanadd >= NumberOfLiteralWords);
-  assert(NumberOfLiteralWords + whatwecanadd <=
-         RunningLengthWord<uword>::largestliteralcount);
-#endif
-  lastRunningLengthWord.setNumberOfLiteralWords(
-      static_cast<uword>(NumberOfLiteralWords + whatwecanadd));
-#ifdef EWAHASSERT
-  assert(lastRunningLengthWord.getNumberOfLiteralWords() ==
-         NumberOfLiteralWords + whatwecanadd);
-#endif
-  const size_t leftovernumber = number - whatwecanadd;
-  // add the dirty words...
-  const size_t oldsize(buffer.size());
-  buffer.resize(oldsize + whatwecanadd);
-  for (size_t k = 0; k < whatwecanadd; ++k) {
-    buffer[oldsize + k] = ~v[k];
+  uword rlw = buffer[lastRLW];
+  size_t NumberOfLiteralWords = RunningLengthWord<uword>::getNumberOfLiteralWords(rlw);
+  if(NumberOfLiteralWords + number <= RunningLengthWord<uword>::largestliteralcount) {
+	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
+	  buffer[lastRLW] = rlw;
+	  sizeinbits += number * wordinbits;
+	  for(size_t k = 0; k < number; ++k)
+		  buffer.push_back(~v[k]);
+	  return number;
   }
-  // memcpy(&buffer[oldsize], v, whatwecanadd * sizeof(uword));
-  sizeinbits += whatwecanadd * wordinbits;
-  size_t wordsadded(whatwecanadd);
-  if (leftovernumber > 0) {
-    // add
-    buffer.push_back(0);
-    lastRLW = buffer.size() - 1;
-    ++wordsadded;
-    wordsadded += addStreamOfDirtyWords(v + whatwecanadd, leftovernumber);
-  }
-#ifdef EWAHASSERT
-  assert(wordsadded >= number);
-#endif
-  return wordsadded;
+  // we proceed the long way
+  size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
+  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
+  buffer[lastRLW] = rlw;
+  for(size_t k = 0; k < howmanywecanadd; ++k)
+	  buffer.push_back(~v[k]);
+  size_t wordadded = howmanywecanadd;
+  sizeinbits += howmanywecanadd * wordinbits;
+  buffer.push_back(0);
+  lastRLW = buffer.size() - 1;
+  ++wordadded;
+  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+  return wordadded;
 }
 
 template <class uword> size_t EWAHBoolArray<uword>::addEmptyWord(const bool v) {

@@ -624,14 +624,8 @@ public:
       else
         returnvalue = zero;
     } else {
-#ifdef EWAHASSERT
-      assert(literalwords < lw);
-#endif
       ++literalwords;
       ++pointer;
-#ifdef EWAHASSERT
-      assert(pointer < myparent.size());
-#endif
       returnvalue = myparent[pointer];
     }
     if ((compressedwords == rl) && (literalwords == lw)) {
@@ -913,9 +907,6 @@ template <class uword> void EWAHBoolArray<uword>::inplace_logicalnot() {
   }
   if (sizeinbits % wordinbits != 0) {
     RunningLengthWord<uword> rlw(buffer[lastrlw]);
-#ifdef EWAHASSERT
-    assert(rlw.getNumberOfLiteralWords() + rlw.getRunningLength() > 0);
-#endif
     const uword maskbogus =
         (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
     if (rlw.getNumberOfLiteralWords() > 0) { // easy case
@@ -937,9 +928,6 @@ template <class uword> size_t EWAHBoolArray<uword>::numberOfOnes() const {
     }
     ++pointer;
     for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-#ifdef EWAHASSERT
-      assert(countOnes(buffer[pointer]) < 64);
-#endif
       tot += countOnes(buffer[pointer]);
       ++pointer;
     }
@@ -1004,9 +992,6 @@ void EWAHBoolArray<uword>::logicalnot(EWAHBoolArray &x) const {
         }
       }
     } else {
-#ifdef EWAHASSERT
-      assert(rlw.getNumberOfLiteralWords() + rlw.getRunningLength() > 0);
-#endif
       if (rlw.getNumberOfLiteralWords() == 0) {
         if ((this->sizeinbits % wordinbits != 0) && !rlw.getRunningBit()) {
           if (rlw.getRunningLength() > 1)
@@ -1110,9 +1095,6 @@ size_t EWAHBoolArray<uword>::addLiteralWord(const uword newdata) {
   }
   lastRunningLengthWord.setNumberOfLiteralWords(
       static_cast<uword>(numbersofar + 1));
-#ifdef EWAHASSERT
-  assert(lastRunningLengthWord.getNumberOfLiteralWords() == numbersofar + 1);
-#endif
   buffer.push_back(newdata);
   return 1;
 }
@@ -1150,10 +1132,6 @@ size_t EWAHBoolArray<uword>::padWithZeroes(const size_t totalbits) {
 
     wordsadded = addStreamOfEmptyWords(false, wordstoadd);
   }
-#ifdef EWAHASSERT
-  assert(sizeinbits >= totalbits);
-  assert(sizeinbits <= totalbits + wordinbits);
-#endif
   sizeinbits = totalbits;
   return wordsadded;
 }
@@ -1172,19 +1150,12 @@ public:
   bool hasNext() const { return pointer < myparent->size(); }
 
   BufferedRunningLengthWord<uword> &next() {
-#ifdef EWAHASSERT
-    assert(pointer < myparent->size());
-#endif
     rlw.read((*myparent)[pointer]);
     pointer = static_cast<size_t>(pointer + rlw.getNumberOfLiteralWords() + 1);
     return rlw;
   }
 
   const uword *dirtyWords() const {
-#ifdef EWAHASSERT
-    assert(pointer > 0);
-    assert(pointer >= rlw.getNumberOfLiteralWords());
-#endif
     return myparent->data() +
            static_cast<size_t>(pointer - rlw.getNumberOfLiteralWords());
   }
@@ -1356,9 +1327,6 @@ void EWAHBoolArray<uword>::append(const EWAHBoolArray &x) {
         (lRLW.getNumberOfLiteralWords() == 0)) {
 // it could be that the running length word is empty, in such a case,
 // we want to get rid of it!
-#ifdef EWAHASSERT
-      assert(lastRLW == buffer.size() - 1);
-#endif
       lastRLW = x.lastRLW + buffer.size() - 1;
       buffer.resize(buffer.size() - 1);
       buffer.insert(buffer.end(), x.buffer.begin(), x.buffer.end());
@@ -1400,13 +1368,7 @@ void EWAHBoolArrayIterator<uword>::readNewRunningLengthWord() {
       ++pointer;
       readNewRunningLengthWord();
     } else {
-#ifdef EWAHASSERT
-      assert(pointer >= myparent.size() - 1);
-#endif
       pointer = myparent.size();
-#ifdef EWAHASSERT
-      assert(!hasNext());
-#endif
     }
   }
 }
@@ -1668,36 +1630,18 @@ template <class uword> size_t EWAHBoolArray<uword>::addEmptyWord(const bool v) {
   uword runlen = lastRunningLengthWord.getRunningLength();
   if ((noliteralword) && (runlen == 0)) {
     lastRunningLengthWord.setRunningBit(v);
-#ifdef EWAHASSERT
-    assert(lastRunningLengthWord.getRunningBit() == v);
-#endif
   }
   if ((noliteralword) && (lastRunningLengthWord.getRunningBit() == v) &&
       (runlen < RunningLengthWord<uword>::largestrunninglengthcount)) {
     lastRunningLengthWord.setRunningLength(static_cast<uword>(runlen + 1));
-#ifdef EWAHASSERT
-    assert(lastRunningLengthWord.getRunningLength() == runlen + 1);
-#endif
     return 0;
   } else {
     // we have to start anew
     buffer.push_back(0);
     lastRLW = buffer.size() - 1;
     RunningLengthWord<uword> lastRunningLengthWord2(buffer[lastRLW]);
-#ifdef EWAHASSERT
-    assert(lastRunningLengthWord2.getRunningLength() == 0);
-    assert(lastRunningLengthWord2.getRunningBit() == 0);
-    assert(lastRunningLengthWord2.getNumberOfLiteralWords() == 0);
-#endif
     lastRunningLengthWord2.setRunningBit(v);
-#ifdef EWAHASSERT
-    assert(lastRunningLengthWord2.getRunningBit() == v);
-#endif
     lastRunningLengthWord2.setRunningLength(1);
-#ifdef EWAHASSERT
-    assert(lastRunningLengthWord2.getRunningLength() == 1);
-    assert(lastRunningLengthWord2.getNumberOfLiteralWords() == 0);
-#endif
     return 1;
   }
 }

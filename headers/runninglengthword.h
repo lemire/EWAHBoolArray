@@ -15,6 +15,7 @@
  */
 template <class uword> class RunningLengthWord {
 public:
+
   RunningLengthWord(uword &data) : mydata(data) {}
 
   RunningLengthWord(const RunningLengthWord &rlw) : mydata(rlw.mydata) {}
@@ -90,9 +91,6 @@ public:
   }
 
   void discardFirstWords(uword x) {
-#ifdef EWAHASSERT
-    assert(x <= size());
-#endif
     const uword rl(getRunningLength());
     if (rl >= x) {
       setRunningLength(rl - x);
@@ -208,6 +206,7 @@ template <class uword> class EWAHBoolArrayRawIterator;
  */
 template <class uword = uint32_t> class BufferedRunningLengthWord {
 public:
+
   BufferedRunningLengthWord(const uword &data,
                             EWAHBoolArrayRawIterator<uword> *p)
       : RunningBit(data & static_cast<uword>(1)),

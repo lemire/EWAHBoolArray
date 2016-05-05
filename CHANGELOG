@@ -3,6 +3,9 @@ TODO
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
 
+0.5.3 (May 4th, 2016)
+ Fixed performance bug with fast_logicalor
+
 0.5.2 (April 29th, 2016)
  Fixed logicalandnot 
  PR fix underflow bug during logical negation  by Matthew Vilim

@@ -48,6 +48,13 @@ public:
   }
 
   /**
+   * Recover wasted memory usage. Fit buffers to the actual data.
+   */
+  void trim() {
+	  buffer.shrink_to_fit();
+  }
+
+  /**
    * Query the value of bit i. This runs in time proportional to
    * the size of the bitmap. This is not meant to be use in
    * a performance-sensitive context.

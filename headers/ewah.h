@@ -547,10 +547,17 @@ public:
    */
   inline void setSizeInBits(const size_t size) { sizeinbits = size; }
 
-  // Like addStreamOfEmptyWords but
-  // addStreamOfEmptyWords but does not return the cost increase,
-  // does not update sizeinbits 
+  /**
+   * Like addStreamOfEmptyWords but
+   * addStreamOfEmptyWords but does not return the cost increase,
+   * does not update sizeinbits
+   */
   void fastaddStreamOfEmptyWords(const bool v, size_t number);
+  /**
+   * LikeaddStreamOfDirtyWords but does not return the cost increse,
+   * does not update sizeinbits.
+   */
+  void fastaddStreamOfDirtyWords(const uword *v, const size_t number);
 
 private:
 
@@ -1595,6 +1602,30 @@ size_t EWAHBoolArray<uword>::addStreamOfDirtyWords(const uword *v,
   wordadded += addStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
   return wordadded;
 }
+
+template <class uword>
+void EWAHBoolArray<uword>::fastaddStreamOfDirtyWords(const uword *v,
+                                                   const size_t number) {
+  if (number == 0)
+    return;
+  uword rlw = buffer[lastRLW];
+  size_t NumberOfLiteralWords = RunningLengthWord<uword>::getNumberOfLiteralWords(rlw);
+  if(NumberOfLiteralWords + number <= RunningLengthWord<uword>::largestliteralcount) {
+	  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, NumberOfLiteralWords + number);
+	  buffer[lastRLW] = rlw;
+	  buffer.insert(buffer.end(), v, v+number);
+	  return;
+  }
+  // we proceed the long way
+  size_t howmanywecanadd = RunningLengthWord<uword>::largestliteralcount - NumberOfLiteralWords;
+  RunningLengthWord<uword>::setNumberOfLiteralWords(rlw, RunningLengthWord<uword>::largestliteralcount);
+  buffer[lastRLW] = rlw;
+  buffer.insert(buffer.end(), v, v+howmanywecanadd);
+  buffer.push_back(0);
+  lastRLW = buffer.size() - 1;
+  fastaddStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+}
+
 
 template <class uword>
 size_t EWAHBoolArray<uword>::addStreamOfNegatedDirtyWords(const uword *v,

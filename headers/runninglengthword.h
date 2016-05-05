@@ -346,7 +346,7 @@ public:
   uword getLiteralWordAt(size_t index) { return parent->dirtyWords()[index]; }
 
   void writeLiteralWords(size_t numWords, EWAHBoolArray<uword> &container) {
-    container.addStreamOfDirtyWords(parent->dirtyWords(), numWords);
+    container.fastaddStreamOfDirtyWords(parent->dirtyWords(), numWords);
   }
 
   void writeNegatedLiteralWords(size_t numWords,

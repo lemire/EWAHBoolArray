@@ -2,6 +2,10 @@ TODO
   Iterators over set bits for BoolArray
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
+
+0.5.6 (August 22nd, 2016)
+ Optimized toArray/toVector functions
+
 0.5.5 (May 5th, 2016)
  Adding trim function
 

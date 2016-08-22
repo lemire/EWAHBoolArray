@@ -438,7 +438,7 @@ public:
    * Convert to a list of positions of "set" bits.
    * The recommended container is vector<size_t>.
    *
-   * See also toVector().
+   * See also toArray().
    */
   template <class container>
   void appendRowIDs(container &out, const size_t offset = 0) const;
@@ -448,7 +448,7 @@ public:
    * The recommended container is vector<size_t>.
    * (alias for appendRowIDs).
    *
-   * See also toVector().
+   * See also toArray().
    */
   template <class container>
   void appendSetBits(container &out, const size_t offset = 0) const {
@@ -457,12 +457,10 @@ public:
 
   /**
    * Returns a vector containing the position of the set
-   * bits in increasing order.
+   * bits in increasing order. This just calls "toArray".
    */
-  std::vector<size_t> toVector() {
-    std::vector<size_t> answer;
-    appendSetBits(answer);
-    return answer;
+  std::vector<size_t> toVector() const {
+    return toArray();
   }
 
   /**
@@ -947,32 +945,29 @@ std::vector<size_t> EWAHBoolArray<uword>::toArray() const {
   std::vector<size_t> ans;
   size_t pos(0);
   size_t pointer(0);
-  while (pointer < buffer.size()) {
+  const size_t buffersize = buffer.size();
+  while (pointer < buffersize) {
     ConstRunningLengthWord<uword> rlw(buffer[pointer]);
+    const size_t productofrl = static_cast<size_t>(rlw.getRunningLength() * wordinbits);
     if (rlw.getRunningBit()) {
-      for (size_t k = 0; k < rlw.getRunningLength() * wordinbits; ++k, ++pos) {
+      size_t upper_limit = pos + productofrl;
+      for (; pos < upper_limit; ++pos) {
         ans.push_back(pos);
       }
     } else {
-      pos += static_cast<size_t>(rlw.getRunningLength() * wordinbits);
+      pos += productofrl;
     }
     ++pointer;
-    const bool usetrailing = true; // optimization
-    for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-      if (usetrailing) {
-        uword myword = buffer[pointer];
-        while (myword != 0) {
-          uint32_t ntz = numberOfTrailingZeros(myword);
-          ans.push_back(pos + ntz);
-          myword ^= (static_cast<uword>(1) << ntz);
-        }
-        pos += wordinbits;
-      } else {
-        for (int c = 0; c < wordinbits; ++c, ++pos)
-          if ((buffer[pointer] & (static_cast<uword>(1) << c)) != 0) {
-            ans.push_back(pos);
-          }
+    const size_t rlwlw = rlw.getNumberOfLiteralWords();
+    for (size_t k = 0; k < rlwlw; ++k) {
+      uword myword = buffer[pointer];
+      while (myword != 0) {
+        uint64_t t = myword & -myword;
+        uint32_t r = numberOfTrailingZeros(t);
+        ans.push_back(pos + r);
+        myword ^= t;
       }
+      pos += wordinbits;
       ++pointer;
     }
   }
@@ -1399,23 +1394,27 @@ void EWAHBoolArray<uword>::appendRowIDs(container &out,
   size_t currentoffset(offset);
   if (RESERVEMEMORY)
     out.reserve(buffer.size() + 64); // trading memory for speed.
-  while (pointer < buffer.size()) {
+  const size_t buffersize = buffer.size();
+  while (pointer < buffersize) {
     ConstRunningLengthWord<uword> rlw(buffer[pointer]);
+    const size_t productofrl = static_cast<size_t>(rlw.getRunningLength() * wordinbits);
     if (rlw.getRunningBit()) {
-      for (size_t x = 0;
-           x < static_cast<size_t>(rlw.getRunningLength() * wordinbits); ++x) {
-        out.push_back(currentoffset + x);
+      const size_t upper_limit = currentoffset + productofrl;
+      for (; currentoffset < upper_limit; ++currentoffset) {
+        out.push_back(currentoffset);
       }
+    } else {
+      currentoffset += productofrl;
     }
-    currentoffset = static_cast<size_t>(currentoffset +
-                                        rlw.getRunningLength() * wordinbits);
     ++pointer;
-    for (uword k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-      const uword currentword = buffer[pointer];
-      for (uint32_t kk = 0; kk < wordinbits; ++kk) {
-        if ((currentword & static_cast<uword>(static_cast<uword>(1) << kk)) !=
-            0)
-          out.push_back(currentoffset + kk);
+    const size_t rlwlw = rlw.getNumberOfLiteralWords();
+    for (uword k = 0; k < rlwlw; ++k) {
+      uword currentword = buffer[pointer];
+      while (currentword != 0) {
+        uint64_t t = currentword & -currentword;
+        uint32_t r = numberOfTrailingZeros(t);
+        out.push_back(currentoffset + r);
+        currentword ^= t;
       }
       currentoffset += wordinbits;
       ++pointer;

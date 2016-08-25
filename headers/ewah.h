@@ -1186,86 +1186,12 @@ EWAHBoolArrayRawIterator<uword> EWAHBoolArray<uword>::raw_iterator() const {
   return EWAHBoolArrayRawIterator<uword>(*this);
 }
 
-#ifndef ALTEQUAL
-
-template <class uword>
-bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray &a) const {
-  EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
-  EWAHBoolArrayRawIterator<uword> j = raw_iterator();
-  if (!(i.hasNext() and j.hasNext())) { // hopefully this never happens...
-    return true;
-  }
-  // at this point, this should be safe:
-  BufferedRunningLengthWord<uword> &rlwi = i.next();
-  BufferedRunningLengthWord<uword> &rlwj = j.next();
-  // RunningLength;
-  while (true) {
-    bool i_is_prey(rlwi.size() < rlwj.size());
-    BufferedRunningLengthWord<uword> &prey(i_is_prey ? rlwi : rlwj);
-    BufferedRunningLengthWord<uword> &predator(i_is_prey ? rlwj : rlwi);
-    uword predatorrl(predator.getRunningLength());
-    const uword preyrl(prey.getRunningLength());
-    if (predatorrl >= preyrl) {
-      const uword tobediscarded = preyrl;
-      if (tobediscarded)
-        if (prey.getRunningBit() ^ predator.getRunningBit())
-          return false;
-    } else {
-      const uword tobediscarded = predatorrl;
-      if (predatorrl > 0) {
-        if (prey.getRunningBit() ^ predator.getRunningBit())
-          return false;
-      }
-      if (preyrl - tobediscarded > 0) {
-        return false;
-      }
-    }
-    predator.discardFirstWords(preyrl);
-    prey.discardFirstWords(preyrl);
-
-    predatorrl = predator.getRunningLength();
-    if (predatorrl > 0) {
-
-      const uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-      const uword tobediscarded =
-          (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey : predatorrl;
-      if (tobediscarded > 0) {
-        return false;
-      }
-    }
-    // all that is left to do now is to AND the dirty words
-    uword nbre_dirty_prey(prey.getNumberOfLiteralWords());
-    if (nbre_dirty_prey > 0) {
-      const uword *idirty = i.dirtyWords();
-      const uword *jdirty = j.dirtyWords();
-
-      for (uword k = 0; k < nbre_dirty_prey; ++k) {
-        if ((idirty[k] ^ jdirty[k]) != 0)
-          return false;
-      }
-      predator.discardFirstWords(nbre_dirty_prey);
-    }
-    if (i_is_prey) {
-      if (!i.hasNext())
-        break;
-      rlwi = i.next();
-    } else {
-      if (!j.hasNext())
-        break;
-      rlwj = j.next();
-    }
-  }
-  return true;
-}
-
-#else
-
 template <class uword>
 bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray &x) const {
   EWAHBoolArrayRawIterator<uword> i = x.raw_iterator();
   EWAHBoolArrayRawIterator<uword> j = raw_iterator();
   if (!(i.hasNext() and j.hasNext())) { // hopefully this never happens...
-    return true;
+    return (i.hasNext() == false) &&  (j.hasNext() == false);
   }
   // at this point, this should be safe:
   BufferedRunningLengthWord<uword> &rlwi = i.next();
@@ -1293,7 +1219,7 @@ bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray &x) const {
       predator.discardRunningWordsWithReload();
     }
     const size_t nbre_literal =
-        min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
+        std::min(rlwi.getNumberOfLiteralWords(), rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k)
         if ((rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k)) != 0)
@@ -1306,8 +1232,6 @@ bool EWAHBoolArray<uword>::operator==(const EWAHBoolArray &x) const {
   BufferedRunningLengthWord<uword> &remaining = i_remains ? rlwi : rlwj;
   return !remaining.nonzero_discharge();
 }
-
-#endif
 
 template <class uword> void EWAHBoolArray<uword>::swap(EWAHBoolArray &x) {
   buffer.swap(x.buffer);

@@ -28,6 +28,32 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #define unlink _unlink
 #endif
 
+template <class uword> bool testInEqualityEWAHBoolArray() {
+  cout << "[testing testInEqualityEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
+  EWAHBoolArray<uword> b1;
+  EWAHBoolArray<uword> b = EWAHBoolArray<uword>::bitmapOf(3, 1, 10, 11);
+  EWAHBoolArray<uword> b3 = EWAHBoolArray<uword>::bitmapOf(3, 1, 10, 11);
+  EWAHBoolArray<uword> b4 = EWAHBoolArray<uword>::bitmapOf(4, 1, 10,  11, 10000);
+
+  if(b3 != b)  {
+    cout << "should be equal!" << endl;
+    return false;
+  }
+  if(b == b1) {
+    cout << "should be different!" << endl;
+    return false;
+  }
+  if(b4 == b1) {
+    cout << "should be different!" << endl;
+    return false;
+  }
+  if(b4 == b3) {
+    cout << "should be different!" << endl;
+    return false;
+  }
+  return true;
+}
+
 template <class uword> bool testCardinalityBoolArray() {
   cout << "[testing CardinalityBoolArray] sizeof(uword)=" << sizeof(uword)
        << endl;
@@ -1008,6 +1034,10 @@ bool testRealData() {
     EWAHBoolArray<uint64_t> **ewahs = JavaEWAHReader::readFile(filename);
     ewahs[0]->appendSetBits(v1);
     ewahs[1]->appendSetBits(v2);
+    if(ewahs[0] == ewahs[1]) {
+      cerr << "successive bitmaps shouldn't be equal" << endl;
+      return false;
+    }
     if (ewahs[0]->numberOfOnes() != v1.size()) {
       cout << "Loading bitmaps from file " << filename << endl;
       cerr << "bad size at vec 1" << endl;
@@ -1222,6 +1252,12 @@ int main(void) {
   if (!funnytest()) {
     ++failures;
   }
+  if (!testInEqualityEWAHBoolArray<uint16_t>())
+    ++failures;
+  if (!testInEqualityEWAHBoolArray<uint32_t>())
+    ++failures;
+  if (!testInEqualityEWAHBoolArray<uint64_t>())
+    ++failures;
 
   if (!testFastOrAggregate<uint16_t>())
     ++failures;

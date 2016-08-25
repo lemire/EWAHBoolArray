@@ -3,6 +3,9 @@ TODO
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
 
+0.5.7 (August 25th, 2016)
+ Fixed issue with equality https://github.com/lemire/EWAHBoolArray/issues/14
+
 0.5.6 (August 22nd, 2016)
  Optimized toArray/toVector functions
 

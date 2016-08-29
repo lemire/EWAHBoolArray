@@ -1059,13 +1059,16 @@ inline void EWAHBoolArray<uword>::readBuffer(std::istream &in,
 template <class uword>
 void EWAHBoolArray<uword>::write(std::ostream &out,
                                  const bool savesizeinbits) const {
-  if (savesizeinbits)
+  if (savesizeinbits) {
     out.write(reinterpret_cast<const char *>(&sizeinbits), sizeof(sizeinbits));
+  }
   const size_t buffersize = buffer.size();
   out.write(reinterpret_cast<const char *>(&buffersize), sizeof(buffersize));
-  if (buffersize > 0)
+
+  if (buffersize > 0) {
     out.write(reinterpret_cast<const char *>(&buffer[0]),
               static_cast<std::streamsize>(sizeof(uword) * buffersize));
+  }
 }
 
 template <class uword>

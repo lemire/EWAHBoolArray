@@ -54,6 +54,40 @@ template <class uword> bool testInEqualityEWAHBoolArray() {
   return true;
 }
 
+template <class uword> bool testSerialSize() {
+  cout << "[testing SerialSize] sizeof(uword)=" << sizeof(uword)
+       << endl;
+  size_t bitval = 55555;
+  EWAHBoolArray<uword> b = EWAHBoolArray<uword>::bitmapOf(1, bitval);// set just one bit
+  // generic write method in EWAHBoolArray can be wasteful for single bits...
+  stringstream ss;
+  b.write(ss);
+  size_t compressedsize = ss.tellp();
+  const size_t wordinbits = sizeof(uword) * CHAR_BIT;
+  size_t offset = (bitval + wordinbits) / wordinbits - 1;
+  offset = (offset + RunningLengthWord<uword>::largestrunninglengthcount - 1) / RunningLengthWord<uword>::largestrunninglengthcount;
+  size_t expectedsize = 2 * sizeof(size_t) +  sizeof(uword) + offset  * sizeof(uword);
+  cout << "using " << compressedsize << " bytes " << endl;
+  if( compressedsize != expectedsize) {
+    cout << "bad size, was expected  " << expectedsize << " got " << compressedsize  << endl;
+    return false; // unexpected size
+  }
+  ss.str("");
+  ss.clear();
+  //
+  uint32_t buffersize = (uint32_t) b.bufferSize();// I am going to use only 32-bit
+  ss.write(reinterpret_cast<const char *>(&buffersize), sizeof(uint32_t));
+  b.writeBuffer(ss);
+  compressedsize = ss.tellp();
+  expectedsize = sizeof(uint32_t) +  sizeof(uword)  + offset  * sizeof(uword);
+  cout << "using " << compressedsize << " bytes with custom format" << endl;
+  if( compressedsize != expectedsize) {
+    cout << "bad size, was expected  " << expectedsize << " got " << compressedsize  << endl;
+    return false; // unexpected size
+  }
+  return true;
+}
+
 template <class uword> bool testCardinalityBoolArray() {
   cout << "[testing CardinalityBoolArray] sizeof(uword)=" << sizeof(uword)
        << endl;
@@ -1252,6 +1286,14 @@ int main(void) {
   if (!funnytest()) {
     ++failures;
   }
+
+  if (!testSerialSize<uint16_t>())
+    ++failures;
+  if (!testSerialSize<uint32_t>())
+    ++failures;
+  if (!testSerialSize<uint64_t>())
+    ++failures;
+
   if (!testInEqualityEWAHBoolArray<uint16_t>())
     ++failures;
   if (!testInEqualityEWAHBoolArray<uint32_t>())

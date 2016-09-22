@@ -962,7 +962,7 @@ std::vector<size_t> EWAHBoolArray<uword>::toArray() const {
     for (size_t k = 0; k < rlwlw; ++k) {
       uword myword = buffer[pointer];
       while (myword != 0) {
-        uint64_t t = myword & -myword;
+        uint64_t t = myword & (~myword + 1);
         uint32_t r = numberOfTrailingZeros(t);
         ans.push_back(pos + r);
         myword ^= t;

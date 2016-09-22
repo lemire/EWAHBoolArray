@@ -1,6 +1,6 @@
 VPATH = src:headers
 ifeq ($(DEBUG),1)
-CXXFLAGS=-Iheaders -std=c++0x -O3 -ggdb -D_GLIBCXX_DEBUG -Wall -Wextra   -Wshadow  -Wcast-qual -Wwrite-strings  -Wpointer-arith -Winit-self  
+CXXFLAGS=-Iheaders -std=c++0x -O3 -ggdb -D_GLIBCXX_DEBUG -Wall -Wextra   -Wshadow  -Wcast-qual -Wwrite-strings  -Wpointer-arith -Winit-self  -fsanitize=undefined -ftrapv
 else
 CXXFLAGS=-Iheaders -std=c++0x -O3 -Wall -Wextra  -Wshadow  -Wcast-qual -Wwrite-strings  -Wpointer-arith -Winit-self  
 endif

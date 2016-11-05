@@ -35,8 +35,8 @@ doxygen:
 	doxygen doxyconfig.txt
 
 package: 
-	zip -9 EWAHBoolArray_`date +%Y-%m-%d`.zip README CHANGELOG makefile example.cpp example2.cpp headers/*.h src/*.cpp
-	cd ..;zip -9 ./EWAHBoolArray/EWAHBoolArray.0.4.0-src.zip ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/example2.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
+	dmg -9 EWAHBoolArray_`date +%Y-%m-%d`.dmg README CHANGELOG makefile example.cpp example2.cpp headers/*.h src/*.cpp
+	cd ..;dmg -9 ./EWAHBoolArray/EWAHBoolArray.0.4.0-src.dmg ./EWAHBoolArray/README ./EWAHBoolArray/CHANGELOG ./EWAHBoolArray/makefile ./EWAHBoolArray/example.cpp ./EWAHBoolArray/example2.cpp ./EWAHBoolArray/headers/*.h ./EWAHBoolArray/src/*.cpp
 	echo "don't forget to run git tag 0.4.0 and do git push --tags"
 clean: 
 	rm -f *.o unit example example2 unit32bits benchmark

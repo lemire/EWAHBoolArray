@@ -3,6 +3,9 @@ TODO
   Iterators over unset bits for BoolArray
   Iterators over unset bits for EWAHBoolArray
 
+0.5.8 (December 8th, 2016)
+ Extended sizeOnDisk API https://github.com/lemire/EWAHBoolArray/issues/18
+
 0.5.7 (August 25th, 2016)
  Fixed issue with equality https://github.com/lemire/EWAHBoolArray/issues/14
 

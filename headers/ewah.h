@@ -341,9 +341,9 @@ public:
 
   /**
    * Compute the size on disk assuming that it was saved using
-   * the method "save".
+   * the method "write".
    */
-  size_t sizeOnDisk() const;
+  size_t sizeOnDisk(const bool savesizeinbits = true) const;
 
   /**
    * Save this bitmap to a stream. The file format is
@@ -1857,8 +1857,8 @@ template <class uword> void EWAHBoolArray<uword>::debugprintout() const {
   std::cout << "==END==" << std::endl;
 }
 
-template <class uword> size_t EWAHBoolArray<uword>::sizeOnDisk() const {
-  return sizeof(sizeinbits) + sizeof(size_t) + sizeof(uword) * buffer.size();
+template <class uword> size_t EWAHBoolArray<uword>::sizeOnDisk(const bool savesizeinbits) const {
+  return (savesizeinbits ? sizeof(sizeinbits) : 0) + sizeof(size_t) + sizeof(uword) * buffer.size();
 }
 
 #endif

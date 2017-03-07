@@ -415,6 +415,32 @@ template <class uword> bool testJoergBukowski() {
   positions.push_back(164599);
   string indexfile("testingewahboolarray.bin");
   ::remove(indexfile.c_str());
+  EWAHBoolArray<uword> mytestarray;
+  for (vector<uint32_t>::const_iterator i = positions.begin();
+       i != positions.end(); ++i) {
+    mytestarray.set(*i);
+  }
+  size_t count = 0;
+  for (typename EWAHBoolArray<uword>::const_iterator j = mytestarray.begin();
+         j != mytestarray.end(); ++j) {
+      if(count >= positions.size()) {
+       std::cout << " Should be done by now!" << std::endl;
+       isOk = false;
+       assert(false);
+       break;
+      }
+      if(*j != positions[count]) {
+        isOk = false;
+        std::cout << " Expected " << positions[count] << std::endl;
+        break;
+      }
+      count++;
+  }
+  if(count < positions.size()) {
+    std::cout << "counted " << count << " values but expected " << positions.size() << std::endl;
+    isOk = false;
+  }
+  assert(count == positions.size());
   EWAHBoolArray<uword> myarray;
   for (vector<uint32_t>::const_iterator i = positions.begin();
        i != positions.end(); ++i) {
@@ -438,8 +464,9 @@ template <class uword> bool testJoergBukowski() {
     }
     vals.clear();
     for (typename EWAHBoolArray<uword>::const_iterator j = recovered.begin();
-         j != recovered.end(); ++j)
+         j != recovered.end(); ++j) {
       vals.push_back(static_cast<uint32_t>(*j));
+    }
     if (vals.size() != static_cast<size_t>(i - positions.begin() + 1)) {
       cout << "failed to recover right number -- iterator" << endl;
       isOk = false;
@@ -1072,9 +1099,23 @@ bool testRealData() {
       cerr << "successive bitmaps shouldn't be equal" << endl;
       return false;
     }
+    size_t c1 = 0;
+    for(auto i = ewahs[0]->begin(); i !=  ewahs[0]->end() ; ++i) c1++;
+    if (c1 != v1.size()) {
+      cout << "Loading bitmaps from file " << filename << endl;
+      cerr << "bad iterator size at vec 1" << endl;
+      return false;
+    }
     if (ewahs[0]->numberOfOnes() != v1.size()) {
       cout << "Loading bitmaps from file " << filename << endl;
       cerr << "bad size at vec 1" << endl;
+      return false;
+    }
+    size_t c2 = 0;
+    for(auto i = ewahs[1]->begin(); i !=  ewahs[1]->end() ; ++i) c2++;
+    if (c2 != v2.size()) {
+      cout << "Loading bitmaps from file " << filename << endl;
+      cerr << "bad iterator size at vec 2" << endl;
       return false;
     }
     if (ewahs[1]->numberOfOnes() != v2.size()) {

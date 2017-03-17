@@ -1123,7 +1123,12 @@ bool testRealData() {
       cerr << "bad size at vec 2" << endl;
       return false;
     }
+    size_t predictedintersection =  ewahs[0]->logicalandcount(*ewahs[1]);
     ewahs[0]->logicaland(*ewahs[1], container);
+    if(container.numberOfOnes() != predictedintersection) {
+      cerr << "bad logicalandcount" << endl;
+      return false;
+    }
     container.appendSetBits(va);
     if (container.numberOfOnes() != va.size()) {
       cout << "Loading bitmaps from file " << filename << endl;
@@ -1143,8 +1148,12 @@ bool testRealData() {
     }
 
     container.reset();
-
+    size_t predictedunion =  ewahs[0]->logicalorcount(*ewahs[1]);
     ewahs[0]->logicalor(*ewahs[1], container);
+    if(container.numberOfOnes() != predictedunion) {
+      cerr << "bad logicalorcount" << endl;
+      return false;
+    }
     container.appendSetBits(vor);
     if (container.numberOfOnes() != vor.size()) {
       cout << "Loading bitmaps from file " << filename << endl;

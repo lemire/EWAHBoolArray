@@ -191,6 +191,7 @@ template <class uword> bool testAndNotEWAHBoolArray() {
   b.logicalandnot(b1,bout);
   cout<<bout<<endl;
   if (bout.numberOfOnes() != 1) {
+      cout << "expected answer : 1 " <<endl;
       return false;
   }
   return true;
@@ -1079,7 +1080,7 @@ bool testRealData() {
     return true;
   }
   const size_t N = 207;
-  vector<size_t> v1, v2, va, vor, vxor;
+  vector<size_t> v1, v2, va, vor, vxor, vand;
   EWAHBoolArray<uint64_t> container;
 
   for (size_t k = 0; k < 207; ++k) {
@@ -1176,6 +1177,12 @@ bool testRealData() {
     container.reset();
 
     ewahs[0]->logicalxor(*ewahs[1], container);
+    size_t predictedxor =  ewahs[0]->logicalxorcount(*ewahs[1]);
+    if(container.numberOfOnes() != predictedxor) {
+      cerr << "bad logicalxorcount"<<container.numberOfOnes() <<" "<< predictedxor<< endl;
+      return false;
+    }
+
     container.appendSetBits(vxor);
     if (container.numberOfOnes() != vxor.size()) {
       cout << "Loading bitmaps from file " << filename << endl;
@@ -1193,6 +1200,26 @@ bool testRealData() {
       cerr << "xor do not match!" << endl;
       return false;
     }
+
+    EWAHBoolArray<uint64_t> tmpcontainer;
+
+    ewahs[0]->logicalxor(*ewahs[1], tmpcontainer);
+    EWAHBoolArray<uint64_t> createdandnotcontainer;
+    ewahs[0]->logicaland(tmpcontainer, createdandnotcontainer);
+    EWAHBoolArray<uint64_t> directandnotcontainer;
+    ewahs[0]->logicalandnot(*ewahs[1], directandnotcontainer);
+
+    if (directandnotcontainer != createdandnotcontainer) {
+      cout << "Loading bitmaps from file " << filename << endl;
+      cerr << "andnot do not match!" << endl;
+      return false;
+    }
+    size_t predictedandnot =  ewahs[0]->logicalandnotcount(*ewahs[1]);
+    if(container.numberOfOnes() != predictedandnot) {
+      cerr << "bad logicalandnotcount" << endl;
+      return false;
+    }
+
     delete ewahs[0];
     delete ewahs[1];
     delete[] ewahs;

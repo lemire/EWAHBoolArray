@@ -196,23 +196,19 @@ public:
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
    *
-   * Both bitmaps are modified to so that they have the same size in bits.
    */
-  void logicalandnot(EWAHBoolArray &a, EWAHBoolArray &container)  {
-    makeSameSize(a);
-    EWAHBoolArray aneg = a.logicalnot(); // could be more efficient
-    logicaland(aneg, container);
-  }
+  void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const;
+
 
   /**
-   * computes the logical and with another compressed bitmap
+   * computes the logical and not with another compressed bitmap
    * Return the answer
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
    */
   EWAHBoolArray logicalandnot(const EWAHBoolArray &a) const {
     EWAHBoolArray answer;
-    logicaland(a, answer);
+    logicalandnot(a, answer);
     return answer;
   }
   /**
@@ -247,6 +243,22 @@ public:
    * bitmap sizes.
    */
   size_t logicalandcount(const EWAHBoolArray &a) const;
+
+
+  /**
+   * computes the size (in number of set bits) of the logical and not with another compressed bitmap
+   * Running time complexity is proportional to the sum of the compressed
+   * bitmap sizes.
+   */
+  size_t logicalandnotcount(const EWAHBoolArray &a) const;
+
+
+  /**
+   * computes the size (in number of set bits) of the logical xor with another compressed bitmap
+   * Running time complexity is proportional to the sum of the compressed
+   * bitmap sizes.
+   */
+  size_t logicalxorcount(const EWAHBoolArray &a) const;
 
   /**
    * computes the logical or with another compressed bitmap
@@ -1774,6 +1786,49 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a,
   remaining.discharge(container);
 }
 
+
+template <class uword>
+size_t EWAHBoolArray<uword>::logicalxorcount(const EWAHBoolArray &a) const {
+  EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
+  EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+  if(!i.hasNext()) return a.numberOfOnes();
+  if(!j.hasNext()) return this->numberOfOnes();
+
+  size_t answer = 0;
+
+  // at this point, this should be safe:
+  BufferedRunningLengthWord<uword> &rlwi = i.next();
+  BufferedRunningLengthWord<uword> &rlwj = j.next();
+
+  while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
+    while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+      const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
+      BufferedRunningLengthWord<uword> &prey = i_is_prey ? rlwi : rlwj;
+      BufferedRunningLengthWord<uword> &predator = i_is_prey ? rlwj : rlwi;
+      if (predator.getRunningBit()) {
+          prey.dischargeCount(predator.getRunningLength(), & answer);
+      } else {
+          prey.dischargeCountNegated(predator.getRunningLength(), & answer);
+      }
+      predator.discardRunningWordsWithReload();
+    }
+    const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),
+                                         rlwj.getNumberOfLiteralWords());
+    if (nbre_literal > 0) {
+      for (size_t k = 0; k < nbre_literal; ++k) {
+        answer += countOnes(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
+      }
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
+    }
+  }
+  const bool i_remains = rlwi.size() > 0;
+  BufferedRunningLengthWord<uword> &remaining = i_remains ? rlwi : rlwj;
+  answer += remaining.dischargeCount();
+  return answer;
+}
+
+
 template <class uword>
 void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
                                       EWAHBoolArray &container) const {
@@ -1818,6 +1873,111 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
     }
   }
   container.setSizeInBits(sizeInBits());
+}
+
+template <class uword>
+void EWAHBoolArray<uword>::logicalandnot(const EWAHBoolArray &a,
+                                      EWAHBoolArray &container) const {
+  container.reset();
+  if (RESERVEMEMORY)
+    container.buffer.reserve(buffer.size() > a.buffer.size() ? buffer.size()
+                                                             : a.buffer.size());
+  EWAHBoolArrayRawIterator<uword> i = raw_iterator();
+  EWAHBoolArrayRawIterator<uword> j = a.raw_iterator();
+  if(!j.hasNext()) {//the other fellow is empty
+    container = *this; // just copy, stupidly, the data
+    return;
+  }
+  if (!(i.hasNext())) { // hopefully this never happens...
+    container.setSizeInBits(sizeInBits());
+    return;
+  }
+  // at this point, this should be safe:
+  BufferedRunningLengthWord<uword> &rlwi = i.next();
+  BufferedRunningLengthWord<uword> &rlwj = j.next();
+
+  while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
+    while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+      const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
+      BufferedRunningLengthWord<uword> &prey(i_is_prey ? rlwi : rlwj);
+      BufferedRunningLengthWord<uword> &predator(i_is_prey ? rlwj : rlwi);
+      if (((predator.getRunningBit()) && (i_is_prey))
+                        || ((!predator.getRunningBit()) && (!i_is_prey))) {
+                    container.fastaddStreamOfEmptyWords(false, predator.getRunningLength());
+                    prey.discardFirstWordsWithReload(predator.getRunningLength());
+      } else if (i_is_prey) {
+                    const size_t index = prey.discharge(container, predator.getRunningLength());
+                    container.fastaddStreamOfEmptyWords(false, predator.getRunningLength() - index);
+      } else {
+                    const size_t index = prey.dischargeNegated(container, predator.getRunningLength());
+                    container.fastaddStreamOfEmptyWords(true, predator.getRunningLength() - index);
+      }
+      predator.discardRunningWordsWithReload();
+    }
+    const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),
+                                         rlwj.getNumberOfLiteralWords());
+    if (nbre_literal > 0) {
+      for (size_t k = 0; k < nbre_literal; ++k) {
+        container.addWord(rlwi.getLiteralWordAt(k) & ~rlwj.getLiteralWordAt(k));
+      }
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
+    }
+  }
+
+  const bool i_remains = rlwi.size() > 0;
+  if(i_remains) {
+    rlwi.discharge(container);
+  }
+  container.setSizeInBits(sizeInBits());
+}
+
+template <class uword>
+size_t EWAHBoolArray<uword>::logicalandnotcount(const EWAHBoolArray &a) const {
+  EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
+  EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+  if(!j.hasNext()) {//the other fellow is empty
+    return this->numberOfOnes();
+  }
+  if (!(i.hasNext())) { // hopefully this never happens...
+    return 0;
+  }
+  size_t answer = 0;
+  // at this point, this should be safe:
+  BufferedRunningLengthWord<uword> &rlwi = i.next();
+  BufferedRunningLengthWord<uword> &rlwj = j.next();
+
+  while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
+    while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+      const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
+      BufferedRunningLengthWord<uword> &prey(i_is_prey ? rlwi : rlwj);
+      BufferedRunningLengthWord<uword> &predator(i_is_prey ? rlwj : rlwi);
+      if (((predator.getRunningBit()) && (i_is_prey))
+                        || ((!predator.getRunningBit()) && (!i_is_prey))) {
+                    prey.discardFirstWordsWithReload(predator.getRunningLength());
+      } else if (i_is_prey) {
+                    prey.dischargeCount(predator.getRunningLength(), & answer);
+      } else {
+                    const size_t index = prey.dischargeCountNegated(predator.getRunningLength(), & answer);
+                    answer += index * wordinbits;
+      }
+      predator.discardRunningWordsWithReload();
+    }
+    const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),
+                                         rlwj.getNumberOfLiteralWords());
+    if (nbre_literal > 0) {
+      for (size_t k = 0; k < nbre_literal; ++k) {
+        answer += countOnes(rlwi.getLiteralWordAt(k) & ~rlwj.getLiteralWordAt(k));
+      }
+      rlwi.discardLiteralWordsWithReload(nbre_literal);
+      rlwj.discardLiteralWordsWithReload(nbre_literal);
+    }
+  }
+  const bool i_remains = rlwi.size() > 0;
+  if(i_remains) {
+    answer += rlwi.dischargeCount();
+  }
+  return answer;
 }
 
 template <class uword>

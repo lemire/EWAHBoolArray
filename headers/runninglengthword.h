@@ -235,6 +235,7 @@ public:
       break;
     }
   }
+
   size_t dischargeCount() {
     size_t answer = 0;
     while (size() > 0) {
@@ -249,6 +250,22 @@ public:
     }
     return answer;
   }
+
+  size_t dischargeCountNegated() {
+    size_t answer = 0;
+    while (size() > 0) {
+      // first run
+      if(!getRunningBit()) {
+        answer += wordinbits * getRunningLength();
+      }
+      size_t pd = getNumberOfLiteralWords();
+      for(size_t i = 0; i < pd; ++i) answer += countOnes(~getLiteralWordAt(i));
+      if (!next())
+      break;
+    }
+    return answer;
+  }
+
   // Symbolically write out up to max words, returns how many were written, write to count the number bits written (we assume that count was initially zero)
   size_t dischargeCount(size_t max, size_t * count) {
     size_t index = 0;
@@ -276,6 +293,31 @@ public:
     return index;
   }
 
+  size_t dischargeCountNegated(size_t max, size_t * count) {
+    size_t index = 0;
+    while (true) {
+      if (index + RunningLength > max) {
+        const size_t offset = max - index;
+        if(!getRunningBit()) *count += offset * wordinbits;
+        RunningLength -= offset;
+        return max;
+      }
+      if(!getRunningBit()) *count += RunningLength * wordinbits;
+      index += RunningLength;
+      if (NumberOfLiteralWords + index > max) {
+        const size_t offset = max - index;
+        for(size_t i = 0; i < offset; ++i) *count += countOnes(~ getLiteralWordAt(i));
+        RunningLength = 0;
+        NumberOfLiteralWords -= offset;
+        return max;
+      }
+      for(size_t i = 0; i < NumberOfLiteralWords; ++i) *count += countOnes(~ getLiteralWordAt(i));
+      index += NumberOfLiteralWords;
+      if (!next())
+        break;
+    }
+    return index;
+  }
   bool nonzero_discharge() {
     while (size() > 0) {
       // first run

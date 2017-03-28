@@ -1758,7 +1758,6 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a,
   // at this point, this should be safe:
   BufferedRunningLengthWord<uword> &rlwi = i.next();
   BufferedRunningLengthWord<uword> &rlwj = j.next();
-
   while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
     while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
       const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
@@ -1799,16 +1798,15 @@ size_t EWAHBoolArray<uword>::logicalxorcount(const EWAHBoolArray &a) const {
   // at this point, this should be safe:
   BufferedRunningLengthWord<uword> &rlwi = i.next();
   BufferedRunningLengthWord<uword> &rlwj = j.next();
-
   while ((rlwi.size() > 0) && (rlwj.size() > 0)) {
     while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
       const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
       BufferedRunningLengthWord<uword> &prey = i_is_prey ? rlwi : rlwj;
       BufferedRunningLengthWord<uword> &predator = i_is_prey ? rlwj : rlwi;
       if (predator.getRunningBit()) {
-          prey.dischargeCount(predator.getRunningLength(), & answer);
-      } else {
           prey.dischargeCountNegated(predator.getRunningLength(), & answer);
+      } else {
+          prey.dischargeCount(predator.getRunningLength(), & answer);
       }
       predator.discardRunningWordsWithReload();
     }

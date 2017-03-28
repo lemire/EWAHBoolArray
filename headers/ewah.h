@@ -1922,7 +1922,6 @@ void EWAHBoolArray<uword>::logicalandnot(const EWAHBoolArray &a,
       rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
-
   const bool i_remains = rlwi.size() > 0;
   if(i_remains) {
     rlwi.discharge(container);
@@ -1932,8 +1931,8 @@ void EWAHBoolArray<uword>::logicalandnot(const EWAHBoolArray &a,
 
 template <class uword>
 size_t EWAHBoolArray<uword>::logicalandnotcount(const EWAHBoolArray &a) const {
-  EWAHBoolArrayRawIterator<uword> i = a.raw_iterator();
-  EWAHBoolArrayRawIterator<uword> j = raw_iterator();
+  EWAHBoolArrayRawIterator<uword> i = raw_iterator();
+  EWAHBoolArrayRawIterator<uword> j = a.raw_iterator();
   if(!j.hasNext()) {//the other fellow is empty
     return this->numberOfOnes();
   }
@@ -1965,7 +1964,7 @@ size_t EWAHBoolArray<uword>::logicalandnotcount(const EWAHBoolArray &a) const {
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
-        answer += countOnes(rlwi.getLiteralWordAt(k) & ~rlwj.getLiteralWordAt(k));
+        answer += countOnes(rlwi.getLiteralWordAt(k) & (~rlwj.getLiteralWordAt(k)));
       }
       rlwi.discardLiteralWordsWithReload(nbre_literal);
       rlwj.discardLiteralWordsWithReload(nbre_literal);

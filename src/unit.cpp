@@ -1215,7 +1215,7 @@ bool testRealData() {
       return false;
     }
     size_t predictedandnot =  ewahs[0]->logicalandnotcount(*ewahs[1]);
-    if(container.numberOfOnes() != predictedandnot) {
+    if(directandnotcontainer.numberOfOnes() != predictedandnot) {
       cerr << "bad logicalandnotcount" << endl;
       return false;
     }

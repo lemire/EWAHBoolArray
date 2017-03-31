@@ -1805,11 +1805,15 @@ size_t EWAHBoolArray<uword>::logicalxorcount(const EWAHBoolArray &a) const {
       const bool i_is_prey = rlwi.getRunningLength() < rlwj.getRunningLength();
       BufferedRunningLengthWord<uword> &prey = i_is_prey ? rlwi : rlwj;
       BufferedRunningLengthWord<uword> &predator = i_is_prey ? rlwj : rlwi;
+      size_t index;
+
       if (predator.getRunningBit()) {
-          prey.dischargeCountNegated(predator.getRunningLength(), & answer);
+          index = prey.dischargeCountNegated(predator.getRunningLength(), & answer);
       } else {
-          prey.dischargeCount(predator.getRunningLength(), & answer);
+          index = prey.dischargeCount(predator.getRunningLength(), & answer);
       }
+      if(predator.getRunningBit()) answer += (predator.getRunningLength() - index) * wordinbits;
+
       predator.discardRunningWordsWithReload();
     }
     const size_t nbre_literal = std::min(rlwi.getNumberOfLiteralWords(),

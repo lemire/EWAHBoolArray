@@ -941,7 +941,7 @@ template <class uword> size_t EWAHBoolArray<uword>::numberOfOnes() const {
     }
     ++pointer;
     for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-      tot += countOnes(buffer[pointer]);
+      tot += countOnes((uword)buffer[pointer]);
       ++pointer;
     }
   }
@@ -1718,6 +1718,8 @@ size_t EWAHBoolArray<uword>::logicalorcount(const EWAHBoolArray &a) const {
       BufferedRunningLengthWord<uword> &predator = i_is_prey ? rlwj : rlwi;
       if (predator.getRunningBit()) {
         answer += predator.getRunningLength() * wordinbits;
+        prey.discardFirstWordsWithReload(predator.getRunningLength());
+
       } else {
         //const size_t index =
             prey.dischargeCount(predator.getRunningLength(), & answer);
@@ -1729,7 +1731,7 @@ size_t EWAHBoolArray<uword>::logicalorcount(const EWAHBoolArray &a) const {
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
-        answer += countOnes(rlwi.getLiteralWordAt(k) | rlwj.getLiteralWordAt(k));
+        answer += countOnes((uword)(rlwi.getLiteralWordAt(k) | rlwj.getLiteralWordAt(k)));
       }
       rlwi.discardLiteralWordsWithReload(nbre_literal);
       rlwj.discardLiteralWordsWithReload(nbre_literal);
@@ -1814,7 +1816,7 @@ size_t EWAHBoolArray<uword>::logicalxorcount(const EWAHBoolArray &a) const {
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
-        answer += countOnes(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
+        answer += countOnes((uword)(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k)));
       }
       rlwi.discardLiteralWordsWithReload(nbre_literal);
       rlwj.discardLiteralWordsWithReload(nbre_literal);
@@ -1964,7 +1966,7 @@ size_t EWAHBoolArray<uword>::logicalandnotcount(const EWAHBoolArray &a) const {
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
-        answer += countOnes(rlwi.getLiteralWordAt(k) & (~rlwj.getLiteralWordAt(k)));
+        answer += countOnes((uword)(rlwi.getLiteralWordAt(k) & (~rlwj.getLiteralWordAt(k))));
       }
       rlwi.discardLiteralWordsWithReload(nbre_literal);
       rlwj.discardLiteralWordsWithReload(nbre_literal);
@@ -2006,7 +2008,7 @@ size_t EWAHBoolArray<uword>::logicalandcount(const EWAHBoolArray &a) const {
                                          rlwj.getNumberOfLiteralWords());
     if (nbre_literal > 0) {
       for (size_t k = 0; k < nbre_literal; ++k) {
-        answer += countOnes(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
+        answer += countOnes((uword)(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k)));
       }
       rlwi.discardLiteralWordsWithReload(nbre_literal);
       rlwj.discardLiteralWordsWithReload(nbre_literal);

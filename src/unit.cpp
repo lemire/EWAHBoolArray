@@ -1335,13 +1335,27 @@ bool funnytest() {
 template <class uword> bool arrayinit() {
   cout << "[arrayinit] checking arrayinit...sizeof(uword)=" << sizeof(uword)
        << endl;
-  EWAHBoolArray<uint32_t> gpr[10];
+  EWAHBoolArray<uword> gpr[10];
   for (int k = 0; k < 10; ++k)
     gpr[k].set(k);
   for (int k = 0; k < 10; ++k)
     cout << gpr[k] << endl;
   cout << "Your code is probably ok. " << endl;
   return true;
+}
+
+template <class uword> bool countstest1() {
+    size_t data1[]={24,5068,5113,5144,5212,5281,5301,5435,5498,5547,5568,5748,6010,6079,6151,6245,6365,6533,6566,6809,6813,6904,7046,7184,7258,7302,7307,7382,7424,7425,7476,7518,7609,7697,7776,7809,7837,7889,7898,7933,8029,8091,8279,8328,8372,8391,8456,8601,8612,8628,8635,8869,8886,8937,9059,9067};
+     size_t data2[]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128};
+    EWAHBoolArray<uword> b1;
+    for(size_t k = 0 ; k < sizeof(data1)/sizeof(size_t); ++k) b1.set(data1[k]);
+    EWAHBoolArray<uword> b2;
+    for(size_t k = 0 ; k < sizeof(data2)/sizeof(size_t); ++k) b2.set(data2[k]);
+    assert(b1.logicalandcount(b2) == b1.logicaland(b2).numberOfOnes());
+    assert(b1.logicalorcount(b2) == b1.logicalor(b2).numberOfOnes());
+    assert(b1.logicalxorcount(b2) == b1.logicalxor(b2).numberOfOnes());
+    assert(b1.logicalandnotcount(b2) == b1.logicalandnot(b2).numberOfOnes());
+    return true;
 }
 
 template <class uword> bool arrayinit2d() {
@@ -1363,6 +1377,12 @@ int main(void) {
   if (!funnytest()) {
     ++failures;
   }
+  if (!countstest1<uint16_t>())
+    ++failures;
+  if (!countstest1<uint32_t>())
+    ++failures;
+  if (!countstest1<uint64_t>())
+    ++failures;
 
   if (!testSerialSize<uint16_t>())
     ++failures;

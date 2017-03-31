@@ -244,7 +244,7 @@ public:
         answer += wordinbits * getRunningLength();
       }
       size_t pd = getNumberOfLiteralWords();
-      for(size_t i = 0; i < pd; ++i) answer += countOnes(getLiteralWordAt(i));
+      for(size_t i = 0; i < pd; ++i) answer += countOnes((uword)getLiteralWordAt(i));
       if (!next())
       break;
     }
@@ -259,7 +259,7 @@ public:
         answer += wordinbits * getRunningLength();
       }
       size_t pd = getNumberOfLiteralWords();
-      for(size_t i = 0; i < pd; ++i) answer += countOnes(~getLiteralWordAt(i));
+      for(size_t i = 0; i < pd; ++i) answer += countOnes((uword)(~getLiteralWordAt(i)));
       if (!next())
       break;
     }
@@ -280,12 +280,12 @@ public:
       index += RunningLength;
       if (NumberOfLiteralWords + index > max) {
         const size_t offset = max - index;
-        for(size_t i = 0; i < offset; ++i) *count += countOnes(getLiteralWordAt(i));
+        for(size_t i = 0; i < offset; ++i) *count += countOnes((uword)getLiteralWordAt(i));
         RunningLength = 0;
         NumberOfLiteralWords -= offset;
         return max;
       }
-      for(size_t i = 0; i < NumberOfLiteralWords; ++i) *count += countOnes(getLiteralWordAt(i));
+      for(size_t i = 0; i < NumberOfLiteralWords; ++i) *count += countOnes((uword)getLiteralWordAt(i));
       index += NumberOfLiteralWords;
       if (!next())
         break;
@@ -306,12 +306,12 @@ public:
       index += RunningLength;
       if (NumberOfLiteralWords + index > max) {
         const size_t offset = max - index;
-        for(size_t i = 0; i < offset; ++i) *count += countOnes(~ getLiteralWordAt(i));
+        for(size_t i = 0; i < offset; ++i) *count += countOnes((uword)(~ getLiteralWordAt(i)));
         RunningLength = 0;
         NumberOfLiteralWords -= offset;
         return max;
       }
-      for(size_t i = 0; i < NumberOfLiteralWords; ++i) *count += countOnes(~ getLiteralWordAt(i));
+      for(size_t i = 0; i < NumberOfLiteralWords; ++i) *count += countOnes((uword)(~ getLiteralWordAt(i)));
       index += NumberOfLiteralWords;
       if (!next())
         break;

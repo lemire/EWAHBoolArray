@@ -1958,7 +1958,7 @@ size_t EWAHBoolArray<uword>::logicalandnotcount(const EWAHBoolArray &a) const {
                     prey.dischargeCount(predator.getRunningLength(), & answer);
       } else {
                     const size_t index = prey.dischargeCountNegated(predator.getRunningLength(), & answer);
-                    answer += index * wordinbits;
+                    answer += (predator.getRunningLength() - index) * wordinbits;
       }
       predator.discardRunningWordsWithReload();
     }

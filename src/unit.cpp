@@ -186,7 +186,7 @@ template <class uword> bool testCardinalityEWAHBoolArray() {
 template <class uword> bool testLargeDirty() {
   cout << "[testing LargeDirty] sizeof(uword)=" << sizeof(uword)
        << endl;
-  size_t N = 80000000;
+  size_t N = 8000000;
   vector<uint32_t> bigarray1(N);
   vector<uint32_t> bigarray2(N);
   for(size_t k = 0; k < N; k++) {

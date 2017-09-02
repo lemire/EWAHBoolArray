@@ -7,6 +7,40 @@
 #include <stdlib.h>
 #include "ewah.h"
 
+void easydemo() {
+  typedef EWAHBoolArray<uint32_t> bitmap;
+  bitmap bitset1 =
+      bitmap::bitmapOf(9, 1, 2, 1000, 1001, 1002, 1003, 1007, 1009, 100000);
+  std::cout << "first bitset : " << bitset1 << std::endl;
+  bitmap bitset2 = bitmap::bitmapOf(5, 1, 3, 1000, 1007, 100000);
+  std::cout << "second bitset : " << bitset2 << std::endl;
+  bitmap bitset3 = bitmap::bitmapOf(3, 10, 11, 12);
+  std::cout << "third  bitset : " << bitset3 << std::endl;
+  bitmap orbitset = bitset1 | bitset2;
+  bitmap andbitset = bitset1 & bitset2;
+  bitmap xorbitset = bitset1 ^ bitset2;
+  bitmap andnotbitset = bitset1 - bitset2;
+
+  std::cout << "logical and: " << andbitset << std::endl;
+  std::cout << "memory usage of compressed bitset = " << andbitset.sizeInBytes()
+            << " bytes" << std::endl;
+  // we will display the and
+  std::cout << "logical or: " << orbitset << std::endl;
+  std::cout << "memory usage of compressed bitset = " << orbitset.sizeInBytes()
+            << " bytes" << std::endl;
+  // we will display the xor
+  std::cout << "logical xor: " << xorbitset << std::endl;
+  std::cout << "memory usage of compressed bitset = " << xorbitset.sizeInBytes()
+            << " bytes" << std::endl;
+  std::cout << "union of all three bitsets = " << (orbitset | bitset3)
+            << std::endl;
+  const bitmap *mybitmaps[] = {&bitset1, &bitset2, &bitset3};
+  std::cout << "fast union of all three bitsets = "
+            << fast_logicalor(3, mybitmaps) << std::endl;
+
+  std::cout << std::endl;
+}
+
 template <class bitmap> void demo() {
   bitmap bitset1 =
       bitmap::bitmapOf(9, 1, 2, 1000, 1001, 1002, 1003, 1007, 1009, 100000);
@@ -109,6 +143,8 @@ int main(void) {
   std::cout << std::endl;
   std::cout << "====compressed example====" << std::endl;
   std::cout << std::endl;
+  easydemo();
+
   demo<EWAHBoolArray<uint32_t>>();
   demoSerialization<EWAHBoolArray<uint32_t>>();
   std::cout << "==== benchmark intersecs === " << std::endl;

@@ -122,6 +122,27 @@ Versions 0.5 and above assume that the compiler supports the C++11 standard.
     make example
     ./example
 
+# Quick code sample
+
+```C++
+  #include "ewah.h"
+
+  typedef EWAHBoolArray<uint32_t> bitmap;
+
+  bitmap bitset1 =
+      bitmap::bitmapOf(9, 1, 2, 1000, 1001, 1002, 1003, 1007, 1009, 100000);
+  std::cout << "first bitset : " << bitset1 << std::endl;
+  bitmap bitset2 = bitmap::bitmapOf(5, 1, 3, 1000, 1007, 100000);
+  std::cout << "second bitset : " << bitset2 << std::endl;
+  bitmap bitset3 = bitmap::bitmapOf(3, 10, 11, 12);
+  std::cout << "third  bitset : " << bitset3 << std::endl;
+  bitmap orbitset = bitset1 | bitset2;
+  bitmap andbitset = bitset1 & bitset2;
+  bitmap xorbitset = bitset1 ^ bitset2;
+  bitmap andnotbitset = bitset1 - bitset2;
+```
+
+
 # Example
 
 Please see example.cpp.

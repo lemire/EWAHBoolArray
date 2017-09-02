@@ -189,6 +189,9 @@ public:
     logicaland(a, answer);
     return answer;
   }
+  EWAHBoolArray operator&(const EWAHBoolArray &a) const {
+    return logicaland(a);
+  }
 
   /**
    * computes the logical and with another compressed bitmap
@@ -199,6 +202,9 @@ public:
    */
   void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
+  EWAHBoolArray operator-(const EWAHBoolArray &a) const {
+    return logicalandnot(a);
+  }
 
   /**
    * computes the logical and not with another compressed bitmap
@@ -211,6 +217,8 @@ public:
     logicalandnot(a, answer);
     return answer;
   }
+
+
   /**
    * tests whether the bitmaps "intersect" (have at least one 1-bit at the same
    * position). This function does not modify the existing bitmaps.
@@ -227,6 +235,7 @@ public:
    * If you have many bitmaps, see fast_logicalor_tocontainer.
    */
   void logicalor(const EWAHBoolArray &a, EWAHBoolArray &container) const;
+
 
 
   /**
@@ -275,6 +284,10 @@ public:
     return answer;
   }
 
+  EWAHBoolArray operator|(const EWAHBoolArray &a) const {
+    return logicalor(a);
+  }
+
   /**
    * computes the logical xor with another compressed bitmap
    * answer goes into container
@@ -293,6 +306,10 @@ public:
     EWAHBoolArray answer;
     logicalxor(a, answer);
     return answer;
+  }
+
+  EWAHBoolArray operator^(const EWAHBoolArray &a) const {
+    return logicalxor(a);
   }
   /**
    * clear the content of the bitmap. It does not
@@ -1502,7 +1519,7 @@ size_t EWAHBoolArray<uword>::addStreamOfDirtyWords(const uword *v,
   buffer.push_back(0);
   lastRLW = buffer.size() - 1;
   ++wordadded;
-  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, number - howmanywecanadd);
   return wordadded;
 }
 
@@ -1528,7 +1545,7 @@ void EWAHBoolArray<uword>::fastaddStreamOfDirtyWords(const uword *v,
   //buffer.insert(buffer.end(), v, v+howmanywecanadd);// seems slower than push_back?
   buffer.push_back(0);
   lastRLW = buffer.size() - 1;
-  fastaddStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+  fastaddStreamOfDirtyWords(v + howmanywecanadd, number - howmanywecanadd);
 }
 
 
@@ -1558,7 +1575,7 @@ size_t EWAHBoolArray<uword>::addStreamOfNegatedDirtyWords(const uword *v,
   buffer.push_back(0);
   lastRLW = buffer.size() - 1;
   ++wordadded;
-  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, NumberOfLiteralWords - howmanywecanadd);
+  wordadded += addStreamOfDirtyWords(v + howmanywecanadd, number - howmanywecanadd);
   return wordadded;
 }
 

@@ -183,6 +183,55 @@ template <class uword> bool testCardinalityEWAHBoolArray() {
   return true;
 }
 
+template <class uword> bool testLargeDirty() {
+  cout << "[testing LargeDirty] sizeof(uword)=" << sizeof(uword)
+       << endl;
+  size_t N = 80000000;
+  vector<uint32_t> bigarray1(N);
+  vector<uint32_t> bigarray2(N);
+  for(size_t k = 0; k < N; k++) {
+    bigarray1[k] = (uint32_t)(8 * k);
+    bigarray2[k] = (uint32_t)(32 * k);
+  }
+  EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>();
+  EWAHBoolArray<uword> b2 = EWAHBoolArray<uword>();
+  for(size_t k = 0; k < N; k++) {
+    b1.set(8 * k);
+    b2.set(64 * k);
+  }
+
+  EWAHBoolArray<uword> b3 = EWAHBoolArray<uword>::bitmapOf(3,1,10,1000);
+  EWAHBoolArray<uword> b4 = EWAHBoolArray<uword>::bitmapOf(3,1,10,1000);
+
+  if (b1.numberOfOnes() != N) {
+    return false;
+  }
+  if (b2.numberOfOnes() != N) {
+    return false;
+  }
+  if (b3.numberOfOnes() != 3) {
+    return false;
+  }
+  b3 = b3 | b1;
+  b4 = b4 | b2;
+  b3 = b3 | b2;
+  b4 = b4 | b1;
+  if( b3 != b4 ) {
+    return false;
+  }
+  b4 = b4 - b1;
+  if (b4.numberOfOnes() != 3) {
+    return false;
+  }
+  b3 = b3 ^ b4;
+  if( b3 != b1 ) {
+    return false;
+  }
+
+  return true;
+}
+
+
 template <class uword> bool testAndNotEWAHBoolArray() {
   cout << "[testing AndNotEWAHBoolArray] sizeof(uword)=" << sizeof(uword) << endl;
   EWAHBoolArray<uword> b1 = EWAHBoolArray<uword>::bitmapOf(1,1);
@@ -1423,6 +1472,13 @@ int main(void) {
   if (!funnytest()) {
     ++failures;
   }
+  if (!testLargeDirty<uint64_t>())
+    ++failures;
+  if (!testLargeDirty<uint16_t>())
+    ++failures;
+  if (!testLargeDirty<uint32_t>())
+    ++failures;
+
   if (!countstest4<uint64_t>())
     ++failures;
   if (!countstest4<uint16_t>())

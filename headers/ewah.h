@@ -173,6 +173,9 @@ public:
    * answer goes into container
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   void logicaland(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
@@ -181,12 +184,19 @@ public:
    * Return the answer
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   EWAHBoolArray logicaland(const EWAHBoolArray &a) const {
     EWAHBoolArray answer;
     logicaland(a, answer);
     return answer;
   }
+
+  /**
+  * calls logicaland
+  */
   EWAHBoolArray operator&(const EWAHBoolArray &a) const {
     return logicaland(a);
   }
@@ -197,9 +207,15 @@ public:
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
    *
+   * The sizeInBits() of the result should be equal to that of the current
+   * bitmap irrespective of a.sizeInBits().
+   *
    */
   void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
+  /**
+  * calls logicalandnot
+  */
   EWAHBoolArray operator-(const EWAHBoolArray &a) const {
     return logicalandnot(a);
   }
@@ -209,6 +225,10 @@ public:
    * Return the answer
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * The sizeInBits() of the result should be equal to that of the current
+   * bitmap irrespective of a.sizeInBits().
+   *
    */
   EWAHBoolArray logicalandnot(const EWAHBoolArray &a) const {
     EWAHBoolArray answer;
@@ -230,6 +250,9 @@ public:
    * bitmap sizes.
    *
    * If you have many bitmaps, see fast_logicalor_tocontainer.
+   *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   void logicalor(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
@@ -273,6 +296,8 @@ public:
    *
    * If you have many bitmaps, see fast_logicalor.
    *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   EWAHBoolArray logicalor(const EWAHBoolArray &a) const {
     EWAHBoolArray answer;
@@ -280,6 +305,9 @@ public:
     return answer;
   }
 
+  /**
+  * calls logicalor
+  */
   EWAHBoolArray operator|(const EWAHBoolArray &a) const { return logicalor(a); }
 
   /**
@@ -287,6 +315,9 @@ public:
    * answer goes into container
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   void logicalxor(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
@@ -295,6 +326,9 @@ public:
    * Return the answer
    * Running time complexity is proportional to the sum of the compressed
    * bitmap sizes.
+   *
+   * The sizeInBits() of the result is equal to the maximum that of the current
+   * bitmap's sizeInBits() and that of a.sizeInBits().
    */
   EWAHBoolArray logicalxor(const EWAHBoolArray &a) const {
     EWAHBoolArray answer;
@@ -302,6 +336,9 @@ public:
     return answer;
   }
 
+  /**
+  * calls logicalxor
+  */
   EWAHBoolArray operator^(const EWAHBoolArray &a) const {
     return logicalxor(a);
   }
@@ -1717,6 +1754,7 @@ void EWAHBoolArray<uword>::logicalor(const EWAHBoolArray &a,
   const bool i_remains = rlwi.size() > 0;
   BufferedRunningLengthWord<uword> &remaining = i_remains ? rlwi : rlwj;
   remaining.discharge(container);
+  container.setSizeInBits(sizeInBits() > a.sizeInBits() ? sizeInBits() : a.sizeInBits());
 }
 
 template <class uword>
@@ -1804,6 +1842,7 @@ void EWAHBoolArray<uword>::logicalxor(const EWAHBoolArray &a,
   const bool i_remains = rlwi.size() > 0;
   BufferedRunningLengthWord<uword> &remaining = i_remains ? rlwi : rlwj;
   remaining.discharge(container);
+  container.setSizeInBits(sizeInBits() > a.sizeInBits() ? sizeInBits() : a.sizeInBits());
 }
 
 template <class uword>
@@ -1899,6 +1938,7 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
     }
   }
   container.setSizeInBits(sizeInBits());
+  container.setSizeInBits(sizeInBits() > a.sizeInBits() ? sizeInBits() : a.sizeInBits());
 }
 
 template <class uword>

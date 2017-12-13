@@ -39,6 +39,6 @@ before_build:
     dir /s ..
     
 build:
-  project: c:\projects\croaring\build\EWAHBoolArray.sln
+  project: c:\projects\ewahboolarray\build\EWAHBoolArray.sln
   verbosity: detailed
   parallel: true 

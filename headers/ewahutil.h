@@ -41,6 +41,10 @@
   } while (false)
 #endif
 
+#ifdef _MSC_VER
+#include <intrin.h> 
+#endif
+
 static inline uint32_t ctz64(uint64_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX && ULLONG_MAX >= UINT64_MAX
   return static_cast<uint32_t>(__builtin_ctzll(n));

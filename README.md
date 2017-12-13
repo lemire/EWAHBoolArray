@@ -1,5 +1,5 @@
 # Compressed bitset in C++
-[![Build Status](https://travis-ci.org/lemire/EWAHBoolArray.png)](https://travis-ci.org/lemire/EWAHBoolArray)
+[![Build Status](https://travis-ci.org/lemire/EWAHBoolArray.png)](https://travis-ci.org/lemire/EWAHBoolArray) [![Build Status](https://img.shields.io/appveyor/ci/lemire/EWAHBoolArray.svg)](https://ci.appveyor.com/project/lemire/EWAHBoolArray)
 
 
 
@@ -115,12 +115,22 @@ It works on x64 processors as well as on 32-bit ARM processors.
 
 Versions 0.5 and above assume that the compiler supports the C++11 standard.
 
-# Usage
+# Usage (Linux and Linux-like systems)
 
     make
     ./unit
     make example
     ./example
+
+# Usage (Visual Studio under Windows)
+
+To build with at least Visual Studio 2017 directly in the IDE:
+- Grab the code from GitHub, e.g., by cloning it using [GitHub Desktop](https://desktop.github.com/).
+- Select the ``Visual C++ tools for CMake`` optional component when installing the C++ Development Workload within Visual Studio.
+- Within Visual Studio use ``File > Open > Folder...`` to open the CRoaring folder.
+- Right click on ``CMakeLists.txt`` in the parent directory within ``Solution Explorer`` and select ``Build`` to build the project.
+- For testing, in the Standard toolbar, drop the ``Select Startup Item...`` menu and choose one of the tests. Run the test by pressing the button to the left of the dropdown.
+
 
 # Quick code sample
 

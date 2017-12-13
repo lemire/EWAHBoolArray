@@ -381,6 +381,7 @@ public:
   /**
    * Return the size of the buffer in bytes. This
    * is equivalent to the storage cost, minus some overhead.
+   * See sizeOnDisk to get the actual storage cost with overhead.
    */
   inline size_t sizeInBytes() const { return buffer.size() * sizeof(uword); }
 
@@ -431,8 +432,19 @@ public:
    * Note that this format is machine-specific. Note also
    * that the word size is not saved. For robust persistent
    * storage, you need to save this extra information elsewhere.
+   *
+   * Returns how many bytes were handed out to the stream.
    */
-  void write(std::ostream &out, const bool savesizeinbits = true) const;
+  size_t write(std::ostream &out, const bool savesizeinbits = true) const;
+
+  /**
+  * same as write(std::ostream...), except that you provide a char pointer
+  * and a "capacity" (in bytes). The function never writes at or beyond "out+capacity".
+  * If the storage needed exceeds the
+  * given capacity, the value zero is returned: it should be considered an error.
+  * Otherwise, the number of bytes copied is returned.
+  */
+  size_t write(char * out, size_t capacity, const bool savesizeinbits = true) const;
 
   /**
    * This only writes the content of the buffer (see write()) method.
@@ -450,8 +462,20 @@ public:
    * if you set savesizeinbits=false, then you are responsible
    * for setting the value fo the attribute sizeinbits (see method
    * setSizeInBits).
+   *
+   * Returns how many bytes were queried from the stream.
    */
-  void read(std::istream &in, const bool savesizeinbits = true);
+  size_t read(std::istream &in, const bool savesizeinbits = true);
+
+
+  /**
+  * same as read(std::istream...), except that you provide a char pointer
+  * and a "capacity" (in bytes). The function never reads at or beyond "in+capacity".
+  * If the detected storage exceeds the  given capacity, the value zero is returned:
+  * it should be considered an error.
+  * Otherwise, the number of bytes read is returned.
+  */
+  size_t read(const char * in, size_t capacity, const bool savesizeinbits = true);
 
   /**
    * read the buffer from a stream, see method writeBuffer.
@@ -1103,32 +1127,100 @@ inline void EWAHBoolArray<uword>::readBuffer(std::istream &in,
 }
 
 template <class uword>
-void EWAHBoolArray<uword>::write(std::ostream &out,
+size_t EWAHBoolArray<uword>::write(std::ostream &out,
                                  const bool savesizeinbits) const {
+  size_t written = 0;
   if (savesizeinbits) {
     out.write(reinterpret_cast<const char *>(&sizeinbits), sizeof(sizeinbits));
+    written += sizeof(sizeinbits);
   }
   const size_t buffersize = buffer.size();
   out.write(reinterpret_cast<const char *>(&buffersize), sizeof(buffersize));
+  written += sizeof(buffersize);
 
   if (buffersize > 0) {
     out.write(reinterpret_cast<const char *>(&buffer[0]),
               static_cast<std::streamsize>(sizeof(uword) * buffersize));
+    written += sizeof(uword) * buffersize;
   }
+  return written;
 }
 
 template <class uword>
-void EWAHBoolArray<uword>::read(std::istream &in, const bool savesizeinbits) {
-  if (savesizeinbits)
+size_t EWAHBoolArray<uword>::write(char * out, size_t capacity,
+                                 const bool savesizeinbits) const {
+  size_t written = 0;
+  if (savesizeinbits) {
+    if(capacity < sizeof(sizeinbits)) return 0;
+    capacity -= sizeof(sizeinbits);
+    memcpy(out, &sizeinbits, sizeof(sizeinbits));
+    out += sizeof(sizeinbits);
+    written += sizeof(sizeinbits);
+  }
+  const size_t buffersize = buffer.size();
+  if(capacity < sizeof(buffersize)) return 0;
+  capacity -= sizeof(buffersize);
+  memcpy(out, &buffersize, sizeof(buffersize));
+  out += sizeof(buffersize);
+  written += sizeof(buffersize);
+
+  if (buffersize > 0) {
+    if(capacity < sizeof(uword) * buffersize) return 0;
+    memcpy(out, &buffer[0], sizeof(uword) * buffersize);
+    written += sizeof(uword) * buffersize;
+  }
+  return written;
+}
+
+
+template <class uword>
+size_t EWAHBoolArray<uword>::read(std::istream &in, const bool savesizeinbits) {
+  size_t read = 0;
+  if (savesizeinbits) {
     in.read(reinterpret_cast<char *>(&sizeinbits), sizeof(sizeinbits));
-  else
+    read += sizeof(sizeinbits);
+  } else {
     sizeinbits = 0;
+  }
   size_t buffersize(0);
   in.read(reinterpret_cast<char *>(&buffersize), sizeof(buffersize));
+  read += sizeof(buffersize);
   buffer.resize(buffersize);
-  if (buffersize > 0)
+  if (buffersize > 0) {
     in.read(reinterpret_cast<char *>(&buffer[0]),
             static_cast<std::streamsize>(sizeof(uword) * buffersize));
+    read += sizeof(uword) * buffersize;
+  }
+  return read;
+}
+
+
+template <class uword>
+size_t EWAHBoolArray<uword>::read(const char * in, size_t capacity, const bool savesizeinbits) {
+  size_t read = 0;
+  if (savesizeinbits) {
+    if(capacity < sizeof(sizeinbits)) return 0;
+    capacity -= sizeof(sizeinbits);
+    memcpy(reinterpret_cast<char *>(&sizeinbits), in, sizeof(sizeinbits));
+    read += sizeof(sizeinbits);
+    in += sizeof(sizeinbits);
+  } else {
+    sizeinbits = 0;
+  }
+  size_t buffersize(0);
+  if(capacity < sizeof(buffersize)) return 0;
+  capacity -= sizeof(buffersize);
+  memcpy(reinterpret_cast<char *>(&buffersize), in, sizeof(buffersize));
+  in += sizeof(buffersize);
+  read += sizeof(buffersize);
+
+  buffer.resize(buffersize);
+  if (buffersize > 0) {
+    if(capacity < sizeof(uword) * buffersize) return 0;
+    memcpy(&buffer[0], in, sizeof(uword) * buffersize);
+    read += sizeof(uword) * buffersize;
+  }
+  return read;
 }
 
 template <class uword>

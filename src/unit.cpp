@@ -922,9 +922,45 @@ template <class uword> bool testSerialization() {
   stringstream ss;
   EWAHBoolArray<uword> lmyarray;
   for (int k = 0; k < 10; ++k) {
-    bitmap.write(ss);
+    size_t w1 = bitmap.write(ss);
+    if (w1 != bitmap.sizeOnDisk()) {
+      return false;
+    }
+    size_t w2 = lmyarray.read(ss);
+    if (w2 != bitmap.sizeOnDisk()) {
+      return false;
+    }
+    if (lmyarray != bitmap) {
+      return false;
+    }
+    typename EWAHBoolArray<uword>::const_iterator i = bitmap.begin();
+    typename EWAHBoolArray<uword>::const_iterator j = lmyarray.begin();
+    for (; i != bitmap.end(); ++i, ++j) {
+      if (*i != *j)
+        return false;
+    }
+  }
+  return true;
+}
 
-    lmyarray.read(ss);
+template <class uword> bool testRawSerialization() {
+  cout << "[testing Raw Serialization] word size = " << sizeof(uword) << endl;
+  EWAHBoolArray<uword> bitmap;
+  for (int i = 0; i < 1 << 31; i = 2 * i + 3) {
+    bitmap.set(static_cast<size_t>(i));
+  }
+  vector<char> buffer(bitmap.sizeOnDisk());
+  stringstream ss;
+  EWAHBoolArray<uword> lmyarray;
+  for (int k = 0; k < 10; ++k) {
+    size_t w1 = bitmap.write(buffer.data(), buffer.size());
+    if (w1 != bitmap.sizeOnDisk()) {
+      return false;
+    }
+    size_t w2 = lmyarray.read(buffer.data(), buffer.size());
+    if (w2 != bitmap.sizeOnDisk()) {
+      return false;
+    }
     if (lmyarray != bitmap) {
       return false;
     }
@@ -1848,6 +1884,18 @@ int main(void) {
     ++failures;
   }
   if (!testSerialization<uint64_t>()){
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRawSerialization<uint16_t>()){
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRawSerialization<uint32_t>()){
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRawSerialization<uint64_t>()){
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }

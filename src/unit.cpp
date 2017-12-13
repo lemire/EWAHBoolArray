@@ -777,7 +777,7 @@ template <class uword> bool testSTLCompatibility() {
   bitset1.set(2);
   bitset1.set(1000);
   bitset1.set(1001);
-  vector<EWAHBoolArray<uword>> testVec(1);
+  vector<EWAHBoolArray<uword> > testVec(1);
   testVec[0].set(1);
   testVec[0].set(2);
   testVec[0].set(1000);
@@ -1387,8 +1387,8 @@ template <class uword> bool dataindexingtest() {
     }
   }
 
-  map<string, EWAHBoolArray<uword>> index1;
-  map<string, EWAHBoolArray<uword>> index2;
+  map<string, EWAHBoolArray<uword> > index1;
+  map<string, EWAHBoolArray<uword> > index2;
 
   for (size_t i = 0; i < col1.size(); i++) {
     index1[col1[i]].set(i);
@@ -1399,10 +1399,10 @@ template <class uword> bool dataindexingtest() {
 
   size_t testcount = 0;
 
-  for (typename map<string, EWAHBoolArray<uword>>::iterator i = index1.begin();
+  for (typename map<string, EWAHBoolArray<uword> >::iterator i = index1.begin();
        i != index1.end(); ++i) {
     EWAHBoolArray<uword> &bitmap1 = i->second;
-    for (typename map<string, EWAHBoolArray<uword>>::iterator j =
+    for (typename map<string, EWAHBoolArray<uword> >::iterator j =
              index2.begin();
          j != index2.end(); ++j) {
       EWAHBoolArray<uword> &bitmap2 = j->second;

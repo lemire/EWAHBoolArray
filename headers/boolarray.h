@@ -135,9 +135,6 @@ public:
 
   /**
    * set to true (whether it was already set to true or not)
-   *
-   * This is an expensive (random access) API, you really ought to
-   * prepare a new word and then append it.
    */
   void set(const size_t pos) {
     if (pos >= sizeinbits)
@@ -148,12 +145,10 @@ public:
   /**
    * set to false (whether it was already set to false or not)
    *
-   * This is an expensive (random access) API, you really ought to
-   * prepare a new word and then append it.
    */
   void unset(const size_t pos) {
     if (pos < sizeinbits)
-      buffer[pos / wordinbits] |=
+      buffer[pos / wordinbits] &=
           ~(static_cast<uword>(1) << (pos % wordinbits));
   }
 

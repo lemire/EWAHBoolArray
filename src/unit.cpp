@@ -54,7 +54,20 @@ template <class uword> bool testInEqualityEWAHBoolArray() {
   }
   return true;
 }
-
+template <class uword> bool testEmpty() {
+  cout << "[testing SizeInBits] sizeof(uword)=" << sizeof(uword) << endl;
+    EWAHBoolArray<uword> ewah0;
+    if(!ewah0.empty()) {
+      std::cout << "empty is buggy " << std::endl;
+      return false;
+    }
+    EWAHBoolArray<uword> ewah1 = EWAHBoolArray<uword>::bitmapOf(1, 1);
+    if(ewah1.empty()) {
+      std::cout << "empty is buggy " << std::endl;
+      return false;
+    }
+    return true;
+}
 template <class uword> bool testSizeInBits() {
   cout << "[testing SizeInBits] sizeof(uword)=" << sizeof(uword) << endl;
 
@@ -1646,7 +1659,14 @@ int main(void) {
   if (!funnytest()) {
     ++failures;
   }
-
+  if (!testEmpty<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEmpty<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
   if (!testSizeInBits<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;

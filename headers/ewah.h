@@ -81,6 +81,26 @@ public:
   }
 
   /**
+  * Returns true if no bit is set.
+  */
+  bool empty() const {
+      size_t pointer(0);
+      while (pointer < buffer.size()) {
+        ConstRunningLengthWord<uword> rlw(buffer[pointer]);
+        if (rlw.getRunningBit()) {
+          if(rlw.getRunningLength() > 0) return false;
+        }
+        ++pointer;
+        for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
+          if(buffer[pointer] != 0) return false;
+          ++pointer;
+        }
+      }
+      return true;
+  }
+
+
+  /**
    * Set the ith bit to true (starting at zero).
    * Auto-expands the bitmap. It has constant running time complexity.
    * Note that you must set the bits in increasing order:

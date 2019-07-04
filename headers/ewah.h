@@ -81,6 +81,26 @@ public:
   }
 
   /**
+  * Returns true if no bit is set.
+  */
+  bool empty() const {
+      size_t pointer(0);
+      while (pointer < buffer.size()) {
+        ConstRunningLengthWord<uword> rlw(buffer[pointer]);
+        if (rlw.getRunningBit()) {
+          if(rlw.getRunningLength() > 0) return false;
+        }
+        ++pointer;
+        for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
+          if(buffer[pointer] != 0) return false;
+          ++pointer;
+        }
+      }
+      return true;
+  }
+
+
+  /**
    * Set the ith bit to true (starting at zero).
    * Auto-expands the bitmap. It has constant running time complexity.
    * Note that you must set the bits in increasing order:
@@ -581,7 +601,7 @@ public:
   enum { wordinbits = sizeof(uword) * 8 };
 
   /**
-   *Please don't copy your bitmaps! The running time
+   * Please don't copy your bitmaps! The running time
    * complexity of a copy is the size of the compressed bitmap.
    **/
   EWAHBoolArray(const EWAHBoolArray &other)
@@ -595,6 +615,23 @@ public:
    */
   EWAHBoolArray &operator=(const EWAHBoolArray &x) {
     buffer = x.buffer;
+    sizeinbits = x.sizeinbits;
+    lastRLW = x.lastRLW;
+    return *this;
+  }
+
+  /**
+  * Move constructor.
+  */
+  EWAHBoolArray(EWAHBoolArray &&other)
+    : buffer(std::move(other.buffer)), sizeinbits(other.sizeinbits),
+      lastRLW(other.lastRLW) {}
+
+  /**
+  * Move assignment operator.
+  */
+  EWAHBoolArray &operator=(EWAHBoolArray &&x) {
+    buffer = std::move(x.buffer);
     sizeinbits = x.sizeinbits;
     lastRLW = x.lastRLW;
     return *this;

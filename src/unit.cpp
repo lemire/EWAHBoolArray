@@ -916,7 +916,7 @@ std::ostream &operator<<(std::ostream &os, const EWAHBoolArray<uword> &ba) {
 template <class uword> bool testSerialization() {
   cout << "[testing Serialization] word size = " << sizeof(uword) << endl;
   EWAHBoolArray<uword> bitmap;
-  for (int i = 0; i < 1 << 31; i = 2 * i + 3) {
+  for (int i = 0; i < (1 << 30); i = 2 * i + 3) {
     bitmap.set(static_cast<size_t>(i));
   }
   stringstream ss;
@@ -946,7 +946,7 @@ template <class uword> bool testSerialization() {
 template <class uword> bool testRawSerialization() {
   cout << "[testing Raw Serialization] word size = " << sizeof(uword) << endl;
   EWAHBoolArray<uword> bitmap;
-  for (int i = 0; i < 1 << 31; i = 2 * i + 3) {
+  for (int i = 0; i < (1 << 30); i = 2 * i + 3) {
     bitmap.set(static_cast<size_t>(i));
   }
   vector<char> buffer(bitmap.sizeOnDisk());

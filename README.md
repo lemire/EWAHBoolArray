@@ -1,5 +1,5 @@
 # Compressed bitset in C++
-[![Build Status](https://travis-ci.org/lemire/EWAHBoolArray.png)](https://travis-ci.org/lemire/EWAHBoolArray) [![Build Status](https://img.shields.io/appveyor/ci/lemire/EWAHBoolArray.svg)](https://ci.appveyor.com/project/lemire/EWAHBoolArray)
+[![Ubuntu 20.04 CI (GCC 9, 8)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml/badge.svg)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml)
 
 
 

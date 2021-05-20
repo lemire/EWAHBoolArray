@@ -10,7 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {gen: Visual Studio 16 2019, arch: Win32}
           - {gen: Visual Studio 16 2019, arch: x64}
     steps:
       - name: checkout

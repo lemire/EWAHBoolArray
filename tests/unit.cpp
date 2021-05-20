@@ -27,6 +27,50 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #if _MSC_VER >= 1400
 #define unlink _unlink
 #endif
+template <class uword> bool testAndNotCompactionEWAHBoolArray() {
+  cout << "[testing testAndNotCompactionEWAHBoolArray] sizeof(uword)="
+       << sizeof(uword) << endl;
+  EWAHBoolArray<uword> one;
+  EWAHBoolArray<uword> other;
+  one.set(71);
+  other.set(130);
+  other = other.logicaland(one);
+  //other is zero
+ // one = one.logicalandnot(other);
+  // one remained on change {71}
+  one.set(155);
+  //one has {71,155}
+    other.debugprintout();
+
+  other.set(251);
+  //other.debugprintout();
+  abort();
+  return  251 == *other.begin();
+  //other has {131}
+//    std::cout <<  " {251}==" << other << std::endl;
+/*
+
+  other = other.logicalor(one);
+  // {71,131,155}
+  one = one.logicaland(other);
+  // {155}
+
+  std::cout << "one";
+  one.debugprintout();
+  std::cout << "other";
+  other.debugprintout();
+  std::cout << other << std::endl;
+    std::cout << one << std::endl;
+  other = other.logicalandnot(one);
+
+  std::cout << "other";
+  other.debugprintout();
+  typename EWAHBoolArray<uword>::const_iterator i = other.begin();
+  auto val = *i;
+  std::cout << "got " << val << std::endl;
+  return val == 217;*/
+  return true;
+}
 
 template <class uword> bool testInEqualityEWAHBoolArray() {
   cout << "[testing testInEqualityEWAHBoolArray] sizeof(uword)="
@@ -1670,6 +1714,18 @@ int main(int argc, char **argv) {
   int failures = 0;
   std::string failtext = "[GOT FAILURE] ";
   if (!funnytest()) {
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
   if (!testEmpty<uint64_t>()) {

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
-#include <ewah.h>
+#include <ewah/ewah.h>
 #include <string>
 #include <algorithm>
 #include <fstream>

@@ -1,7 +1,0 @@
-language: cpp
-sudo: false
-compiler:
-  - gcc
-  - clang
-
-script: make && ./unit

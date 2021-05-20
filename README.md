@@ -117,10 +117,10 @@ Versions 0.5 and above assume that the compiler supports the C++11 standard.
 
 # Usage (Linux and Linux-like systems)
 
-    make
-    ./unit
-    make example
-    ./example
+    cmake -B build 
+    cmake --build build
+    cd build
+    ctest
 
 # Usage (Visual Studio under Windows)
 
@@ -155,12 +155,9 @@ To build with at least Visual Studio 2017 directly in the IDE:
 
 # Example
 
-Please see example.cpp.
-For an example with tabular data, please see example2.cpp.
+Please see `examples/example.cpp`.
+For an example with tabular data, please see `example2.cpp`.
 
-# Further documentation
-
-If you have ``doxygen`` installed, you can type ``make doxygen`` and create a documentation folder that might prove useful.
 
 # Further reading
 

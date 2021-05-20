@@ -14,8 +14,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-#include "ewah.h"
-#include "boolarray.h"
+#include "ewah/ewah.h"
+#include "ewah/boolarray.h"
 
 #define SSTR(x) (to_string(x))
 
@@ -1197,10 +1197,10 @@ int dirExists(const char *path) {
     return 0;
 }
 
-bool testRealData() {
+bool testRealData(std::string data) {
   cout << "[testRealData] from JavaEWAH bitmaps (Jacques NABHAN)" << endl;
 
-  string path = "data/bitmap_dumps/";
+  string path = data + "bitmap_dumps/";
   if (!dirExists(path.c_str())) {
     cout << "I cannot find bitmap dump directory : " << path << endl;
     cout << "Please run unit tests from a proper location. " << endl;
@@ -1362,18 +1362,17 @@ bool testRealData() {
   return true;
 }
 
-template <class uword> bool dataindexingtest() {
+template <class uword> bool dataindexingtest(std::string path) {
   cout << "[dataindexingtest] checking intersects...sizeof(uword)="
        << sizeof(uword) << endl;
 
   // read the data from the CSV file
   vector<string> col1, col2;
-  string datasource = "data/data.csv";
+  string datasource = path + "data.csv";
 
   ifstream infile(datasource.c_str(), ios::binary);
   if (!infile) {
-    cout << "WARNING: For this test to run, I need to find data/data.csv in "
-            "current directory. "
+    cout << "WARNING: For this test to run, I need to find " << datasource
          << endl;
     return true;
   }
@@ -1653,7 +1652,14 @@ template <class uword> bool arrayinit2d() {
   return true;
 }
 
-int main(void) {
+int main(int argc, char ** argv) {
+  std::string path = "tests/data/";
+  if(argc > 1) { 
+    path = argv[1];
+    std::cout << " I am expecting the data files in directory " << path << std::endl; 
+  } else {
+    std::cout << " You did not pass a directory for the data files, defaulting on " << path << std::endl; 
+  }
   int failures = 0;
   std::string failtext = "[GOT FAILURE] ";
   if (!funnytest()) {
@@ -1805,20 +1811,20 @@ int main(void) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
  }
-  if (!dataindexingtest<uint16_t>()) {
+  if (!dataindexingtest<uint16_t>(path)) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!dataindexingtest<uint32_t>()) {
+  if (!dataindexingtest<uint32_t>(path)) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!dataindexingtest<uint64_t>()) {
+  if (!dataindexingtest<uint64_t>(path)) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testRealData()) {
+  if (!testRealData(path)) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }

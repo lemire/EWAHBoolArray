@@ -13,7 +13,7 @@
 #else
 #include <sys/time.h>
 #endif
-#include "ewah.h"
+#include "ewah/ewah.h"
 using namespace std;
 
 /**

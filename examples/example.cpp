@@ -5,7 +5,7 @@
  * (c) Daniel Lemire, http://lemire.me/en/
  */
 #include <stdlib.h>
-#include "ewah.h"
+#include "ewah/ewah.h"
 
 void easydemo() {
   typedef EWAHBoolArray<uint32_t> bitmap;

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <ewah.h>
+#include <ewah/ewah.h>
 #include <string>
 #include <algorithm>
 

@@ -4,18 +4,18 @@
  *
  * (c) Daniel Lemire, http://lemire.me/en/
  */
-#include <stdio.h>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include "ewah/ewah.h"
 #include "ewah/boolarray.h"
+#include "ewah/ewah.h"
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <vector>
 
 #define SSTR(x) (to_string(x))
 
@@ -56,41 +56,43 @@ template <class uword> bool testInEqualityEWAHBoolArray() {
 }
 template <class uword> bool testEmpty() {
   cout << "[testing SizeInBits] sizeof(uword)=" << sizeof(uword) << endl;
-    EWAHBoolArray<uword> ewah0;
-    if(!ewah0.empty()) {
-      std::cout << "empty is buggy " << std::endl;
-      return false;
-    }
-    EWAHBoolArray<uword> ewah1 = EWAHBoolArray<uword>::bitmapOf(1, 1);
-    if(ewah1.empty()) {
-      std::cout << "empty is buggy " << std::endl;
-      return false;
-    }
-    return true;
+  EWAHBoolArray<uword> ewah0;
+  if (!ewah0.empty()) {
+    std::cout << "empty is buggy " << std::endl;
+    return false;
+  }
+  EWAHBoolArray<uword> ewah1 = EWAHBoolArray<uword>::bitmapOf(1, 1);
+  if (ewah1.empty()) {
+    std::cout << "empty is buggy " << std::endl;
+    return false;
+  }
+  return true;
 }
 template <class uword> bool testSizeInBits() {
   cout << "[testing SizeInBits] sizeof(uword)=" << sizeof(uword) << endl;
 
-    EWAHBoolArray<uword> ewah1 = EWAHBoolArray<uword>::bitmapOf(1, 1);
-    EWAHBoolArray<uword> ewah2 = EWAHBoolArray<uword>::bitmapOf(1, 2);
-    EWAHBoolArray<uword> ewah3 = EWAHBoolArray<uword>::bitmapOf(1, 3);
-    EWAHBoolArray<uword> ewah4 = EWAHBoolArray<uword>::bitmapOf(1, 4);
-    EWAHBoolArray<uword> result1 = ewah1 | ewah2 | ewah3 | ewah4;
-    EWAHBoolArray<uword> result12 = ewah1 & ewah2 & ewah3 & ewah4;
-    EWAHBoolArray<uword> result13 = ewah1 ^ ewah2 ^ ewah3 ^ ewah4;
+  EWAHBoolArray<uword> ewah1 = EWAHBoolArray<uword>::bitmapOf(1, 1);
+  EWAHBoolArray<uword> ewah2 = EWAHBoolArray<uword>::bitmapOf(1, 2);
+  EWAHBoolArray<uword> ewah3 = EWAHBoolArray<uword>::bitmapOf(1, 3);
+  EWAHBoolArray<uword> ewah4 = EWAHBoolArray<uword>::bitmapOf(1, 4);
+  EWAHBoolArray<uword> result1 = ewah1 | ewah2 | ewah3 | ewah4;
+  EWAHBoolArray<uword> result12 = ewah1 & ewah2 & ewah3 & ewah4;
+  EWAHBoolArray<uword> result13 = ewah1 ^ ewah2 ^ ewah3 ^ ewah4;
 
-    EWAHBoolArray<uword> result2 = EWAHBoolArray<uword>::bitmapOf(4, 1, 2, 3, 4);
-    if(result1 != result2) {
-      cout << testfailed << endl;
-      std::cout << "should be equal " << std::endl;
-      return false;
-    }
-    if((result1.sizeInBits() != result2.sizeInBits()) || (result12.sizeInBits() != result2.sizeInBits()) || (result13.sizeInBits() != result2.sizeInBits())) {
-      cout << testfailed << endl;
-      std::cout << "bad sizeInBits " << std::endl;
-      return false;
-    }
-    return true;
+  EWAHBoolArray<uword> result2 = EWAHBoolArray<uword>::bitmapOf(4, 1, 2, 3, 4);
+  if (result1 != result2) {
+    cout << testfailed << endl;
+    std::cout << "should be equal " << std::endl;
+    return false;
+  }
+  if ((result1.sizeInBits() != result2.sizeInBits()) ||
+      (result12.sizeInBits() != result2.sizeInBits()) ||
+      (result13.sizeInBits() != result2.sizeInBits())) {
+    cout << testfailed << endl;
+    std::cout << "bad sizeInBits " << std::endl;
+    return false;
+  }
+  return true;
 }
 
 template <class uword> bool testSerialSize() {
@@ -790,7 +792,7 @@ template <class uword> bool testSTLCompatibility() {
   bitset1.set(2);
   bitset1.set(1000);
   bitset1.set(1001);
-  vector<EWAHBoolArray<uword> > testVec(1);
+  vector<EWAHBoolArray<uword>> testVec(1);
   testVec[0].set(1);
   testVec[0].set(2);
   testVec[0].set(1000);
@@ -1399,8 +1401,8 @@ template <class uword> bool dataindexingtest(std::string path) {
     }
   }
 
-  map<string, EWAHBoolArray<uword> > index1;
-  map<string, EWAHBoolArray<uword> > index2;
+  map<string, EWAHBoolArray<uword>> index1;
+  map<string, EWAHBoolArray<uword>> index2;
 
   for (size_t i = 0; i < col1.size(); i++) {
     index1[col1[i]].set(i);
@@ -1411,10 +1413,10 @@ template <class uword> bool dataindexingtest(std::string path) {
 
   size_t testcount = 0;
 
-  for (typename map<string, EWAHBoolArray<uword> >::iterator i = index1.begin();
+  for (typename map<string, EWAHBoolArray<uword>>::iterator i = index1.begin();
        i != index1.end(); ++i) {
     EWAHBoolArray<uword> &bitmap1 = i->second;
-    for (typename map<string, EWAHBoolArray<uword> >::iterator j =
+    for (typename map<string, EWAHBoolArray<uword>>::iterator j =
              index2.begin();
          j != index2.end(); ++j) {
       EWAHBoolArray<uword> &bitmap2 = j->second;
@@ -1436,7 +1438,9 @@ template <class uword> bool dataindexingtest(std::string path) {
   return true;
 }
 
-typedef struct { EWAHBoolArray<uint32_t> gpr[32][4]; } vcpu_ctx;
+typedef struct {
+  EWAHBoolArray<uint32_t> gpr[32][4];
+} vcpu_ctx;
 
 typedef struct {
   vcpu_ctx vcpu;
@@ -1652,13 +1656,16 @@ template <class uword> bool arrayinit2d() {
   return true;
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
   std::string path = "tests/data/";
-  if(argc > 1) { 
+  if (argc > 1) {
     path = argv[1];
-    std::cout << " I am expecting the data files in directory " << path << std::endl; 
+    std::cout << " I am expecting the data files in directory " << path
+              << std::endl;
   } else {
-    std::cout << " You did not pass a directory for the data files, defaulting on " << path << std::endl; 
+    std::cout
+        << " You did not pass a directory for the data files, defaulting on "
+        << path << std::endl;
   }
   int failures = 0;
   std::string failtext = "[GOT FAILURE] ";
@@ -1666,6 +1673,10 @@ int main(int argc, char ** argv) {
     ++failures;
   }
   if (!testEmpty<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEmpty<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
@@ -1810,7 +1821,7 @@ int main(int argc, char ** argv) {
   if (!arrayinit2d<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
- }
+  }
   if (!dataindexingtest<uint16_t>(path)) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
@@ -1829,258 +1840,258 @@ int main(int argc, char ** argv) {
     ++failures;
   }
 
-  if (!testIntersects<uint16_t>()){
+  if (!testIntersects<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testIntersects<uint32_t>()){
+  if (!testIntersects<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testIntersects<uint64_t>()){
+  if (!testIntersects<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testNanJiang<uint16_t>()){
+  if (!testNanJiang<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testNanJiang<uint32_t>()){
+  if (!testNanJiang<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testNanJiang<uint64_t>()){
+  if (!testNanJiang<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityEWAHBoolArray<uint16_t>()){
+  if (!testCardinalityEWAHBoolArray<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityEWAHBoolArray<uint32_t>()){
+  if (!testCardinalityEWAHBoolArray<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityEWAHBoolArray<uint64_t>()){
+  if (!testCardinalityEWAHBoolArray<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotEWAHBoolArray<uint16_t>()){
+  if (!testAndNotEWAHBoolArray<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotEWAHBoolArray<uint32_t>()){
+  if (!testAndNotEWAHBoolArray<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotEWAHBoolArray<uint64_t>()){
+  if (!testAndNotEWAHBoolArray<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityBoolArray<uint16_t>()){
+  if (!testCardinalityBoolArray<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityBoolArray<uint32_t>()){
+  if (!testCardinalityBoolArray<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testCardinalityBoolArray<uint64_t>()){
+  if (!testCardinalityBoolArray<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotBoolArray<uint16_t>()){
+  if (!testAndNotBoolArray<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotBoolArray<uint32_t>()){
+  if (!testAndNotBoolArray<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testAndNotBoolArray<uint64_t>()){
+  if (!testAndNotBoolArray<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testSerialization<uint16_t>()){
+  if (!testSerialization<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testSerialization<uint32_t>()){
+  if (!testSerialization<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testSerialization<uint64_t>()){
+  if (!testSerialization<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testRawSerialization<uint16_t>()){
+  if (!testRawSerialization<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testRawSerialization<uint32_t>()){
+  if (!testRawSerialization<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testRawSerialization<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-
-  if (!testGet<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testGet<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testGet<uint64_t>()){
+  if (!testRawSerialization<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testLucaDeri<uint16_t>()){
+  if (!testGet<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testLucaDeri<uint32_t>()){
+  if (!testGet<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testLucaDeri<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-
-  if (!testSetGet<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testSetGet<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testSetGet<uint64_t>()){
+  if (!testGet<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testPhongTran()){
+  if (!testLucaDeri<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testLucaDeri<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testLucaDeri<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testSTLCompatibility<uint16_t>()){
+  if (!testSetGet<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testSTLCompatibility<uint32_t>()){
+  if (!testSetGet<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testSTLCompatibility<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-
-  if (!testHemeury<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testHemeury<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testHemeury<uint64_t>()){
+  if (!testSetGet<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testPhongTran2<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testPhongTran2<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testPhongTran2<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testRunningLengthWord<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testRunningLengthWord<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testRunningLengthWord<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testEWAHBoolArray<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testEWAHBoolArray<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testEWAHBoolArray<uint64_t>()){
+  if (!testPhongTran()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testEWAHBoolArrayLogical<uint16_t>()){
+  if (!testSTLCompatibility<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testEWAHBoolArrayLogical<uint32_t>()){
+  if (!testSTLCompatibility<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testEWAHBoolArrayLogical<uint64_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-
-  if (!testEWAHBoolArrayLogical2<uint16_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testEWAHBoolArrayLogical2<uint32_t>()){
-    std::cout << failtext << __LINE__ << std::endl;
-    ++failures;
-  }
-  if (!testEWAHBoolArrayLogical2<uint64_t>()){
+  if (!testSTLCompatibility<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testEWAHBoolArrayAppend<uint16_t>()){
+  if (!testHemeury<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testEWAHBoolArrayAppend<uint32_t>()){
+  if (!testHemeury<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testEWAHBoolArrayAppend<uint64_t>()){
+  if (!testHemeury<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
 
-  if (!testJoergBukowski<uint16_t>()){
+  if (!testPhongTran2<uint16_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testJoergBukowski<uint32_t>()){
+  if (!testPhongTran2<uint32_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
-  if (!testJoergBukowski<uint64_t>()){
+  if (!testPhongTran2<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRunningLengthWord<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRunningLengthWord<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testRunningLengthWord<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArray<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArray<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArray<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+
+  if (!testEWAHBoolArrayLogical<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayLogical<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayLogical<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+
+  if (!testEWAHBoolArrayLogical2<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayLogical2<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayLogical2<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+
+  if (!testEWAHBoolArrayAppend<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayAppend<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testEWAHBoolArrayAppend<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+
+  if (!testJoergBukowski<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testJoergBukowski<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testJoergBukowski<uint64_t>()) {
     std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }

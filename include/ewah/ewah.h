@@ -972,8 +972,9 @@ template <class uword> bool EWAHBoolArray<uword>::set(size_t i) {
                       (sizeinbits + wordinbits - 1) / wordinbits;
   sizeinbits = i + 1;
   if (dist > 0) { // easy
-    if (dist > 1)
+    if (dist > 1) {
       fastaddStreamOfEmptyWords(false, dist - 1);
+    }
     addLiteralWord(
         static_cast<uword>(static_cast<uword>(1) << (i % wordinbits)));
     return true;
@@ -2280,6 +2281,8 @@ BitmapStatistics EWAHBoolArray<uword>::computeStatistics() const {
 template <class uword> void EWAHBoolArray<uword>::debugprintout() const {
   std::cout << "==printing out EWAHBoolArray==" << std::endl;
   std::cout << "Number of compressed words: " << buffer.size() << std::endl;
+  std::cout << "Size in bits: " << sizeinbits << std::endl;
+
   size_t pointer = 0;
   while (pointer < buffer.size()) {
     ConstRunningLengthWord<uword> rlw(buffer[pointer]);

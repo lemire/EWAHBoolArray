@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "ewahutil.h"
 // uncomment this for debugging
 //#define EWAHASSERT
 

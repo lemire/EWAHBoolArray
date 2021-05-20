@@ -1,6 +1,6 @@
 # Compressed bitset in C++
 [![Ubuntu 20.04 CI (GCC 9, 8)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml/badge.svg)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml)
-
+[![VS16-CI](https://github.com/lemire/EWAHBoolArray/actions/workflows/vs16-ci.yml/badge.svg)](https://github.com/lemire/EWAHBoolArray/actions/workflows/vs16-ci.yml)
 
 
 

@@ -497,12 +497,12 @@ size_t EWAHBoolArray<uword>::write(std::ostream &out,
                                  const bool savesizeinbits) const {
   size_t written = 0;
   if (savesizeinbits) {
-    uint64_t sb = sizeinbits;
+    uint64_t sb = static_cast<uint64_t>(sizeinbits);
     out.write(reinterpret_cast<const char *>(&sb), sizeof(sb));
     written += sizeof(sb);
   }
   const size_t buffersize = buffer.size();
-  uint64_t bs = buffersize;
+  uint64_t bs = static_cast<uint64_t>(buffersize);
   out.write(reinterpret_cast<const char *>(&bs), sizeof(bs));
   written += sizeof(buffersize);
 
@@ -519,7 +519,7 @@ size_t EWAHBoolArray<uword>::write(char * out, size_t capacity,
                                  const bool savesizeinbits) const {
   size_t written = 0;
   if (savesizeinbits) {
-    uint64_t sb = sizeinbits;
+    uint64_t sb = static_cast<uint64_t>(sizeinbits);
     if(capacity < sizeof(sb)) return 0;
     capacity -= sizeof(sb);
     memcpy(out, &sb, sizeof(sb));
@@ -527,7 +527,7 @@ size_t EWAHBoolArray<uword>::write(char * out, size_t capacity,
     written += sizeof(sb);
   }
   const size_t buffersize = buffer.size();
-  uint64_t bs = buffersize;
+  uint64_t bs = static_cast<uint64_t>(buffersize);
   if(capacity < sizeof(bs)) return 0;
   capacity -= sizeof(bs);
   memcpy(out, &buffersize, sizeof(bs));

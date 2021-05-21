@@ -941,20 +941,27 @@ template <class uword> bool testSerialization() {
   for (int k = 0; k < 10; ++k) {
     size_t w1 = bitmap.write(ss);
     if (w1 != bitmap.sizeOnDisk()) {
+      std::cout << " bitmap.sizeOnDisk() = " << bitmap.sizeOnDisk() << std::endl;
+      std::cout << " Effective result size = " << w1 << std::endl;
       return false;
     }
     size_t w2 = lmyarray.read(ss);
     if (w2 != bitmap.sizeOnDisk()) {
+      std::cout << " bitmap.sizeOnDisk() = " << bitmap.sizeOnDisk() << std::endl;
+      std::cout << " Effective result size = " << w1 << std::endl;
       return false;
     }
     if (lmyarray != bitmap) {
+      std::cout << " Same size, but the bitmaps differ." << std::endl;
       return false;
     }
     typename EWAHBoolArray<uword>::const_iterator i = bitmap.begin();
     typename EWAHBoolArray<uword>::const_iterator j = lmyarray.begin();
     for (; i != bitmap.end(); ++i, ++j) {
-      if (*i != *j)
+      if (*i != *j) {
+        std::cout << " Same size, but the bitmaps differ over iterators." << std::endl;
         return false;
+      }
     }
   }
   return true;

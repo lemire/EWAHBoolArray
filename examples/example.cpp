@@ -6,6 +6,9 @@
  */
 #include "ewah/ewah.h"
 #include <stdlib.h>
+#include <stdlib.h>
+#include <time.h>
+
 using namespace ewah;
 
 void easydemo() {

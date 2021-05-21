@@ -20,6 +20,7 @@
 #define SSTR(x) (to_string(x))
 
 using namespace std;
+using namespace ewah;
 
 static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
@@ -27,6 +28,29 @@ static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 #if _MSC_VER >= 1400
 #define unlink _unlink
 #endif
+template <class uword> bool testAndNotCompactionEWAHBoolArray() {
+  cout << "[testing testAndNotCompactionEWAHBoolArray] sizeof(uword)="
+       << sizeof(uword) << endl;
+  EWAHBoolArray<uword> one;
+  EWAHBoolArray<uword> other;
+  one.set(71);
+  other.set(130);
+  other = other.logicaland(one);
+  one = one.logicalandnot(other);
+  one.set(155);
+  other.set(251);
+  if (*other.begin() != 251) {
+    return false;
+  }
+  other = other.logicalor(one);
+  // {71,131,155}
+  one = one.logicaland(other);
+  // {155}
+  other = other.logicalandnot(one);
+  typename EWAHBoolArray<uword>::const_iterator i = other.begin();
+  auto val = *i;
+  return val == 251;
+}
 
 template <class uword> bool testInEqualityEWAHBoolArray() {
   cout << "[testing testInEqualityEWAHBoolArray] sizeof(uword)="
@@ -104,28 +128,8 @@ template <class uword> bool testSerialSize() {
   stringstream ss;
   b.write(ss);
   size_t compressedsize = ss.tellp();
-  const size_t wordinbits = sizeof(uword) * CHAR_BIT;
-  size_t offset = (bitval + wordinbits) / wordinbits - 1;
-  offset = (offset + RunningLengthWord<uword>::largestrunninglengthcount - 1) /
-           RunningLengthWord<uword>::largestrunninglengthcount;
-  size_t expectedsize =
-      2 * sizeof(size_t) + sizeof(uword) + offset * sizeof(uword);
-  cout << "using " << compressedsize << " bytes " << endl;
-  if (compressedsize != expectedsize) {
-    cout << "bad size, was expected  " << expectedsize << " got "
-         << compressedsize << endl;
-    return false; // unexpected size
-  }
-  ss.str("");
-  ss.clear();
-  //
-  uint32_t buffersize =
-      (uint32_t)b.bufferSize(); // I am going to use only 32-bit
-  ss.write(reinterpret_cast<const char *>(&buffersize), sizeof(uint32_t));
-  b.writeBuffer(ss);
-  compressedsize = ss.tellp();
-  expectedsize = sizeof(uint32_t) + sizeof(uword) + offset * sizeof(uword);
-  cout << "using " << compressedsize << " bytes with custom format" << endl;
+  size_t expectedsize = b.sizeOnDisk();
+
   if (compressedsize != expectedsize) {
     cout << "bad size, was expected  " << expectedsize << " got "
          << compressedsize << endl;
@@ -939,20 +943,30 @@ template <class uword> bool testSerialization() {
   for (int k = 0; k < 10; ++k) {
     size_t w1 = bitmap.write(ss);
     if (w1 != bitmap.sizeOnDisk()) {
+      std::cout << " bitmap.sizeOnDisk() = " << bitmap.sizeOnDisk()
+                << std::endl;
+      std::cout << " Effective result size = " << w1 << std::endl;
       return false;
     }
     size_t w2 = lmyarray.read(ss);
     if (w2 != bitmap.sizeOnDisk()) {
+      std::cout << " bitmap.sizeOnDisk() = " << bitmap.sizeOnDisk()
+                << std::endl;
+      std::cout << " Effective result size = " << w1 << std::endl;
       return false;
     }
     if (lmyarray != bitmap) {
+      std::cout << " Same size, but the bitmaps differ." << std::endl;
       return false;
     }
     typename EWAHBoolArray<uword>::const_iterator i = bitmap.begin();
     typename EWAHBoolArray<uword>::const_iterator j = lmyarray.begin();
     for (; i != bitmap.end(); ++i, ++j) {
-      if (*i != *j)
+      if (*i != *j) {
+        std::cout << " Same size, but the bitmaps differ over iterators."
+                  << std::endl;
         return false;
+      }
     }
   }
   return true;
@@ -1670,6 +1684,18 @@ int main(int argc, char **argv) {
   int failures = 0;
   std::string failtext = "[GOT FAILURE] ";
   if (!funnytest()) {
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint64_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint32_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
+    ++failures;
+  }
+  if (!testAndNotCompactionEWAHBoolArray<uint16_t>()) {
+    std::cout << failtext << __LINE__ << std::endl;
     ++failures;
   }
   if (!testEmpty<uint64_t>()) {

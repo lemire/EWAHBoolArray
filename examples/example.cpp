@@ -4,8 +4,12 @@
  *
  * (c) Daniel Lemire, http://lemire.me/en/
  */
-#include <stdlib.h>
 #include "ewah/ewah.h"
+#include <stdlib.h>
+#include <stdlib.h>
+#include <time.h>
+
+using namespace ewah;
 
 void easydemo() {
   typedef EWAHBoolArray<uint32_t> bitmap;

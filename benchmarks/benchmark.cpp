@@ -6,15 +6,19 @@
  */
 
 #include <algorithm>
-#include <vector>
 #include <set>
+#include <vector>
 #ifdef _MSC_VER
 #include <winsock2.h>
 #else
 #include <sys/time.h>
 #endif
+#include <stdlib.h>
+#include <time.h>
 #include "ewah/ewah.h"
+
 using namespace std;
+using namespace ewah;
 
 /**
  *  Mersenne twister - random number generator.

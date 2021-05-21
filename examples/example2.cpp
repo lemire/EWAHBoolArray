@@ -5,15 +5,15 @@
  * code by Kelly Sommers.
  */
 
-#include <vector>
+#include <algorithm>
+#include <ewah/ewah.h>
 #include <iostream>
 #include <map>
 #include <string>
-#include <ewah/ewah.h>
-#include <string>
-#include <algorithm>
+#include <vector>
 
 using namespace std;
+using namespace ewah;
 
 vector<string> fromarraytovector(string *x, const size_t n) {
   vector<string> ans;

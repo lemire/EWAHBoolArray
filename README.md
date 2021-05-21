@@ -136,6 +136,7 @@ To build with at least Visual Studio 2017 directly in the IDE:
 
 ```C++
   #include "ewah.h"
+  using namespace ewah;
 
   typedef EWAHBoolArray<uint32_t> bitmap;
 
@@ -181,19 +182,5 @@ You can install it by typing:
 
 ## Persistent storage
 
-If you save the bitmap to disk using "write" and then try to read it again with "read" on a different machine, it *may* crash. The file format is specific to the machine you are using. E.g., using two 64-bit Windows PC might work, but if you send the same data to a 32-bit Linux box it may fail.
-
-You can get better persistence with the readBuffer and writeBuffer methods. They will be consistent across machines except for bit endianness: you may need to manually check bit endianness. Moreover, these methods require you to save some metadata (i.e., buffersize and sizeinbits) yourself in some portable way.
-
-
-For saving in a persistent way:
-
-     size_t sb = mybitmap.sizeInBits(); // save sb somewhere safe, your responsibility!
-     size_t bs = mybitmap.bufferSize(); // save bs somewhere safe, your responsibility!
-     mybitmap.writeBuffer(out); // this writes the internal buffer of the bitmap
-
-
-For loading:
-
-     mybitmap.readBuffer(in,bs); // recover the saved internal buffer, you are responsible for endianness
-     mybitmap.setSizeInBits(sb); // you have to do this to get a proper bitmap size
+We do not correct for the endianess. If you use both little endian and big endian machines, you should
+be careful. Thankfully,  big endian hardware is vanishingly rare.

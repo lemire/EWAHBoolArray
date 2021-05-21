@@ -25,25 +25,10 @@
 #include <algorithm>
 #include <sstream>
 
-// taken from stackoverflow
-#ifndef NDEBUG
-#define ASSERT(condition, message)                                             \
-  do {                                                                         \
-    if (!(condition)) {                                                        \
-      std::cerr << "Assertion `" #condition "` failed in " << __FILE__         \
-                << " line " << __LINE__ << ": " << message << std::endl;       \
-      std::exit(EXIT_FAILURE);                                                 \
-    }                                                                          \
-  } while (false)
-#else
-#define ASSERT(condition, message)                                             \
-  do {                                                                         \
-  } while (false)
-#endif
-
 #ifdef _MSC_VER
 #include <intrin.h> 
 #endif
+namespace ewah {
 
 static inline uint32_t ctz64(uint64_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX && ULLONG_MAX >= UINT64_MAX
@@ -236,5 +221,5 @@ template <class uword> std::string toBinaryString(const uword w) {
   }
   return convert.str();
 }
-
+} // namespace ewah
 #endif

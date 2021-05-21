@@ -14,6 +14,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace ewah;
 
 vector<string> fromarraytovector(string *x, const size_t n) {
   vector<string> ans;

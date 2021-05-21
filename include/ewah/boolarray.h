@@ -19,6 +19,7 @@
 // uncomment this for debugging
 //#define EWAHASSERT
 
+namespace ewah {
 /**
  * A dynamic bitset implementation. (without compression).
  */
@@ -485,5 +486,5 @@ template <class uword> void BoolArray<uword>::append(const BoolArray &a) {
   }
   sizeinbits += a.sizeinbits;
 }
-
+} // namespace ewah
 #endif

@@ -20,6 +20,7 @@
 #define SSTR(x) (to_string(x))
 
 using namespace std;
+using namespace ewah;
 
 static string testfailed = "---\ntest failed.\n\n\n\n\n\n";
 
@@ -35,41 +36,18 @@ template <class uword> bool testAndNotCompactionEWAHBoolArray() {
   one.set(71);
   other.set(130);
   other = other.logicaland(one);
-  //other is zero
- // one = one.logicalandnot(other);
-  // one remained on change {71}
+  one = one.logicalandnot(other);
   one.set(155);
-  //one has {71,155}
-    other.debugprintout();
-
   other.set(251);
-  //other.debugprintout();
-  abort();
-  return  251 == *other.begin();
-  //other has {131}
-//    std::cout <<  " {251}==" << other << std::endl;
-/*
-
+  if(*other.begin() != 251) {return false;}
   other = other.logicalor(one);
   // {71,131,155}
   one = one.logicaland(other);
   // {155}
-
-  std::cout << "one";
-  one.debugprintout();
-  std::cout << "other";
-  other.debugprintout();
-  std::cout << other << std::endl;
-    std::cout << one << std::endl;
   other = other.logicalandnot(one);
-
-  std::cout << "other";
-  other.debugprintout();
   typename EWAHBoolArray<uword>::const_iterator i = other.begin();
   auto val = *i;
-  std::cout << "got " << val << std::endl;
-  return val == 217;*/
-  return true;
+  return val == 251;
 }
 
 template <class uword> bool testInEqualityEWAHBoolArray() {

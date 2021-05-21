@@ -10,6 +10,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace ewah;
 
 /**
 * Simple DEMO to test the intersects function

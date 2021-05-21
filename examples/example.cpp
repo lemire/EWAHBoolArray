@@ -6,6 +6,7 @@
  */
 #include <stdlib.h>
 #include "ewah/ewah.h"
+using namespace ewah;
 
 void easydemo() {
   typedef EWAHBoolArray<uint32_t> bitmap;

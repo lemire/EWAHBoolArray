@@ -14,7 +14,9 @@
 #include <sys/time.h>
 #endif
 #include "ewah/ewah.h"
+
 using namespace std;
+using namespace ewah;
 
 /**
  *  Mersenne twister - random number generator.

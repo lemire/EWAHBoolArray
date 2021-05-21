@@ -7,6 +7,8 @@
 #ifndef RUNNINGLENGTHWORD_H_
 #define RUNNINGLENGTHWORD_H_
 #include <iostream>
+namespace ewah {
+
 /**
  * For expert users.
  * This class is used to represent a special type of word storing
@@ -544,5 +546,6 @@ private:
   uword NumberOfLiteralWords;
   EWAHBoolArrayRawIterator<uword> *parent;
 };
+} // namespace ewah
 
 #endif /* RUNNINGLENGTHWORD_H_ */

@@ -10,11 +10,11 @@
 #define EWAH_H
 
 #include <algorithm>
-#include <vector>
 #include <queue>
+#include <vector>
 
-#include "ewahutil.h"
 #include "boolarray.h"
+#include "ewahutil.h"
 
 #include "runninglengthword.h"
 
@@ -83,24 +83,25 @@ public:
   }
 
   /**
-  * Returns true if no bit is set.
-  */
+   * Returns true if no bit is set.
+   */
   bool empty() const {
-      size_t pointer(0);
-      while (pointer < buffer.size()) {
-        ConstRunningLengthWord<uword> rlw(buffer[pointer]);
-        if (rlw.getRunningBit()) {
-          if(rlw.getRunningLength() > 0) return false;
-        }
-        ++pointer;
-        for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
-          if(buffer[pointer] != 0) return false;
-          ++pointer;
-        }
+    size_t pointer(0);
+    while (pointer < buffer.size()) {
+      ConstRunningLengthWord<uword> rlw(buffer[pointer]);
+      if (rlw.getRunningBit()) {
+        if (rlw.getRunningLength() > 0)
+          return false;
       }
-      return true;
+      ++pointer;
+      for (size_t k = 0; k < rlw.getNumberOfLiteralWords(); ++k) {
+        if (buffer[pointer] != 0)
+          return false;
+        ++pointer;
+      }
+    }
+    return true;
   }
-
 
   /**
    * Set the ith bit to true (starting at zero).
@@ -217,8 +218,8 @@ public:
   }
 
   /**
-  * calls logicaland
-  */
+   * calls logicaland
+   */
   EWAHBoolArray operator&(const EWAHBoolArray &a) const {
     return logicaland(a);
   }
@@ -236,8 +237,8 @@ public:
   void logicalandnot(const EWAHBoolArray &a, EWAHBoolArray &container) const;
 
   /**
-  * calls logicalandnot
-  */
+   * calls logicalandnot
+   */
   EWAHBoolArray operator-(const EWAHBoolArray &a) const {
     return logicalandnot(a);
   }
@@ -328,8 +329,8 @@ public:
   }
 
   /**
-  * calls logicalor
-  */
+   * calls logicalor
+   */
   EWAHBoolArray operator|(const EWAHBoolArray &a) const { return logicalor(a); }
 
   /**
@@ -359,8 +360,8 @@ public:
   }
 
   /**
-  * calls logicalxor
-  */
+   * calls logicalxor
+   */
   EWAHBoolArray operator^(const EWAHBoolArray &a) const {
     return logicalxor(a);
   }
@@ -449,19 +450,20 @@ public:
    * | sizeinbits | buffer lenth | buffer content|
    * the sizeinbits part can be omitted if "savesizeinbits=false".
    * Both sizeinbits and buffer length are saved using the uint64_t data
-   * type. 
+   * type.
    * Returns how many bytes were handed out to the stream.
    */
   size_t write(std::ostream &out, const bool savesizeinbits = true) const;
 
   /**
-  * same as write(std::ostream...), except that you provide a char pointer
-  * and a "capacity" (in bytes). The function never writes at or beyond "out+capacity".
-  * If the storage needed exceeds the
-  * given capacity, the value zero is returned: it should be considered an error.
-  * Otherwise, the number of bytes copied is returned.
-  */
-  size_t write(char * out, size_t capacity, const bool savesizeinbits = true) const;
+   * same as write(std::ostream...), except that you provide a char pointer
+   * and a "capacity" (in bytes). The function never writes at or beyond
+   * "out+capacity". If the storage needed exceeds the given capacity, the value
+   * zero is returned: it should be considered an error. Otherwise, the number
+   * of bytes copied is returned.
+   */
+  size_t write(char *out, size_t capacity,
+               const bool savesizeinbits = true) const;
 
   /**
    * This only writes the content of the buffer (see write()) method.
@@ -484,15 +486,15 @@ public:
    */
   size_t read(std::istream &in, const bool savesizeinbits = true);
 
-
   /**
-  * same as read(std::istream...), except that you provide a char pointer
-  * and a "capacity" (in bytes). The function never reads at or beyond "in+capacity".
-  * If the detected storage exceeds the  given capacity, the value zero is returned:
-  * it should be considered an error.
-  * Otherwise, the number of bytes read is returned.
-  */
-  size_t read(const char * in, size_t capacity, const bool savesizeinbits = true);
+   * same as read(std::istream...), except that you provide a char pointer
+   * and a "capacity" (in bytes). The function never reads at or beyond
+   * "in+capacity". If the detected storage exceeds the  given capacity, the
+   * value zero is returned: it should be considered an error. Otherwise, the
+   * number of bytes read is returned.
+   */
+  size_t read(const char *in, size_t capacity,
+              const bool savesizeinbits = true);
 
   /**
    * read the buffer from a stream, see method writeBuffer.
@@ -606,15 +608,15 @@ public:
   }
 
   /**
-  * Move constructor.
-  */
+   * Move constructor.
+   */
   EWAHBoolArray(EWAHBoolArray &&other)
-    : buffer(std::move(other.buffer)), sizeinbits(other.sizeinbits),
-      lastRLW(other.lastRLW) {}
+      : buffer(std::move(other.buffer)), sizeinbits(other.sizeinbits),
+        lastRLW(other.lastRLW) {}
 
   /**
-  * Move assignment operator.
-  */
+   * Move assignment operator.
+   */
   EWAHBoolArray &operator=(EWAHBoolArray &&x) {
     buffer = std::move(x.buffer);
     sizeinbits = x.sizeinbits;

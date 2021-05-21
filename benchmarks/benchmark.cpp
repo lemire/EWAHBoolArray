@@ -6,8 +6,8 @@
  */
 
 #include <algorithm>
-#include <vector>
 #include <set>
+#include <vector>
 #ifdef _MSC_VER
 #include <winsock2.h>
 #else

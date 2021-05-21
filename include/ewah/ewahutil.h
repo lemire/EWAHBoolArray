@@ -10,30 +10,30 @@
 #ifndef EWAHUTIL_H
 #define EWAHUTIL_H
 
-#include <string.h>
-#include <stdlib.h>
 #include <iso646.h> // mostly for Microsoft compilers
 #include <limits.h>
 #include <stdint.h> // part of Visual Studio 2010 and better
+#include <stdlib.h>
+#include <string.h>
 
-#include <cassert>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <stdexcept>
-#include <cstddef>
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #ifdef _MSC_VER
-#include <intrin.h> 
+#include <intrin.h>
 #endif
 namespace ewah {
 
 static inline uint32_t ctz64(uint64_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX && ULLONG_MAX >= UINT64_MAX
   return static_cast<uint32_t>(__builtin_ctzll(n));
-#elif  defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 &&              \
+#elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 &&              \
     ULONG_MAX >= UINT64_MAX
   uint32_t i;
   _BitScanForward64((unsigned long *)&i, n);

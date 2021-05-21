@@ -4,8 +4,8 @@
  *
  * (c) Daniel Lemire, http://lemire.me/en/
  */
-#include <stdlib.h>
 #include "ewah/ewah.h"
+#include <stdlib.h>
 using namespace ewah;
 
 void easydemo() {

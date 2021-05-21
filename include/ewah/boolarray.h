@@ -7,13 +7,13 @@
 
 #ifndef BOOLARRAY_H
 #define BOOLARRAY_H
-#include <iso646.h> // mostly for Microsoft compilers
-#include <stdarg.h>
 #include <cassert>
 #include <iostream>
-#include <vector>
-#include <stdexcept>
+#include <iso646.h> // mostly for Microsoft compilers
 #include <sstream>
+#include <stdarg.h>
+#include <stdexcept>
+#include <vector>
 
 #include "ewahutil.h"
 // uncomment this for debugging
@@ -192,9 +192,9 @@ public:
   }
 
   /**
-  * Computes the logical and and return the result.
-  * The current bitmaps is unchanged.
-  */
+   * Computes the logical and and return the result.
+   * The current bitmaps is unchanged.
+   */
   BoolArray logicaland(const BoolArray &a) const {
     BoolArray answer;
     logicaland(a, answer);
@@ -224,9 +224,9 @@ public:
   }
 
   /**
-  * Computes the logical andnot and return the result.
-  * The current bitmaps is unchanged.
-  */
+   * Computes the logical andnot and return the result.
+   * The current bitmaps is unchanged.
+   */
   BoolArray logicalandnot(const BoolArray &a) const {
     BoolArray answer;
     logicalandnot(a, answer);
@@ -264,9 +264,9 @@ public:
   }
 
   /**
-  * Computes the logical or and return the result.
-  * The current bitmaps is unchanged.
-  */
+   * Computes the logical or and return the result.
+   * The current bitmaps is unchanged.
+   */
   BoolArray logicalor(const BoolArray &a) const {
     BoolArray answer;
     logicalor(a, answer);
@@ -298,9 +298,9 @@ public:
   }
 
   /**
-  * Computes the logical xor and return the result.
-  * The current bitmaps is unchanged.
-  */
+   * Computes the logical xor and return the result.
+   * The current bitmaps is unchanged.
+   */
   BoolArray logicalxor(const BoolArray &a) const {
     BoolArray answer;
     logicalxor(a, answer);
@@ -321,9 +321,9 @@ public:
   }
 
   /**
-  * Computes the logical not and return the result.
-  * The current bitmaps is unchanged.
-  */
+   * Computes the logical not and return the result.
+   * The current bitmaps is unchanged.
+   */
   BoolArray logicalandnot() const {
     BoolArray answer;
     logicalnot(answer);
@@ -368,8 +368,8 @@ public:
       padWithZeroes(a.sizeinbits);
   }
   /**
-  * Make sure the current bitmap has the size of the provided bitmap.
-  */
+   * Make sure the current bitmap has the size of the provided bitmap.
+   */
   void setToSize(const BoolArray &a) {
     sizeinbits = a.sizeinbits;
     buffer.resize(a.buffer.size());

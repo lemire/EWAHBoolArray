@@ -1,20 +1,19 @@
 
-#include <vector>
-#include <iostream>
-#include <unordered_map>
-#include <string>
-#include <ewah/ewah.h>
-#include <string>
 #include <algorithm>
+#include <ewah/ewah.h>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 using namespace std;
 using namespace ewah;
 
 /**
-* Simple DEMO to test the intersects function
-*/
+ * Simple DEMO to test the intersects function
+ */
 
 unordered_map<string, EWAHBoolArray<uint32_t>> indexColumn(vector<string> col) {
   unordered_map<string, EWAHBoolArray<uint32_t>> indexes;

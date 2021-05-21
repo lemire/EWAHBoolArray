@@ -33,7 +33,7 @@ namespace ewah {
 static inline uint32_t ctz64(uint64_t n) {
 #if defined(__GNUC__) && UINT_MAX >= UINT32_MAX && ULLONG_MAX >= UINT64_MAX
   return static_cast<uint32_t>(__builtin_ctzll(n));
-#elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 &&              \
+#elif  defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 &&              \
     ULONG_MAX >= UINT64_MAX
   uint32_t i;
   _BitScanForward64((unsigned long *)&i, n);

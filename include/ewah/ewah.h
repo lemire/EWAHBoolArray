@@ -687,7 +687,7 @@ public:
   inline void fastaddStreamOfDirtyWords(const uword *v, const size_t number);
 
 private:
-  void checkWordCount(std::string message) const;
+  void assertWordCount(std::string message) const;
   void correctWordCount();
   size_t numberOfWords() const;
   // private because does not increment the size in bits

@@ -8,7 +8,19 @@ function(add_cpp_test TEST_NAME)
     target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/cpp)
     add_test(NAME ${TEST_NAME} COMMAND "${TEST_NAME}" "${CMAKE_CURRENT_BINARY_DIR}/data/" )
     target_link_libraries(${TEST_NAME} PUBLIC ewah)
+    if(NOT MSVC)  
+    target_compile_options(
+      ${TEST_NAME} PUBLIC
+      -Werror -Wall -Wextra -Weffc++ -Wsign-compare -Wshadow -Wwrite-strings
+      -Wpointer-arith -Winit-self -Wconversion -Wno-sign-conversion
+    )
+    endif()
+    
 endfunction(add_cpp_test)
 
 add_cpp_test(unit)
+
+
+
+
 

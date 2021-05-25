@@ -4,6 +4,7 @@
  *
  * (c) Daniel Lemire, http://lemire.me/en/
  */
+#define EWAHASSERT
 #include "ewah/boolarray.h"
 #include "ewah/ewah.h"
 #include <fstream>
@@ -290,6 +291,7 @@ template <class uword> bool testAndNotEWAHBoolArray() {
   cout << bout << endl;
   if (bout.numberOfOnes() != 1) {
     cout << "expected answer : 1 " << endl;
+    cout << "got      answer : " << bout.numberOfOnes() << endl;
     return false;
   }
   return true;

@@ -16,8 +16,6 @@
 #include <vector>
 
 #include "ewahutil.h"
-// uncomment this for debugging
-//#define EWAHASSERT
 
 namespace ewah {
 /**

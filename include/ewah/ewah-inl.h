@@ -330,15 +330,18 @@ template <class uword> size_t EWAHBoolArray<uword>::numberOfWords() const {
 }
 
 template <class uword>
-void EWAHBoolArray<uword>::checkWordCount(std::string message) const {
+void EWAHBoolArray<uword>::assertWordCount(std::string message) const {
 #ifdef EWAHASSERT
   size_t tot = numberOfWords();
   size_t expected = (sizeinbits + wordinbits - 1) / wordinbits;
   if (expected != tot) {
-    std::cerr << "[checkWordCount] " << message << std::endl;
-    std::cerr << "[checkWordCount] number of words " << tot << std::endl;
-    std::cerr << "[checkWordCount] expected number of words " << expected
+    std::cerr << "[assertWordCount] wordinbits " << wordinbits << std::endl;
+    std::cerr << "[assertWordCount] sizeinbits " << sizeinbits << std::endl;
+    std::cerr << "[assertWordCount] " << message << std::endl;
+    std::cerr << "[assertWordCount] number of words " << tot << std::endl;
+    std::cerr << "[assertWordCount] expected number of words " << expected
               << std::endl;
+    debugprintout();
     throw std::runtime_error("bug");
   }
 #endif
@@ -1413,11 +1416,14 @@ void EWAHBoolArray<uword>::logicaland(const EWAHBoolArray &a,
       rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
-  container.setSizeInBits(sizeInBits());
+  BufferedRunningLengthWord<uword> &remain = rlwj.size() > 0 ? rlwj : rlwi;
+  while(remain.size() > 0) {
+    container.addStreamOfEmptyWords(false, remain.size());
+    if (!remain.next()) { break; }
+  }
   container.setSizeInBits(sizeInBits() > a.sizeInBits() ? sizeInBits()
                                                         : a.sizeInBits());
-  container.correctWordCount();
-  container.checkWordCount("logicaland");
+  container.assertWordCount("logicaland");
 }
 
 template <class uword>
@@ -1473,13 +1479,17 @@ void EWAHBoolArray<uword>::logicalandnot(const EWAHBoolArray &a,
       rlwj.discardLiteralWordsWithReload(nbre_literal);
     }
   }
-  const bool i_remains = rlwi.size() > 0;
-  if (i_remains) {
+  if(rlwi.size() > 0) {
     rlwi.discharge(container);
+    container.setSizeInBits(sizeInBits());
+  } else {
+    while(rlwj.size() > 0) {
+      container.addStreamOfEmptyWords(false, rlwj.size());
+      if (!rlwj.next()) { break; }
+    }
+    container.setSizeInBits(a.sizeInBits());
   }
-  container.setSizeInBits(sizeInBits());
-  container.correctWordCount();
-  container.checkWordCount("logicalandnot");
+  container.assertWordCount("logicalandnot");
 }
 
 template <class uword>

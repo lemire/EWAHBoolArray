@@ -139,7 +139,7 @@ public:
   void set(const size_t pos) {
     if (pos >= sizeinbits)
       padWithZeroes(pos + 1);
-    buffer[pos / wordinbits] |= (static_cast<uword>(1) << (pos % wordinbits));
+    buffer[pos / wordinbits] |= static_cast<uword>((static_cast<uword>(1) << (pos % wordinbits)));
   }
 
   /**
@@ -215,7 +215,7 @@ public:
     size_t upto = out.buffer.size() < ba.buffer.size() ? out.buffer.size()
                                                        : ba.buffer.size();
     for (size_t i = 0; i < upto; ++i)
-      out.buffer[i] = buffer[i] & (~ba.buffer[i]);
+      out.buffer[i] = static_cast<uword>(buffer[i] & (~ba.buffer[i]));
     for (size_t i = upto; i < out.buffer.size(); ++i)
       out.buffer[i] = buffer[i];
     out.clearBogusBits();
@@ -434,7 +434,7 @@ private:
   void clearBogusBits() {
     if ((sizeinbits % wordinbits) != 0) {
       const uword maskbogus =
-          (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1;
+          static_cast<uword>((static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1);
       buffer[buffer.size() - 1] &= maskbogus;
     }
   }

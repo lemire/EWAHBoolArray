@@ -1454,14 +1454,17 @@ template <class uword> bool dataindexingtest(std::string path) {
   return true;
 }
 
-typedef struct {
-  EWAHBoolArray<uint32_t> gpr[32][4];
-} vcpu_ctx;
+struct  vcpu_ctx {
+  EWAHBoolArray<uint32_t> gpr[32][4]{};
+};
 
-typedef struct {
-  vcpu_ctx vcpu;
-  void *uval;
-} thread_ctx_t;
+struct thread_ctx_t {
+  thread_ctx_t() = default;
+  thread_ctx_t(const thread_ctx_t& t) = delete;
+  thread_ctx_t& operator=(const thread_ctx_t&) = delete;
+  vcpu_ctx vcpu{};
+  void *uval{nullptr};
+};
 
 bool funnytest() {
   cout << "[funnytest] checking funnytest" << endl;

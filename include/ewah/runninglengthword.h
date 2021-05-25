@@ -340,7 +340,7 @@ public:
       size_t pd = getNumberOfLiteralWords();
       if (pd > 0)
         return true;
-      discardFirstWordsWithReload(pl + pd);
+      discardFirstWordsWithReload(static_cast<uword>(pl + pd));
     }
     return false;
   }
@@ -352,7 +352,7 @@ public:
       if (index + RunningLength > max) {
         const size_t offset = max - index;
         container.fastaddStreamOfEmptyWords(getRunningBit(), offset);
-        RunningLength -= offset;
+        RunningLength = static_cast<uword>(RunningLength - offset);
         return max;
       }
       container.fastaddStreamOfEmptyWords(getRunningBit(), RunningLength);
@@ -361,7 +361,7 @@ public:
         const size_t offset = max - index;
         writeLiteralWords(offset, container);
         RunningLength = 0;
-        NumberOfLiteralWords -= offset;
+        NumberOfLiteralWords = static_cast<uword>(NumberOfLiteralWords - offset);
         return max;
       }
       writeLiteralWords(NumberOfLiteralWords, container);
@@ -389,7 +389,7 @@ public:
       }
       if (pd > 0)
         return true;
-      discardFirstWordsWithReload(pl + pd);
+      discardFirstWordsWithReload(static_cast<uword>(pl + pd));
     }
     return false;
   }
@@ -411,7 +411,7 @@ public:
         pd = max - index;
       }
       writeNegatedLiteralWords(pd, container);
-      discardFirstWordsWithReload(pl + pd);
+      discardFirstWordsWithReload(static_cast<uword>(pl + pd));
       index += pd;
     }
     return index;
@@ -432,7 +432,7 @@ public:
       }
       if (pd > 0)
         return true;
-      discardFirstWordsWithReload(pl + pd);
+      discardFirstWordsWithReload(static_cast<uword>(pl + pd));
       index += pd;
     }
     return false;
@@ -532,7 +532,7 @@ public:
       size_t toDiscard = x > NumberOfLiteralWords ? NumberOfLiteralWords : x;
       NumberOfLiteralWords =
           static_cast<uword>(NumberOfLiteralWords - toDiscard);
-      x -= toDiscard;
+      x = static_cast<uword>(x - toDiscard);
       if ((x > 0) || (size() == 0)) {
         if (!next())
           break;

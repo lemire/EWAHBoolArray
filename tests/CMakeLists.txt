@@ -11,7 +11,7 @@ function(add_cpp_test TEST_NAME)
     if(NOT MSVC)  
     target_compile_options(
       ${TEST_NAME} PUBLIC
-      -Werror -Wall -Wextra -Weffc++ -Wsign-compare -Wshadow -Wwrite-strings
+      -Wall -Wextra -Weffc++ -Wsign-compare -Wshadow -Wwrite-strings
       -Wpointer-arith -Winit-self -Wconversion -Wno-sign-conversion
     )
     endif()

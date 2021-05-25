@@ -18,14 +18,13 @@ bitmap.
 
 ## Real-world usage
 
-EWAH is used to accelerate the distributed version control system Git (http://githubengineering.com/counting-objects/). You can find the C port of EWAH written by the Git team at https://github.com/git/git/tree/master/ewah
+[EWAH is used to accelerate the distributed version control system Git](http://githubengineering.com/counting-objects/).
 
 The Java counterpart of this library (JavaEWAH) is part of Apache Hive and its derivatives (e.g.,  Apache Spark) and Eclipse JGit. It has been used in production systems for many years. It is part of major Linux distributions.
 
 
-This library is used by database and information retrieval engines
-such as Hustle -- A column oriented, embarrassingly distributed relational
-event database (see https://github.com/chango/hustle).
+This library is used by database and information retrieval engines such as [Hustle -- A column oriented, embarrassingly distributed relational
+event database]https://github.com/chango/hustle). We find it [in the fuzzing tool VUzzer](https://github.com/vusec/vuzzer64).
 
 
 
@@ -169,9 +168,19 @@ Please see
 * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. http://arxiv.org/abs/0901.3751
 * Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience 46 (2), 2016. http://arxiv.org/abs/1402.4466
 
+# Node/JavaScript wrapper
+
+
+Dimitrios Vasilas wrote a [wrapper for JavaScript](https://github.com/dvasilas/node-bitmap-ewah).
+
+You can install it by typing:
+
+        npm install -g node-gyp
+        npm install node-bitmap-ewah
+
 # Ruby wrapper
 
-Josh Ferguson wrote a wrapper for Ruby.
+Josh Ferguson wrote a [wrapper for Ruby](https://github.com/besquared/ewah-bitset/).
 The implementation is packaged and installable as a ruby gem.
 
 You can install it by typing:

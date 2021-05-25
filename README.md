@@ -23,8 +23,7 @@ bitmap.
 The Java counterpart of this library (JavaEWAH) is part of Apache Hive and its derivatives (e.g.,  Apache Spark) and Eclipse JGit. It has been used in production systems for many years. It is part of major Linux distributions.
 
 
-This library is used by database and information retrieval engines such as [Hustle -- A column oriented, embarrassingly distributed relational
-event database]https://github.com/chango/hustle). We find it [in the fuzzing tool VUzzer](https://github.com/vusec/vuzzer64).
+This library is used by database and information retrieval engines such as [Hustle -- A column oriented, embarrassingly distributed relational event database]https://github.com/chango/hustle). We find it [in the fuzzing tool VUzzer](https://github.com/vusec/vuzzer64).
 
 
 
@@ -92,8 +91,8 @@ does not compress quite as well. It is faster because it allows some form of "sk
 over uncompressed words. So though none of these formats are great at random access, EWAH
 is better than the alternatives.
 
-There are other alternatives however. For example, the Roaring
-format (https://github.com/lemire/RoaringBitmap) is not a run-length-encoded hybrid. It provides faster random access
+There are other alternatives however. For example, the [Roaring
+format](https://github.com/lemire/RoaringBitmap) is not a run-length-encoded hybrid. It provides faster random access
 than even EWAH.
 
 

@@ -15,6 +15,9 @@ function(add_cpp_test TEST_NAME)
       -Wpointer-arith -Winit-self -Wconversion -Wno-sign-conversion
     )
     endif()
+    if(MSVC_VERSION GREATER 1910)
+       target_compile_options(${TEST_NAME} PUBLIC /permissive-)
+    endif()
     
 endfunction(add_cpp_test)
 

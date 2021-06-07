@@ -155,7 +155,7 @@ static inline uint32_t ctz16(uint16_t n) {
 inline uint32_t countOnes(uint32_t x) {
   return static_cast<uint32_t>(__builtin_popcount(x));
 }
-#elif defined(_MSC_VER) && _MSC_VER >= 1400 && !defined(_M_ARM)
+#elif defined(_MSC_VER) && _MSC_VER >= 1400 && !defined(_M_ARM)&& !defined(_M_ARM64)
 inline uint32_t countOnes(uint32_t x) { return __popcnt(x); }
 #else
 inline uint32_t countOnes(uint32_t v) {

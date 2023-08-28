@@ -1,8 +1,4 @@
 # Compressed bitset in C++
-[![Ubuntu 20.04 CI (GCC 9, 8)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml/badge.svg)](https://github.com/lemire/EWAHBoolArray/actions/workflows/ubuntu20.yml)
-[![VS16-CI](https://github.com/lemire/EWAHBoolArray/actions/workflows/vs16-ci.yml/badge.svg)](https://github.com/lemire/EWAHBoolArray/actions/workflows/vs16-ci.yml)
-
-
 
 ## What is this?
 
@@ -66,7 +62,7 @@ whether you like it or not. That can become very wasteful.
 
 This being said, there are definitively cases where attempting to use compressed bitmaps is wasteful.
 For example, if you have a small universe size. E.g., your bitmaps represent sets of integers
-from [0,n) where n is small (e.g., n=64 or n=128). If you are able to uncompressed BitSet and
+from [0,n) where n is small (e.g., n=64 or n=128). If you can use an BitSet and
 it does not blow up your memory usage,  then compressed bitmaps are probably not useful
 to you. In fact, if you do not need compression, then a BitSet offers remarkable speed.
 One of the downsides of a compressed bitmap like those provided by EWAHBoolArray is slower random access:

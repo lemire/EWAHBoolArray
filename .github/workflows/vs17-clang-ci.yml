@@ -1,4 +1,4 @@
-name: VS16-CLANG-CI
+name: VS17-CLANG-CI
 
 on: [push, pull_request]
 

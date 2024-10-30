@@ -1,5 +1,25 @@
 # Compressed bitset in C++
 
+- [Compressed bitset in C++](#compressed-bitset-in-c)
+   * [What is this?](#what-is-this)
+   * [Real-world usage](#real-world-usage)
+   * [When should you use a bitmap?](#when-should-you-use-a-bitmap)
+   * [When should you use compressed bitmaps?](#when-should-you-use-compressed-bitmaps)
+   * [How does EWAH compares with the alternatives?](#how-does-ewah-compares-with-the-alternatives)
+- [API](#api)
+- [Licensing](#licensing)
+- [Dependencies](#dependencies)
+- [Usage (Linux and Linux-like systems)](#usage-linux-and-linux-like-systems)
+- [Usage (Visual Studio under Windows)](#usage-visual-studio-under-windows)
+- [Quick code sample](#quick-code-sample)
+- [Example](#example)
+- [Further reading](#further-reading)
+- [Wrappers ](#wrappers)
+   * [Node/JavaScript wrapper](#nodejavascript-wrapper)
+   * [Ruby wrapper](#ruby-wrapper)
+- [Persistent storage](#persistent-storage)
+
+
 ## What is this?
 
 The class EWAHBoolArray is a compressed bitset data structure.
@@ -91,13 +111,19 @@ There are other alternatives however. For example, the [Roaring
 format](https://github.com/lemire/RoaringBitmap) is not a run-length-encoded hybrid. It provides faster random access
 than even EWAH.
 
+# API
 
-## Licensing
+Please see our main header file: 
+
+https://github.com/lemire/EWAHBoolArray/blob/master/include/ewah/ewah.h
+
+
+#  Licensing
 
 The EWAHBoolArray project is under a dual license (Apache/MIT).
 Users of the library may choose one or the other license.
 
-## Dependencies
+# Dependencies
 
 None. (Will work under MacOS, Windows or Linux.)
 
@@ -161,7 +187,10 @@ Please see
 * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. http://arxiv.org/abs/0901.3751
 * Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience 46 (2), 2016. http://arxiv.org/abs/1402.4466
 
-# Node/JavaScript wrapper
+
+# Wrappers 
+
+## Node/JavaScript wrapper
 
 
 Dimitrios Vasilas wrote a [wrapper for JavaScript](https://github.com/dvasilas/node-bitmap-ewah).
@@ -171,7 +200,7 @@ You can install it by typing:
         npm install -g node-gyp
         npm install node-bitmap-ewah
 
-# Ruby wrapper
+## Ruby wrapper
 
 Josh Ferguson wrote a [wrapper for Ruby](https://github.com/besquared/ewah-bitset/).
 The implementation is packaged and installable as a ruby gem.
@@ -182,7 +211,7 @@ You can install it by typing:
 
 
 
-## Persistent storage
+# Persistent storage
 
 We provide read and write functions.
 

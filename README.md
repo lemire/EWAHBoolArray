@@ -117,6 +117,7 @@ Please see our main header file:
 
 https://github.com/lemire/EWAHBoolArray/blob/master/include/ewah/ewah.h
 
+You may also consult our [Web documentation](https://lemire.github.io/EWAHBoolArray/classewah_1_1_e_w_a_h_bool_array.html).
 
 #  Licensing
 

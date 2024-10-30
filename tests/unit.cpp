@@ -1,9 +1,4 @@
-/**
- * This code is released under the
- * Apache License Version 2.0 http://www.apache.org/licenses/.
- *
- * (c) Daniel Lemire, http://lemire.me/en/
- */
+// See LICENSE file for license information.
 #define EWAHASSERT
 #include "ewah/boolarray.h"
 #include "ewah/ewah.h"
@@ -1454,14 +1449,14 @@ template <class uword> bool dataindexingtest(std::string path) {
   return true;
 }
 
-struct  vcpu_ctx {
+struct vcpu_ctx {
   EWAHBoolArray<uint32_t> gpr[32][4]{};
 };
 
 struct thread_ctx_t {
   thread_ctx_t() = default;
-  thread_ctx_t(const thread_ctx_t& t) = delete;
-  thread_ctx_t& operator=(const thread_ctx_t&) = delete;
+  thread_ctx_t(const thread_ctx_t &t) = delete;
+  thread_ctx_t &operator=(const thread_ctx_t &) = delete;
   vcpu_ctx vcpu{};
   void *uval{nullptr};
 };

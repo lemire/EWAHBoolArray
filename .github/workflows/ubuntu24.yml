@@ -12,8 +12,13 @@ jobs:
         with:
           cmake-version: '3.16.x'
       - name: Configure
-        run: cmake -B build
+        run: cmake -DCMAKE_INSTALL_PREFIX:PATH=destination -B build
       - name: Build
         run: cmake --build build
       - name: Run basic tests
         run: cd build && ctest --output-on-failure 
+      - name: install
+        run: cmake --install build --verbose
+      - name: Run installed tests
+        run: cd tests/install &&  cmake -DCMAKE_INSTALL_PREFIX:PATH=../../destination -B build && cmake --build build
+

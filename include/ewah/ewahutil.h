@@ -1,33 +1,25 @@
-/**
- * This code is released under the
- * Apache License Version 2.0 http://www.apache.org/licenses/.
- *
- * (c) Daniel Lemire, http://lemire.me/en/
- *
- * Some code from the public domain tuklib.
- */
-
+// See LICENSE file for license information.
 #ifndef EWAHUTIL_H
 #define EWAHUTIL_H
-
-#include <iso646.h> // mostly for Microsoft compilers
-#include <limits.h>
-#include <stdint.h> // part of Visual Studio 2010 and better
-#include <stdlib.h>
-#include <string.h>
 
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <iostream>
+#include <iso646.h> // mostly for Microsoft compilers
+#include <limits.h>
 #include <sstream>
 #include <stdexcept>
+#include <stdint.h> // part of Visual Studio 2010 and better
+#include <stdlib.h>
+#include <string.h>
 #include <string>
 #include <vector>
 
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
+
 namespace ewah {
 
 static inline uint32_t ctz64(uint64_t n) {
@@ -155,7 +147,8 @@ static inline uint32_t ctz16(uint16_t n) {
 inline uint32_t countOnes(uint32_t x) {
   return static_cast<uint32_t>(__builtin_popcount(x));
 }
-#elif defined(_MSC_VER) && _MSC_VER >= 1400 && !defined(_M_ARM)&& !defined(_M_ARM64)
+#elif defined(_MSC_VER) && _MSC_VER >= 1400 && !defined(_M_ARM) &&             \
+    !defined(_M_ARM64)
 inline uint32_t countOnes(uint32_t x) { return __popcnt(x); }
 #else
 inline uint32_t countOnes(uint32_t v) {
@@ -173,7 +166,8 @@ inline uint32_t countOnes(uint32_t v) {
 inline uint32_t countOnes(uint64_t x) {
   return static_cast<uint32_t>(__builtin_popcountll(x));
 }
-#elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 && !defined(_M_ARM64)
+#elif defined(_WIN64) && defined(_MSC_VER) && _MSC_VER >= 1400 &&              \
+    !defined(_M_ARM64)
 inline uint32_t countOnes(uint64_t x) {
   return static_cast<uint32_t>(__popcnt64(static_cast<__int64>(x)));
 }

@@ -1,11 +1,4 @@
-/**
- * This code is released under the
- * Apache License Version 2.0 http://www.apache.org/licenses/.
- *
- * (c) Daniel Lemire, http://lemire.me/en/
- *     with contributions from Zarian Waheed and others.
- */
-
+// See LICENSE file for license information.
 #ifndef EWAH_H
 #define EWAH_H
 

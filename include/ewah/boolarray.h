@@ -1,12 +1,7 @@
-/**
- * This code is released under the
- * Apache License Version 2.0 http://www.apache.org/licenses/.
- *
- * (c) Daniel Lemire, http://lemire.me/en/
- */
-
+// See LICENSE file for license information.
 #ifndef BOOLARRAY_H
 #define BOOLARRAY_H
+
 #include <cassert>
 #include <iostream>
 #include <iso646.h> // mostly for Microsoft compilers
@@ -139,7 +134,8 @@ public:
   void set(const size_t pos) {
     if (pos >= sizeinbits)
       padWithZeroes(pos + 1);
-    buffer[pos / wordinbits] |= static_cast<uword>((static_cast<uword>(1) << (pos % wordinbits)));
+    buffer[pos / wordinbits] |=
+        static_cast<uword>((static_cast<uword>(1) << (pos % wordinbits)));
   }
 
   /**
@@ -433,8 +429,8 @@ public:
 private:
   void clearBogusBits() {
     if ((sizeinbits % wordinbits) != 0) {
-      const uword maskbogus =
-          static_cast<uword>((static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1);
+      const uword maskbogus = static_cast<uword>(
+          (static_cast<uword>(1) << (sizeinbits % wordinbits)) - 1);
       buffer[buffer.size() - 1] &= maskbogus;
     }
   }

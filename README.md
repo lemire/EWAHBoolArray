@@ -94,10 +94,8 @@ than even EWAH.
 
 ## Licensing
 
-Apache License 2.0.
-
-Update (May 20th, 2013): though by default I use the Apache License 2.0 (which is compatible with GPL 3.0), you can *also* consider this library licensed under GPL 2.0.
-
+The EWAHBoolArray project is under a dual license (Apache/MIT).
+Users of the library may choose one or the other license.
 
 ## Dependencies
 

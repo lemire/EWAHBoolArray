@@ -33,7 +33,6 @@ install(
     EXPORT ewahTargets
     RUNTIME COMPONENT ewah_Runtime
     LIBRARY COMPONENT ewah_Runtime
-    NAMELINK_COMPONENT ewah_Development
     ARCHIVE COMPONENT ewah_Development
     INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )

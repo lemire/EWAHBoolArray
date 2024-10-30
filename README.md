@@ -138,7 +138,7 @@ Versions 0.5 and above assume that the compiler supports the C++11 standard.
     cmake -B build 
     cmake --build build
     cd build
-    ctest
+    ctest --test-dir build
 
 # Usage (Visual Studio under Windows)
 

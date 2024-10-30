@@ -184,5 +184,9 @@ You can install it by typing:
 
 ## Persistent storage
 
+We provide read and write functions.
+
 We do not correct for the endianess. If you use both little endian and big endian machines, you should
 be careful. Thankfully,  big endian hardware is vanishingly rare.
+
+When loading data from an untrusted source, we recommend that you use hashes to validate the content.
